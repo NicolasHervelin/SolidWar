@@ -16,9 +16,9 @@ public abstract class Case {
 
     }
 
-    public Case(int xPosition, int yPosition) {
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
+    public Case(Position p) {
+        this.xPosition = p.x;
+        this.yPosition = p.y;
         switch(getType()) {
             case "CaseNormale" :
                 this.couleur = Color.WHITE;
@@ -43,21 +43,6 @@ public abstract class Case {
         }
     }
 
-    public int getXPosition() {
-        return xPosition;
-    }
-
-    public void setXPosition(int xPosition) {
-        this.xPosition = xPosition;
-    }
-
-    public int getYPosition() {
-        return yPosition;
-    }
-
-    public void setYPosition(int yPosition) {
-        this.yPosition = yPosition;
-    }
 
     public Color getCouleur() {
         return couleur;
