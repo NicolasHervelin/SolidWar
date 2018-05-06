@@ -1,5 +1,7 @@
 package com.hervelin.model;
 
+import java.awt.*;
+
 public class CasePopo extends Case {
     private int volume;
 
@@ -8,7 +10,7 @@ public class CasePopo extends Case {
     public static final int VOLUME_GRAND = 50;
 
     public CasePopo(Position p, int volume) {
-        super(p,"CasePopo");
+        super(p,"CasePopo",Color.BLUE);
         this.volume = volume;
     }
 

@@ -7,32 +7,11 @@ public abstract class Case {
     private Color couleur;
     private String type;
 
-    
-    public Case(Position p, String type) {
+
+    public Case(Position p, String type,Color color) {
         position=p;
         this.type=type;
-        switch(type) {
-            case "CaseNormale" :
-                this.couleur = Color.WHITE;
-                break;
-
-            case "CaseMur" :
-                this.couleur = Color.BLACK;
-                break;
-
-            case "CaseArme" :
-                this.couleur = Color.YELLOW;
-                break;
-
-            case "CasePopo" :
-                this.couleur = Color.BLUE;
-                break;
-
-                default :
-                    this.couleur = Color.WHITE;
-                    break;
-
-        }
+        couleur=color;
     }
 
 

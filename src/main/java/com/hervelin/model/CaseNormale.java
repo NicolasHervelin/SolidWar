@@ -1,11 +1,13 @@
 package com.hervelin.model;
 
+import java.awt.*;
+
 public class CaseNormale extends Case {
     private boolean isMine;
     private String joueurProprioDeLaMine;
 
     public CaseNormale(Position p) {
-        super(p,"CaseNormale");
+        super(p,"CaseNormale",Color.WHITE);
         this.isMine = false;
         this.joueurProprioDeLaMine = "";
     }
