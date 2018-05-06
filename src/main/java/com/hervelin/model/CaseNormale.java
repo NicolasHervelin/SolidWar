@@ -4,8 +4,8 @@ public class CaseNormale extends Case {
     private boolean isMine;
     private String joueurProprioDeLaMine;
 
-    public CaseNormale(int xPosition, int yPosition) {
-        super(xPosition, yPosition);
+    public CaseNormale(Position p) {
+        super(p,"CaseNormale");
         this.isMine = false;
         this.joueurProprioDeLaMine = "";
     }

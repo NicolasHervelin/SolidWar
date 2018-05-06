@@ -3,8 +3,8 @@ package com.hervelin.model;
 public class CaseMur extends Case {
     private int ptStructure;
 
-    public CaseMur(int xPosition, int yPosition) {
-        super(xPosition, yPosition);
+    public CaseMur(Position p) {
+        super(p,"CaseMur");
         this.ptStructure = 50;
     }
 

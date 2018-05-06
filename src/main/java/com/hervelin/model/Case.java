@@ -3,23 +3,15 @@ package com.hervelin.model;
 import java.awt.*;
 
 public abstract class Case {
-    private int xPosition;
-    private int yPosition;
+    private Position position;
     private Color couleur;
+    private String type;
 
-    public static final String CASE_NORMALE = "CaseNormale";
-    public static final String CASE_MUR = "CaseMur";
-    public static final String CASE_ARME = "CaseArme";
-    public static final String CASE_POPO = "CasePopo";
-
-    public Case() {
-
-    }
-
-    public Case(Position p) {
-        this.xPosition = p.x;
-        this.yPosition = p.y;
-        switch(getType()) {
+    
+    public Case(Position p, String type) {
+        position=p;
+        this.type=type;
+        switch(type) {
             case "CaseNormale" :
                 this.couleur = Color.WHITE;
                 break;
@@ -53,7 +45,7 @@ public abstract class Case {
     }
 
     public String getType() {
-        return this.getClass().getName();
+        return this.type;
     }
 
 }
