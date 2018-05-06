@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     static String Menu_ID = "MENU";
-    static String Menu_FILE = "/Menu.fxml";
+    static String Menu_FILE = "/menu.fxml";
 
     @Override
     public void start(Stage primaryStage) throws Exception {
