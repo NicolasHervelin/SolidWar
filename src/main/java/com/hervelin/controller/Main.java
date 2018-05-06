@@ -10,12 +10,15 @@ public class Main extends Application {
     static String Menu_ID = "MENU";
     static String Menu_FILE = "/menu.fxml";
 
+    static String Jeu_ID = "JEU";
+    static String Jeu_FILE = "/jeu.fxml";
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
         ScreensController mainContainer = new ScreensController();
-        mainContainer.loadScreen(Menu_ID, Menu_FILE);
-        mainContainer.setScreen(Menu_ID);
+        mainContainer.loadScreen(Jeu_ID, Jeu_FILE);
+        mainContainer.setScreen(Jeu_ID);
 
         Group root = new Group();
         root.getChildren().addAll(mainContainer.stack);
