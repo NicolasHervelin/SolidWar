@@ -135,5 +135,21 @@ public class Plateau {
         }
     }
 
+    private int lancerUnDe() {
+        int lance = 1 + (int)(Math.random() * ((6 - 1) + 1));
+        return lance;
+    }
 
+    private int lancerDeuxDes() {
+        int lance1 = 1 + (int)(Math.random() * ((6 - 1) + 1));
+        int lance2 = 1 + (int)(Math.random() * ((6 - 1) + 1));
+        return lance1 + lance2;
+    }
+
+    private int lancerTroisDes() {
+        int lance1 = 1 + (int)(Math.random() * ((6 - 1) + 1));
+        int lance2 = 1 + (int)(Math.random() * ((6 - 1) + 1));
+        int lance3 = 1 + (int)(Math.random() * ((6 - 1) + 1));
+        return lance1 + lance2 + lance3;
+    }
 }
