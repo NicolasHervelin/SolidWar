@@ -21,6 +21,16 @@ public class Joueur {
         this.ptSante = 100;
     }
 
+    public void deplacerX(int deplacementX) {
+
+        position.x += deplacementX;
+    }
+
+    public void deplacerY(int deplacementY) {
+
+        position.y += deplacementY;
+    }
+
     public String getName() {
         return name;
     }
