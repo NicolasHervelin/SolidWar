@@ -7,31 +7,36 @@ public class Plateau {
     private ArrayList<Joueur> listeDeJoueurs = new ArrayList<>(4);
     private int xTaille;
     private int yTaille;
+    private Position p1= new Position(1,1);
+    private Position p2= new Position(xTaille,yTaille);
+    private Position p3= new Position(1,yTaille);
+    private Position p4= new Position(xTaille,1);
+
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new Joueur(joueur1));
-        listeDeJoueurs.add(new Joueur(joueur2));
+        listeDeJoueurs.add(new Joueur(joueur1,p1));
+        listeDeJoueurs.add(new Joueur(joueur2,p2));
         initialize();
     }
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2, String joueur3) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new Joueur(joueur1));
-        listeDeJoueurs.add(new Joueur(joueur2));
-        listeDeJoueurs.add(new Joueur(joueur3));
+        listeDeJoueurs.add(new Joueur(joueur1,p1));
+        listeDeJoueurs.add(new Joueur(joueur2,p2));
+        listeDeJoueurs.add(new Joueur(joueur3,p3));
         initialize();
     }
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2, String joueur3, String joueur4) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new Joueur(joueur1));
-        listeDeJoueurs.add(new Joueur(joueur2));
-        listeDeJoueurs.add(new Joueur(joueur3));
-        listeDeJoueurs.add(new Joueur(joueur4));
+        listeDeJoueurs.add(new Joueur(joueur1,p1));
+        listeDeJoueurs.add(new Joueur(joueur2,p2));
+        listeDeJoueurs.add(new Joueur(joueur3,p3));
+        listeDeJoueurs.add(new Joueur(joueur4,p4));
         initialize();
     }
 
@@ -62,9 +67,9 @@ public class Plateau {
         creerPopos();
     }
 
-    public Case getCaseByPosition(int xPosition, int yPosition) {
+    public Case getCaseByPosition(Position p) {
         for (Case temp : casesDuPlateau) {
-            if((temp.getXPosition() == xPosition) && (temp.getYPosition() == yPosition)) {
+            if((temp.position.getX() == p.x) && (temp.position.getY() == p.y)) {
                 return temp;
             }
         }
@@ -74,7 +79,7 @@ public class Plateau {
     private void creerPlateau() {
         for(int i = 1; i <= xTaille; i++) {
             for(int j = 1; j <= yTaille; j++) {
-                casesDuPlateau.add(new CaseNormale(i, j));
+                casesDuPlateau.add(new CaseNormale(new Position(i,j)));
             }
         }
     }
@@ -84,9 +89,9 @@ public class Plateau {
             int xRandom = 1 + (int)(Math.random() * ((xTaille - 1) + 1));
             int yRandom = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 
-            Case caseASupprimer = getCaseByPosition(xRandom,yRandom);
+            Case caseASupprimer = getCaseByPosition(new Position(xRandom,yRandom));
             casesDuPlateau.remove(caseASupprimer);
-            casesDuPlateau.add(new CaseMur(xRandom,yRandom));
+            casesDuPlateau.add(new CaseMur(new Position(xRandom,yRandom)));
         }
     }
 
@@ -95,10 +100,10 @@ public class Plateau {
             int xRandom = 1 + (int)(Math.random() * ((xTaille - 1) + 1));
             int yRandom = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 
-            Case caseASupprimer = getCaseByPosition(xRandom,yRandom);
-            if(caseASupprimer.getType().equals(Case.CASE_NORMALE)) {
+            Case caseASupprimer = getCaseByPosition(new Position(xRandom,yRandom));
+            if(caseASupprimer.getType().equals("CaseNormale")) {
                 casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CaseArme(xRandom,yRandom));
+                casesDuPlateau.add(new CaseArme(new Position(xRandom,yRandom)));
             }
         }
     }
@@ -115,22 +120,22 @@ public class Plateau {
             int yRandom3 = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 
 
-            Case caseASupprimer = getCaseByPosition(xRandom1,yRandom1);
-            if(caseASupprimer.getType().equals(Case.CASE_NORMALE)) {
+            Case caseASupprimer = getCaseByPosition(new Position(xRandom1,yRandom1));
+            if(caseASupprimer.getType().equals("CaseNormale")) {
                 casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CasePopo(xRandom1,yRandom1,CasePopo.VOLUME_PETIT));
+                casesDuPlateau.add(new CasePopo(new Position(xRandom1,yRandom1),CasePopo.VOLUME_PETIT));
             }
 
-            caseASupprimer = getCaseByPosition(xRandom2,yRandom2);
-            if(caseASupprimer.getType().equals(Case.CASE_NORMALE)) {
+            caseASupprimer = getCaseByPosition(new Position(xRandom2,yRandom2));
+            if(caseASupprimer.getType().equals("CaseNormale")) {
                 casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CasePopo(xRandom2,yRandom2,CasePopo.VOLUME_MOYEN));
+                casesDuPlateau.add(new CasePopo(new Position(xRandom2,yRandom2),CasePopo.VOLUME_MOYEN));
             }
 
-            caseASupprimer = getCaseByPosition(xRandom3,yRandom3);
-            if(caseASupprimer.getType().equals(Case.CASE_NORMALE)) {
+            caseASupprimer = getCaseByPosition(new Position(xRandom3,yRandom3));
+            if(caseASupprimer.getType().equals("CaseNormale")) {
                 casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CasePopo(xRandom3, yRandom3, CasePopo.VOLUME_GRAND));
+                casesDuPlateau.add(new CasePopo(new Position(xRandom3,yRandom3), CasePopo.VOLUME_GRAND));
             }
         }
     }

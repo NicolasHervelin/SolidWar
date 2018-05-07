@@ -3,7 +3,7 @@ package com.hervelin.model;
 import java.awt.*;
 
 public abstract class Case {
-    private Position position;
+    public Position position;
     private Color couleur;
     private String type;
 
