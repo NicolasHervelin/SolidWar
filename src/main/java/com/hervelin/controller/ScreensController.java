@@ -35,14 +35,13 @@ class ScreensController {
         screens.put(name, screen);
     }
 
-    // charger un fichier fxml et lajouter dans les screens
+    // charger un fichier fxml et l'ajouter dans les screens
     boolean loadScreen(String name, String resource) {
         try {
-            FXMLLoader myLoader = new
-                    FXMLLoader(getClass().getResource(resource));
+            FXMLLoader myLoader = new FXMLLoader(getClass().getResource(resource));
             Parent loadScreen = myLoader.load();
-            ControlledScreen myScreenControler = myLoader.getController();
-            myScreenControler.setScreenParent(this);
+            ControlledScreen myScreenController = myLoader.getController();
+            myScreenController.setScreenParent(this);
             addScreen(name, loadScreen);
             return true;
         } catch (Exception e) {
@@ -53,7 +52,8 @@ class ScreensController {
 
     //activer un screen avec son ID pour passer d'une vue a une autre
     boolean setScreen(final String name) {
-
+        System.out.println(name);
+        System.out.println(screens.get(name));
         if (screens.get(name) != null) { //screen loaded
             final DoubleProperty opacity = stack.opacityProperty();
 

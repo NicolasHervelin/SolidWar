@@ -5,11 +5,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
+
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerMenu">
     <children>
         <Pane id="mainMenu" prefHeight="700.0" prefWidth="900.0">
             <children>
-
+                <Button layoutX="400.0" layoutY="400.0" mnemonicParsing="false" onAction="#goToJeu" text="C'est parti !" prefWidth="90" />
             </children>
         </Pane>
     </children>

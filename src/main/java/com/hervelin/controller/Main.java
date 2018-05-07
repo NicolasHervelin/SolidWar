@@ -17,8 +17,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         ScreensController mainContainer = new ScreensController();
-        mainContainer.loadScreen(Jeu_ID, Jeu_FILE);
-        mainContainer.setScreen(Jeu_ID);
+        mainContainer.loadScreen(Menu_ID, Menu_FILE);
+        mainContainer.setScreen(Menu_ID);
 
         Group root = new Group();
         root.getChildren().addAll(mainContainer.stack);
