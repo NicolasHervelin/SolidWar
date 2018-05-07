@@ -1,10 +1,12 @@
 package com.hervelin.model;
 
+import java.awt.*;
+
 public class CaseMur extends Case {
     private int ptStructure;
 
-    public CaseMur(int xPosition, int yPosition) {
-        super(xPosition, yPosition);
+    public CaseMur(Position p) {
+        super(p,"CaseMur",Color.BLACK);
         this.ptStructure = 50;
     }
 

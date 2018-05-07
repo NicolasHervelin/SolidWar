@@ -1,21 +1,34 @@
 package com.hervelin.model;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Joueur {
     private String name;
     private Pion pion;
+    private Position position;
     private ArrayList<Arme> armes = new ArrayList<>();
     private int ptMouvement;
     private int ptAttaque;
     private int ptSante;
 
-    public Joueur(String name) {
+    public Joueur(String name,Position p) {
         this.name = name;
-        this.pion = new Pion();
+        this.position=p;
+        this.pion = new Pion(p,Color.BLUE);
         this.ptMouvement = 0;
         this.ptAttaque = 0;
         this.ptSante = 100;
+    }
+
+    public void deplacerX(int deplacementX) {
+
+        position.x += deplacementX;
+    }
+
+    public void deplacerY(int deplacementY) {
+
+        position.y += deplacementY;
     }
 
     public String getName() {
