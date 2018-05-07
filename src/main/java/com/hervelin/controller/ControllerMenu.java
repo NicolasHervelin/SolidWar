@@ -11,13 +11,13 @@ public class ControllerMenu implements Initializable, ControlledScreen {
     ScreensController myController;
 
     @Override
-    public void setScreenParent(ScreensController screenParent) {
-        myController = screenParent;
+    public void initialize(URL location, ResourceBundle resources) {
+
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
+    public void setScreenParent(ScreensController screenParent) {
+        myController = screenParent;
     }
 
     public void goToJeu() {

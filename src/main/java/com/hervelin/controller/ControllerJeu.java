@@ -6,13 +6,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ControllerJeu implements Initializable, ControlledScreen {
+public class ControllerJeu implements ControlledScreen {
     ScreensController myController;
 
     private Joueur joueur1;
@@ -24,23 +27,25 @@ public class ControllerJeu implements Initializable, ControlledScreen {
     public int nombreCaseX = 50;
     public int nombreCaseY = 50;
 
-    /*@FXML
-    public GridPane gridPlateau;*/
+    @FXML
+    public GridPane gridPlateau;
 
 
     @Override
     public void setScreenParent(ScreensController screenParent) {
         myController = screenParent;
-        //initialize();
+
+        setUp();
     }
-    /*
-    public void initialize() {
+
+    private void setUp() {
         String nomJoueur1 = "Joueur 1";
         String nomJoueur2 = "Joueur 2";
         String nomJoueur3 = "Joueur 3";
         String nomJoueur4 = "Joueur 4";
         String nombreDeJoueurs = "2";
 
+        /*
         if(!myController.getData("NomDuJoueur1").equals(""))
             nomJoueur1 = myController.getData("NomDuJoueur1");
         if(!myController.getData("NomDuJoueur2").equals(""))
@@ -51,6 +56,7 @@ public class ControllerJeu implements Initializable, ControlledScreen {
             nomJoueur4 = myController.getData("NomDuJoueur4");
         if(!myController.getData("NombreDeJoueurs").equals(""))
             nombreDeJoueurs = myController.getData("NombreDeJoueurs");
+        */
 
         switch (nombreDeJoueurs) {
             case "2" :
@@ -70,25 +76,19 @@ public class ControllerJeu implements Initializable, ControlledScreen {
         for (int row = 0; row < nombreCaseX; row++) {
             for (int col = 0; col < nombreCaseY; col ++) {
                 StackPane square = new StackPane();
-                String color ;
-                if ((row + col) % 2 == 0) {
-                    color = "white";
-                } else {
-                    color = "gray";
-                }
-                square.setStyle("-fx-background-color: "+color+";");
-                gridPlateau.add(square, col, row);
+                Button bouton = new Button();
+                Rectangle rectangle = new Rectangle();
+                Color color ;
+                if ((row + col) % 2 == 0)
+                    color = Color.LIGHTGRAY;
+                else
+                    color = Color.GRAY;
+                rectangle.setFill(color);
+                gridPlateau.add(rectangle, col, row);
+                rectangle.widthProperty().bind(gridPlateau.widthProperty().divide(nombreCaseX));
+                rectangle.heightProperty().bind(gridPlateau.heightProperty().divide(nombreCaseY));
             }
         }
-        for (int i = 0; i < nombreCaseX; i++) {
-            gridPlateau.getColumnConstraints().add(new ColumnConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
-            gridPlateau.getRowConstraints().add(new RowConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.CENTER, true));
-        }
-
-    }*/
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
 
     }
 }

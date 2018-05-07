@@ -76,9 +76,9 @@
     </dependencies>
 
     <scm>
-        <connection>scm:git:https://github.com/PBZ-InsightR/Spellmonger3.git</connection>
-        <developerConnection>scm:git:https://github.com/PBZ-InsightR/Spellmonger3.git</developerConnection>
-        <url>https://github.com/PBZ-InsightR/Spellmonger3</url>
+        <connection>scm:git:https://github.com/NicolasHervelin/TheGameBiketteBillGusto.git</connection>
+        <developerConnection>scm:git:https://github.com/NicolasHervelin/TheGameBiketteBillGusto.git</developerConnection>
+        <url>https://github.com/NicolasHervelin/TheGameBiketteBillGusto</url>
     </scm>
     <repositories>
     </repositories>
