@@ -85,7 +85,7 @@ public class Plateau {
     }
 
     private void creerMurs() {
-        for(int i = 0; i <= xTaille*18; i++) {
+        for(int i = 0; i <= xTaille*4; i++) {
             int xRandom = 1 + (int)(Math.random() * ((xTaille - 1) + 1));
             int yRandom = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 
@@ -93,23 +93,25 @@ public class Plateau {
             casesDuPlateau.remove(caseASupprimer);
             casesDuPlateau.add(new CaseMur(new Position(xRandom,yRandom)));
         }
-        for(int j=0;j<40;j++) {
+        for(int j=0;j<100;j++) {
             int xRandom = 1 + (int) (Math.random() * ((xTaille - 1) + 1));
             int yRandom = 1 + (int) (Math.random() * ((yTaille - 1) + 1));
             for (int i = 0; i < 6; i++) {
                 Case caseASupprimer = getCaseByPosition(new Position(xRandom, yRandom));
                 casesDuPlateau.remove(caseASupprimer);
                 casesDuPlateau.add(new CaseMur(new Position(xRandom, yRandom)));
-                double x = (Math.random() * ((1 + 1) -1));
-                if(x<0.5) x=1;
-                else x=-1;
-                double y = (Math.random() * ((1 + 1) -1));
-                if(y<0.5 ) y=1;
-                else y=-1;
-                //System.out.println(x);
-                //System.out.println(y);
-                xRandom = (int) (xRandom+x);
-                yRandom = (int) (yRandom+y);
+                double alea = (Math.random() * ((1 + 1) -1));
+                if(alea<0.6) {
+                    double x = (Math.random() * ((1 + 1) - 1));
+                    if (x < 0.5) x = 1;
+                    else x = -1;
+                    xRandom = (int) (xRandom + x);
+                }else {
+                    double y = (Math.random() * ((1 + 1) - 1));
+                    if (y < 0.5) y = 1;
+                    else y = -1;
+                    yRandom = (int) (yRandom+y);
+                }
             }
         }
     }
