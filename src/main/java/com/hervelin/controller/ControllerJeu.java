@@ -2,6 +2,7 @@ package com.hervelin.controller;
 
 import com.hervelin.model.Joueur;
 import com.hervelin.model.Plateau;
+import com.hervelin.model.Position;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
@@ -61,6 +62,7 @@ public class ControllerJeu implements ControlledScreen {
         switch (nombreDeJoueurs) {
             case "2" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
+                //System.out.println(plateau.getCaseByPosition(new Position(1, 1)).getCouleur());
                 break;
             case "3" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3);
@@ -73,16 +75,13 @@ public class ControllerJeu implements ControlledScreen {
                 break;
         }
 
-        for (int row = 0; row < nombreCaseX; row++) {
-            for (int col = 0; col < nombreCaseY; col ++) {
+        for (int row = 1; row <= nombreCaseX; row++) {
+            for (int col = 1; col <= nombreCaseY; col ++) {
                 StackPane square = new StackPane();
                 Button bouton = new Button();
                 Rectangle rectangle = new Rectangle();
-                Color color ;
-                if ((row + col) % 2 == 0)
-                    color = Color.LIGHTGRAY;
-                else
-                    color = Color.GRAY;
+                Color color =  plateau.getCaseByPosition(new Position(row, col)).getCouleur();
+                System.out.println(color);
                 rectangle.setFill(color);
                 gridPlateau.add(rectangle, col, row);
                 rectangle.widthProperty().bind(gridPlateau.widthProperty().divide(nombreCaseX));

@@ -1,7 +1,9 @@
 package com.hervelin.controller;
 
 import javafx.application.Application;
+import javafx.scene.Camera;
 import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;

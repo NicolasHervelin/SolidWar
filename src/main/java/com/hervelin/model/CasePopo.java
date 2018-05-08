@@ -1,6 +1,6 @@
 package com.hervelin.model;
 
-import java.awt.*;
+import javafx.scene.paint.Color;
 
 public class CasePopo extends Case {
     private int volume;

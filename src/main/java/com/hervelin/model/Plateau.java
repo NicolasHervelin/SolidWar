@@ -85,7 +85,7 @@ public class Plateau {
     }
 
     private void creerMurs() {
-        for(int i = 0; i <= xTaille; i++) {
+        for(int i = 0; i <= xTaille*4; i++) {
             int xRandom = 1 + (int)(Math.random() * ((xTaille - 1) + 1));
             int yRandom = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 

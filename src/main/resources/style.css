@@ -1,4 +1,5 @@
 #gridPlateau {
     -fx-padding: 20 5 20 5;
     -fx-background-color: #ffffff;
+    -fx-grid-lines-visible: true;
 }

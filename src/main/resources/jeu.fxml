@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet href="@style.css" type="text/css" ?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
-<GridPane fx:id="gridPlateau" prefHeight="650.0" prefWidth="650.0" alignment="center" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.hervelin.controller.ControllerJeu">
+<?import javafx.scene.PerspectiveCamera?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane fx:id="gridPlateau" alignment="center" prefHeight="650.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerJeu">
     <GridPane.margin>
         <Insets>
             <left>15</left>
         </Insets>
     </GridPane.margin>
+   <children>
+      <PerspectiveCamera />
+   </children>
 </GridPane>
