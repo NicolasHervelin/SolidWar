@@ -3,3 +3,12 @@
     -fx-background-color: #ffffff;
     -fx-grid-lines-visible: true;
 }
+
+#mainMenu {
+
+    -fx-background-image: url("image.jpg");
+    -fx-background-repeat: stretch;
+    -fx-background-size: 900 700;
+    -fx-background-position: center center;
+   /* -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); */
+}
