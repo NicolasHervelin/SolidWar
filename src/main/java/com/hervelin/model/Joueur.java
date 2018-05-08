@@ -19,6 +19,8 @@ public class Joueur {
         this.ptMouvement = 0;
         this.ptAttaque = 0;
         this.ptSante = 100;
+
+        Couteau armeDeBase = new Couteau();
     }
 
     public void deplacerX(int deplacementX) {

@@ -7,7 +7,7 @@ public class CaseMur extends Case {
 
     public CaseMur(Position p) {
         super(p,"CaseMur",Color.BLACK);
-        this.ptStructure = 50;
+        this.ptStructure = 10;
     }
 
     public int getPtStructure() {

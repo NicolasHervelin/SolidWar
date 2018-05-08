@@ -115,7 +115,7 @@ public class Plateau {
     }
 
     private void creerArmes() {
-        for(int i = 0; i <= xTaille/5; i++) {
+        for(int i = 0; i <= xTaille/2; i++) {
             int xRandom = 1 + (int)(Math.random() * ((xTaille - 1) + 1));
             int yRandom = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 
@@ -168,4 +168,10 @@ public class Plateau {
         int lance3 = 1 + (int)(Math.random() * ((6 - 1) + 1));
         return lance1 + lance2 + lance3;
     }
+
+    private int lancerUnDeAtroisChiffres() {
+        int lance = 1 + (int)(Math.random() * ((3 - 1) + 1));
+        return lance;
+    }
+
 }

@@ -1,7 +1,13 @@
 #gridPlateau {
-    -fx-padding: 20 5 20 5;
+    -fx-padding: 5 5 5 5;
     -fx-background-color: #ffffff;
     -fx-grid-lines-visible: true;
+    -fx-pref-width:900;
+    -fx-pref-height:900;
+}
+
+#scrollPlateau {
+    -fx-padding: 10 10 10 10
 }
 
 #mainMenu {
@@ -11,4 +17,28 @@
     -fx-background-size: 900 700;
     -fx-background-position: center center;
    /* -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); */
+}
+
+#perso1 {
+    -fx-background-image: url("images/perso1.png");
+    -fx-background-size: 100%;
+    -fx-background-position: center center;
+}
+
+#perso2 {
+    -fx-background-image: url("images/perso2.png");
+    -fx-background-size: 100%;
+    -fx-background-position: center center;
+}
+
+#perso3 {
+    -fx-background-image: url("images/perso3.png");
+    -fx-background-size: 100%;
+    -fx-background-position: center center;
+}
+
+#perso4 {
+    -fx-background-image: url("images/perso4.png");
+    -fx-background-size: 100%;
+    -fx-background-position: center center;
 }
