@@ -85,7 +85,7 @@ public class Plateau {
     }
 
     private void creerMurs() {
-        for(int i = 0; i <= xTaille*4; i++) {
+        for(int i = 0; i <= xTaille*18; i++) {
             int xRandom = 1 + (int)(Math.random() * ((xTaille - 1) + 1));
             int yRandom = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 
@@ -93,23 +93,25 @@ public class Plateau {
             casesDuPlateau.remove(caseASupprimer);
             casesDuPlateau.add(new CaseMur(new Position(xRandom,yRandom)));
         }
-            /*for(int j=0;j<4;j++) {
-                int xRandom = 1 + (int) (Math.random() * ((xTaille - 1) + 1));
-                int yRandom = 1 + (int) (Math.random() * ((yTaille - 1) + 1));
-                for (int i = 0; i <= xRandom; i++) {
-                    Case caseASupprimer = getCaseByPosition(new Position(xRandom, yRandom));
-                    casesDuPlateau.remove(caseASupprimer);
-                    casesDuPlateau.add(new CaseMur(new Position(xRandom, yRandom)));
-                    int x = (int) Math.random();
-                    if(x<0.5) x=1;
-                    else x=-1;
-                    int y = (int) Math.random();
-                    if(y<0.5 ) y=1;
-                    else y=-1;
-                    xRandom=xRandom+x;
-                    yRandom=yRandom+y;
-                }
-        }*/
+        for(int j=0;j<40;j++) {
+            int xRandom = 1 + (int) (Math.random() * ((xTaille - 1) + 1));
+            int yRandom = 1 + (int) (Math.random() * ((yTaille - 1) + 1));
+            for (int i = 0; i < 6; i++) {
+                Case caseASupprimer = getCaseByPosition(new Position(xRandom, yRandom));
+                casesDuPlateau.remove(caseASupprimer);
+                casesDuPlateau.add(new CaseMur(new Position(xRandom, yRandom)));
+                double x = (Math.random() * ((1 + 1) -1));
+                if(x<0.5) x=1;
+                else x=-1;
+                double y = (Math.random() * ((1 + 1) -1));
+                if(y<0.5 ) y=1;
+                else y=-1;
+                //System.out.println(x);
+                //System.out.println(y);
+                xRandom = (int) (xRandom+x);
+                yRandom = (int) (yRandom+y);
+            }
+        }
     }
 
     private void creerArmes() {
@@ -118,10 +120,8 @@ public class Plateau {
             int yRandom = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 
             Case caseASupprimer = getCaseByPosition(new Position(xRandom,yRandom));
-            if(caseASupprimer.getType().equals("CaseNormale")) {
-                casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CaseArme(new Position(xRandom,yRandom)));
-            }
+            casesDuPlateau.remove(caseASupprimer);
+            casesDuPlateau.add(new CaseArme(new Position(xRandom,yRandom)));
         }
     }
 
@@ -138,22 +138,16 @@ public class Plateau {
 
 
             Case caseASupprimer = getCaseByPosition(new Position(xRandom1,yRandom1));
-            if(caseASupprimer.getType().equals("CaseNormale")) {
-                casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CasePopo(new Position(xRandom1,yRandom1),CasePopo.VOLUME_PETIT));
-            }
+            casesDuPlateau.remove(caseASupprimer);
+            casesDuPlateau.add(new CasePopo(new Position(xRandom1,yRandom1),CasePopo.VOLUME_PETIT));
 
             caseASupprimer = getCaseByPosition(new Position(xRandom2,yRandom2));
-            if(caseASupprimer.getType().equals("CaseNormale")) {
-                casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CasePopo(new Position(xRandom2,yRandom2),CasePopo.VOLUME_MOYEN));
-            }
+            casesDuPlateau.remove(caseASupprimer);
+            casesDuPlateau.add(new CasePopo(new Position(xRandom2,yRandom2),CasePopo.VOLUME_MOYEN));
 
             caseASupprimer = getCaseByPosition(new Position(xRandom3,yRandom3));
-            if(caseASupprimer.getType().equals("CaseNormale")) {
-                casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CasePopo(new Position(xRandom3,yRandom3), CasePopo.VOLUME_GRAND));
-            }
+            casesDuPlateau.remove(caseASupprimer);
+            casesDuPlateau.add(new CasePopo(new Position(xRandom3,yRandom3), CasePopo.VOLUME_GRAND));
         }
     }
 

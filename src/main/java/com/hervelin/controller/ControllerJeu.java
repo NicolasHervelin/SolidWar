@@ -81,7 +81,6 @@ public class ControllerJeu implements ControlledScreen {
                 Button bouton = new Button();
                 Rectangle rectangle = new Rectangle();
                 Color color =  plateau.getCaseByPosition(new Position(row, col)).getCouleur();
-                System.out.println(color);
                 rectangle.setFill(color);
                 gridPlateau.add(rectangle, col, row);
                 rectangle.widthProperty().bind(gridPlateau.widthProperty().divide(nombreCaseX));
