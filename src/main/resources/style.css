@@ -2,3 +2,12 @@
     -fx-padding: 20 5 20 5;
     -fx-background-color: #ffffff;
 }
+
+#mainMenu {
+
+    -fx-background-image: url("image.jpg");
+    -fx-background-repeat: stretch;
+    -fx-background-size: 900 700;
+    -fx-background-position: center center;
+   /* -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); */
+}
