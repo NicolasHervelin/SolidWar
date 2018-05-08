@@ -93,6 +93,23 @@ public class Plateau {
             casesDuPlateau.remove(caseASupprimer);
             casesDuPlateau.add(new CaseMur(new Position(xRandom,yRandom)));
         }
+            /*for(int j=0;j<4;j++) {
+                int xRandom = 1 + (int) (Math.random() * ((xTaille - 1) + 1));
+                int yRandom = 1 + (int) (Math.random() * ((yTaille - 1) + 1));
+                for (int i = 0; i <= xRandom; i++) {
+                    Case caseASupprimer = getCaseByPosition(new Position(xRandom, yRandom));
+                    casesDuPlateau.remove(caseASupprimer);
+                    casesDuPlateau.add(new CaseMur(new Position(xRandom, yRandom)));
+                    int x = (int) Math.random();
+                    if(x<0.5) x=1;
+                    else x=-1;
+                    int y = (int) Math.random();
+                    if(y<0.5 ) y=1;
+                    else y=-1;
+                    xRandom=xRandom+x;
+                    yRandom=yRandom+y;
+                }
+        }*/
     }
 
     private void creerArmes() {

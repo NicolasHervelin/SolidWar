@@ -6,7 +6,7 @@
 
 #mainMenu {
 
-    -fx-background-image: url("image.jpg");
+    -fx-background-image: url("images/Font.jpg");
     -fx-background-repeat: stretch;
     -fx-background-size: 900 700;
     -fx-background-position: center center;
