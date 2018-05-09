@@ -122,7 +122,6 @@ public class ControllerJeu implements ControlledScreen {
         Image imgPopo = new Image("images/TexturePopoBleue.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgArmure = new Image("images/TextureBouclierBleu.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgWhite = new Image("images/TextureCaseNormale.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);*/
-        ArrayList<CaseJoueur> listeDeJoueurs=plateau.getListeDeJoueurs();
 
         //Définition des cases du plateau
         for (int row = 1; row <= nombreCaseX; row++) {
@@ -137,10 +136,7 @@ public class ControllerJeu implements ControlledScreen {
                 gridPlateau.add(bouton, col, row);
             }
         }
-        for (CaseJoueur joueur:listeDeJoueurs) {
-            Rectangle rectangle = new Rectangle();
-            rectangle.setFill(new ImagePattern(joueur.getImg()));
-        }
+
         /*EventHandler handler = new EventHandler() {
             @Override
             public void handle(Event event) {

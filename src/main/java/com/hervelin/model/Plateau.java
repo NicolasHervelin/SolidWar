@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Plateau {
     private ArrayList<Case> casesDuPlateau = new ArrayList<>();
-    private ArrayList<CaseJoueur> listeDeJoueurs = new ArrayList<>(4);
+    private ArrayList<Joueur> listeDeJoueurs = new ArrayList<>(4);
     private int xTaille;
     private int yTaille;
     private Position p1= new Position(1,1);
@@ -18,27 +18,27 @@ public class Plateau {
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur1,p1),new Image("images/Perso1minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur2,p2),new Image("images/Perso2minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur1,p1,new Image("images/Perso1minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur2,p2,new Image("images/Perso2minimized.png")));
         initialize();
     }
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2, String joueur3) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur1,p1),new Image("images/Perso1minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur2,p2),new Image("images/Perso2minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur3,p3),new Image("images/Perso3minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur1,p1,new Image("images/Perso1minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur2,p2,new Image("images/Perso2minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur3,p3,new Image("images/Perso3minimized.png")));
         initialize();
     }
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2, String joueur3, String joueur4) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur1,p1),new Image("images/Perso1minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur2,p2),new Image("images/Perso2minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur3,p3),new Image("images/Perso3minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur4,p4),new Image("images/Perso4minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur1,p1,new Image("images/Perso1minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur2,p2,new Image("images/Perso2minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur3,p3,new Image("images/Perso3minimized.png")));
+        listeDeJoueurs.add(new Joueur(joueur4,p4,new Image("images/Perso4minimized.png")));
         initialize();
     }
 
@@ -68,6 +68,7 @@ public class Plateau {
         creerArmes();
         creerPopos();
         creerArmures();
+        creerJoueur();
     }
 
     public Case getCaseByPosition(Position p) {
@@ -84,6 +85,14 @@ public class Plateau {
             for(int j = 2; j <= yTaille; j++) {
                 casesDuPlateau.add(new CaseNormale(new Position(i,j)));
             }
+        }
+    }
+
+    private void creerJoueur(){
+        for (Joueur joueur:listeDeJoueurs) {
+            Case caseASupprimer = getCaseByPosition(joueur.getPosition());
+            casesDuPlateau.remove(caseASupprimer);
+            casesDuPlateau.add(new CaseJoueur(joueur,joueur.getImg()));
         }
     }
 
@@ -205,7 +214,7 @@ public class Plateau {
         return lance;
     }
 
-    public ArrayList<CaseJoueur> getListeDeJoueurs(){
+    public ArrayList<Joueur> getListeDeJoueurs(){
         return listeDeJoueurs;
     }
 
