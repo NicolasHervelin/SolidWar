@@ -7,15 +7,34 @@
 <?import javafx.scene.control.ScrollPane?>
 
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerJeu">
-    <ScrollPane fx:id="scrollPlateau" prefHeight="690.0" prefWidth="690.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <content>
-            <GridPane fx:id="gridPlateau" alignment="TOP_LEFT">
-                <children>
-                    <PerspectiveCamera />
-                </children>
-            </GridPane>
-        </content>
-    </ScrollPane>
-
+    <MenuBar id="MenuBar" prefWidth="950">
+        <menus>
+            <Menu text="Game" id="MenuGame" >
+                <items>
+                    <MenuItem text="Nouvelle Partie" onAction="#backToJeu"/>
+                    <MenuItem text="Retour au menu" onAction="#backToMenu"/>
+                </items>
+            </Menu>
+            <Menu text="Help" fx:id="MenuHelp" >
+                <items>
+                    <MenuItem text="Règles"/>
+                </items>
+            </Menu>
+        </menus>
+    </MenuBar>
+    <children>
+        <ScrollPane fx:id="scrollPlateau" prefHeight="720.0" prefWidth="710.0" AnchorPane.topAnchor="29.0">
+            <content>
+                <GridPane fx:id="gridPlateau" alignment="TOP_LEFT">
+                    <children>
+                        <PerspectiveCamera />
+                    </children>
+                </GridPane>
+            </content>
+        </ScrollPane>
+    </children>
 </AnchorPane>

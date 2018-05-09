@@ -1,11 +1,13 @@
 package com.hervelin.controller;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
 
@@ -28,7 +30,7 @@ public class Main extends Application {
         //primaryStage.getIcons().add(new Image("images/fond.png"));
         primaryStage.setTitle("The Game");
         //primaryStage.getIcons().add(new Image("images/fond.png"));
-        Scene scene = new Scene(root, 890, 690);
+        Scene scene = new Scene(root, 950, 750);
         scene.getStylesheets().add("/style.css");
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);
