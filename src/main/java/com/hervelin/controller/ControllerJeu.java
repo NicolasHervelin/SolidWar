@@ -23,6 +23,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.Light;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -44,7 +45,7 @@ public class ControllerJeu implements ControlledScreen {
     /**
      * The zoom factor.
      */
-    private final DoubleProperty zoomProperty = new SimpleDoubleProperty(1000);
+    private final DoubleProperty zoomProperty = new SimpleDoubleProperty(2000);
 
 
     /**
@@ -82,12 +83,24 @@ public class ControllerJeu implements ControlledScreen {
         String nomJoueur4 = "Joueur 4";
         String nombreDeJoueurs = "2";
 
-        //scrollPlateau.setFitToWidth(true);
-        //scrollPlateau.setFitToHeight(true);
         double scaleX = gridPlateau.getScaleX(); // I only store this to be able to revert the changes
         double scaleY = gridPlateau.getScaleY();
 
 
+        /*
+        if(!myController.getData("NomDuJoueur1").equals(""))
+            nomJoueur1 = myController.getData("NomDuJoueur1");
+        if(!myController.getData("NomDuJoueur2").equals(""))
+            nomJoueur2 = myController.getData("NomDuJoueur2");
+        if(!myController.getData("NomDuJoueur3").equals(""))
+            nomJoueur3 = myController.getData("NomDuJoueur3");
+        if(!myController.getData("NomDuJoueur4").equals(""))
+            nomJoueur4 = myController.getData("NomDuJoueur4");
+        if(!myController.getData("NombreDeJoueurs").equals(""))
+            nombreDeJoueurs = myController.getData("NombreDeJoueurs");
+        */
+
+        //Initialisation du plateau
         switch (nombreDeJoueurs) {
             case "2" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
@@ -104,40 +117,33 @@ public class ControllerJeu implements ControlledScreen {
                 break;
         }
 
-        Image img;
+        Image imgCoffre = new Image("images/TextureCoffre.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
+        Image imgMur = new Image("images/TextureMur.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
+        Image imgPopo = new Image("images/TexturePopoBleue.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
+        Image imgArmure = new Image("images/TextureBouclierBleu.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
+        Image imgWhite = new Image("images/TextureCaseNormale.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         ArrayList<CaseJoueur> listeDeJoueurs=plateau.getListeDeJoueurs();
 
-        for (int row = 1; row < nombreCaseX; row++) {
-            for (int col = 1; col < nombreCaseY; col ++) {
-                StackPane square = new StackPane();
+        //Définition des cases du plateau
+        for (int row = 1; row <= nombreCaseX; row++) {
+            for (int col = 1; col <= nombreCaseY; col ++) {
                 Button bouton = new Button();
-                Rectangle rectangle = new Rectangle();
+                bouton.setStyle("-fx-padding:2 2 2 2;");
                 Position positionActuelle = new Position(row,col);
-                Color color =  plateau.getCaseByPosition(positionActuelle).getCouleur();
                 if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseNormale"))
-                    rectangle.setFill(color);
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseArme")) {
-                    img = new Image("images/TextureCoffre.png");
-                    rectangle.setFill(new ImagePattern(img));
-                }
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseMur")) {
-                    img = new Image("images/TextureMur.png");
-                    rectangle.setFill(new ImagePattern(img));
-                }
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CasePopo")){
-                    img = new Image("images/TexturePopoVerte.png");
-                    rectangle.setFill(new ImagePattern(img));
-                }
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseArmure")){
-                    img = new Image("images/TexturePopoBleue.png");
-                    rectangle.setFill(new ImagePattern(img));
-                }
+                    setImagePourLesBoutons(bouton, imgWhite);
+                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseArme"))
+                    setImagePourLesBoutons(bouton, imgCoffre);
+                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseMur"))
+                    setImagePourLesBoutons(bouton, imgMur);
+                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CasePopo"))
+                    setImagePourLesBoutons(bouton, imgPopo);
+                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseArmure"))
+                    setImagePourLesBoutons(bouton, imgArmure);
 
-
-                gridPlateau.add(rectangle, col, row);
-
-                rectangle.widthProperty().bind(gridPlateau.widthProperty().divide(nombreCaseX/1.5));
-                rectangle.heightProperty().bind(gridPlateau.heightProperty().divide(nombreCaseY/1.5));
+                bouton.setPrefWidth(nombreCaseX/1.5);
+                bouton.setPrefHeight(nombreCaseY/1.5);
+                gridPlateau.add(bouton, col, row);
             }
         }
         for (CaseJoueur joueur:listeDeJoueurs) {
@@ -155,21 +161,27 @@ public class ControllerJeu implements ControlledScreen {
         };*/
         //gridPlateau.addEventHandler(ZoomEvent.ZOOM_STARTED, handler);
 
+        //Zoom sur le ScrollPane
         gridPlateau.setOnMouseMoved(event -> {
             mouseXProperty.set(event.getX());
             mouseYProperty.set(event.getY());
         });
-
-
         gridPlateau.setOnZoom(event -> {
             zoomProperty.set(zoomProperty.get() * event.getZoomFactor());
-
             gridPlateau.setScaleX(gridPlateau.getScaleX()*event.getZoomFactor());
             gridPlateau.setScaleY(gridPlateau.getScaleY()*event.getZoomFactor());
-            //System.out.println(event.getZoomFactor());
             event.consume();
         });
 
+    }
+
+    //Assigne à chaque bouton l'image correspondante
+    public void setImagePourLesBoutons(Button bouton, Image img) {
+        ImageView imageView = new ImageView(img);
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(nombreCaseX / 1.5);
+        imageView.setFitHeight(nombreCaseY / 1.5);
+        bouton.setGraphic(imageView);
     }
 
 

@@ -6,6 +6,10 @@
     -fx-pref-height:900;
 }
 
+#gridPlateau .children {
+    -fx-padding: 0 0 0 0;
+}
+
 #scrollPlateau {
     -fx-padding: 10 10 10 10
 }
