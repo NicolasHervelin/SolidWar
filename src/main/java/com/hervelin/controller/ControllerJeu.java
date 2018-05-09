@@ -141,6 +141,10 @@ public class ControllerJeu implements ControlledScreen {
                     img = new Image("images/TexturePopoBleue.png");
                     rectangle.setFill(new ImagePattern(img));
                 }
+                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseJoueur")){
+                    img = new Image("images/perso1.png");
+                    rectangle.setFill(new ImagePattern(img));
+                }
 
                 gridPlateau.add(rectangle, col, row);
 

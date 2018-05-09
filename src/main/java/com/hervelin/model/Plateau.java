@@ -66,6 +66,7 @@ public class Plateau {
         creerArmes();
         creerPopos();
         creerArmures();
+        creerJoueurs();
     }
 
     public Case getCaseByPosition(Position p) {
@@ -75,6 +76,15 @@ public class Plateau {
             }
         }
         return null;
+    }
+    private void creerJoueurs() {
+        int i=1;
+        for (Joueur joueurs:listeDeJoueurs) {
+            Case caseASupprimer = getCaseByPosition(p1);
+            casesDuPlateau.remove(caseASupprimer);
+            casesDuPlateau.add(new CaseJoueur(p1));
+            i++;
+        }
     }
 
     private void creerPlateau() {
