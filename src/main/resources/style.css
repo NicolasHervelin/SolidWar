@@ -1,3 +1,25 @@
+#MenuBar {
+
+}
+
+#MenuGame {
+    -fx-pref-width:70;
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:left;
+    -fx-padding: 5 5 5 20;
+    -fx-background-image: url('images/GameIcon.png');
+}
+
+#MenuHelp {
+    -fx-pref-width:70;
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:left;
+    -fx-padding: 5 5 5 25;
+    -fx-background-image: url('images/HelpIcon.png');
+}
+
 #gridPlateau {
     -fx-padding: 5 5 5 5;
     -fx-background-color: #ffffff;
@@ -18,7 +40,7 @@
 
     -fx-background-image: url("images/Font.jpg");
     -fx-background-repeat: stretch;
-    -fx-background-size: 900 700;
+    -fx-background-size: 950 750;
     -fx-background-position: center center;
    /* -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); */
 }

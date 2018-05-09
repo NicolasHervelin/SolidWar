@@ -1,6 +1,7 @@
 package com.hervelin.model;
 
-import java.awt.*;
+import javafx.scene.image.Image;
+
 import java.util.ArrayList;
 
 public class Joueur {
@@ -10,15 +11,18 @@ public class Joueur {
     private int ptMouvement;
     private int ptAttaque;
     private int ptSante;
+    private Image imageJoueur;
 
-    public Joueur(String name,Position p) {
+    public Joueur(String name, Position p, Image image) {
         this.name = name;
         this.position=p;
         this.ptMouvement = 0;
         this.ptAttaque = 0;
         this.ptSante = 100;
+        this.imageJoueur = image;
 
         Couteau armeDeBase = new Couteau();
+        armes.add(armeDeBase);
     }
 
     public void deplacerX(int deplacementX) {
@@ -82,5 +86,13 @@ public class Joueur {
 
     public void setPosition(Position p){
         position=p;
+    }
+
+    public Image getImageJoueur() {
+        return imageJoueur;
+    }
+
+    public void setImageJoueur(Image imageJoueur) {
+        this.imageJoueur = imageJoueur;
     }
 }

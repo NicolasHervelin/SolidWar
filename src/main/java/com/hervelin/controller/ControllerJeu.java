@@ -1,9 +1,6 @@
 package com.hervelin.controller;
 
-import com.hervelin.model.CaseJoueur;
-import com.hervelin.model.Joueur;
-import com.hervelin.model.Plateau;
-import com.hervelin.model.Position;
+import com.hervelin.model.*;
 import com.sun.javafx.tk.TKSceneListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -28,6 +25,8 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
@@ -62,6 +61,7 @@ public class ControllerJeu implements ControlledScreen {
     public Plateau plateau;
     public int nombreCaseX = 40;
     public int nombreCaseY = 40;
+    private ArrayList<Joueur> listeDesJoueurs;
 
     @FXML
     public GridPane gridPlateau;
@@ -72,7 +72,6 @@ public class ControllerJeu implements ControlledScreen {
     @Override
     public void setScreenParent(ScreensController screenParent) {
         myController = screenParent;
-
         setUp();
     }
 
@@ -117,12 +116,14 @@ public class ControllerJeu implements ControlledScreen {
                 break;
         }
 
+        listeDesJoueurs = plateau.getListeDeJoueurs();
+
         /*Image imgCoffre = new Image("images/TextureCoffre.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgMur = new Image("images/TextureMur.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgPopo = new Image("images/TexturePopoBleue.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgArmure = new Image("images/TextureBouclierBleu.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgWhite = new Image("images/TextureCaseNormale.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);*/
-        ArrayList<CaseJoueur> listeDeJoueurs=plateau.getListeDeJoueurs();
+        //ArrayList<CaseJoueur> listeDeJoueurs=plateau.getListeDeJoueurs();
 
         //Définition des cases du plateau
         for (int row = 1; row <= nombreCaseX; row++) {
@@ -131,26 +132,11 @@ public class ControllerJeu implements ControlledScreen {
                 bouton.setStyle("-fx-padding:2 2 2 2;");
                 Position positionActuelle = new Position(row,col);
                 setImagePourLesBoutons(bouton, plateau.getCaseByPosition(positionActuelle).getImg());
-
                 bouton.setPrefWidth(nombreCaseX/1.5);
                 bouton.setPrefHeight(nombreCaseY/1.5);
                 gridPlateau.add(bouton, col, row);
             }
         }
-        for (CaseJoueur joueur:listeDeJoueurs) {
-            Rectangle rectangle = new Rectangle();
-            rectangle.setFill(new ImagePattern(joueur.getImg()));
-        }
-        /*EventHandler handler = new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                System.out.println("Handling event " + event.getEventType());
-                gridPlateau.setScaleX(gridPlateau.getScaleX()*event.getZoomFactor());
-                gridPlateau.setScaleY(gridPlateau.getScaleY()*event.getZoomFactor());
-                event.consume();
-            }
-        };*/
-        //gridPlateau.addEventHandler(ZoomEvent.ZOOM_STARTED, handler);
 
         //Zoom sur le ScrollPane
         gridPlateau.setOnMouseMoved(event -> {
@@ -164,6 +150,12 @@ public class ControllerJeu implements ControlledScreen {
             event.consume();
         });
 
+        //Gestion clic sur les cases
+        /*gridPlateau.setOnMouseClicked(event -> {
+            event.
+            event.consume();
+        });*/
+
     }
 
     //Assigne à chaque bouton l'image correspondante
@@ -175,6 +167,17 @@ public class ControllerJeu implements ControlledScreen {
         bouton.setGraphic(imageView);
     }
 
+    //Boutton permettant de retourner au menu
+    public void backToMenu() {
+        myController.loadScreen(Main.Menu_ID, Main.Menu_FILE);
+        myController.setScreen(Main.Menu_ID);
+    }
+
+    //Boutton permettant de redémarrer la partie
+    public void backToJeu() {
+        myController.loadScreen(Main.Jeu_ID, Main.Jeu_FILE);
+        myController.setScreen(Main.Jeu_ID);
+    }
 
 
 }

@@ -6,39 +6,80 @@ import java.util.ArrayList;
 
 public class Plateau {
     private ArrayList<Case> casesDuPlateau = new ArrayList<>();
-    private ArrayList<CaseJoueur> listeDeJoueurs = new ArrayList<>(4);
+    private ArrayList<Joueur> listeDeJoueurs = new ArrayList<>(4);
+
     private int xTaille;
     private int yTaille;
-    private Position p1= new Position(1,1);
-    private Position p2= new Position(xTaille,yTaille);
-    private Position p3= new Position(1,yTaille);
-    private Position p4= new Position(xTaille,1);
+    private Image imageJoueur1;
+    private Image imageJoueur2;
+    private Image imageJoueur3;
+    private Image imageJoueur4;
+    private Position randomPosition1;
+    private Position randomPosition2;
+    private Position randomPosition3;
+    private Position randomPosition4;
 
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur1,p1),new Image("images/Perso1minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur2,p2),new Image("images/Perso2minimized.png")));
+        randomPosition1 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        if(isDejaExistant("2"))
+            randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        imageJoueur1 = new Image("images/Perso1minimizedColor.png");
+        imageJoueur2 = new Image("images/Perso2minimizedColor.png");
+        System.out.println(joueur1);
+        listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, imageJoueur1));
+        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));
         initialize();
     }
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2, String joueur3) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur1,p1),new Image("images/Perso1minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur2,p2),new Image("images/Perso2minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur3,p3),new Image("images/Perso3minimized.png")));
+        randomPosition1 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        randomPosition3 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        if(isDejaExistant("3")) {
+            while (isDejaExistant("3")) {
+                randomPosition1 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+                randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+                randomPosition3 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+            }
+        }
+        imageJoueur1 = new Image("images/Perso1minimizedColor.png");
+        imageJoueur2 = new Image("images/Perso2minimizedColor.png");
+        imageJoueur3 = new Image("images/Perso3minimizedColor.png");
+        listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, imageJoueur1));
+        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));
+        listeDeJoueurs.add(new Joueur(joueur3, randomPosition3, imageJoueur3));
         initialize();
     }
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2, String joueur3, String joueur4) {
         this.xTaille = xTaille;
         this.yTaille = yTaille;
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur1,p1),new Image("images/Perso1minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur2,p2),new Image("images/Perso2minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur3,p3),new Image("images/Perso3minimized.png")));
-        listeDeJoueurs.add(new CaseJoueur(new Joueur(joueur4,p4),new Image("images/Perso4minimized.png")));
+        randomPosition1 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        randomPosition3 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        randomPosition4 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        if(isDejaExistant("4")) {
+            while (isDejaExistant("4")) {
+                randomPosition1 = new Position(1 + (int) (Math.random() * ((xTaille - 1) + 1)), 1 + (int) (Math.random() * ((yTaille - 1) + 1)));
+                randomPosition2 = new Position(1 + (int) (Math.random() * ((xTaille - 1) + 1)), 1 + (int) (Math.random() * ((yTaille - 1) + 1)));
+                randomPosition3 = new Position(1 + (int) (Math.random() * ((xTaille - 1) + 1)), 1 + (int) (Math.random() * ((yTaille - 1) + 1)));
+                randomPosition4 = new Position(1 + (int) (Math.random() * ((xTaille - 1) + 1)), 1 + (int) (Math.random() * ((yTaille - 1) + 1)));
+            }
+        }
+        imageJoueur1 = new Image("images/Perso1minimizedColor.png");
+        imageJoueur2 = new Image("images/Perso2minimizedColor.png");
+        imageJoueur3 = new Image("images/Perso3minimizedColor.png");
+        imageJoueur4 = new Image("images/Perso4minimizedColor.png");
+        listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, imageJoueur1));
+        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));
+        listeDeJoueurs.add(new Joueur(joueur3, randomPosition3, imageJoueur3));
+        listeDeJoueurs.add(new Joueur(joueur4, randomPosition4, imageJoueur4));
         initialize();
     }
 
@@ -68,6 +109,31 @@ public class Plateau {
         creerArmes();
         creerPopos();
         creerArmures();
+        creerJoueurs();
+    }
+
+    public boolean isDejaExistant(String nbJoueurs) {
+        switch(nbJoueurs) {
+            case "2" :
+                if(randomPosition1 == randomPosition2)
+                    return true;
+            break;
+
+            case "3" :
+                if(randomPosition1 == randomPosition2 || randomPosition1 == randomPosition3 || randomPosition3 == randomPosition3)
+                    return true;
+                break;
+
+            case "4" :
+                if(randomPosition1 == randomPosition2 || randomPosition1 == randomPosition3 || randomPosition1 == randomPosition4
+                        || randomPosition2 == randomPosition3 || randomPosition2 == randomPosition4 || randomPosition3 == randomPosition4)
+                    return true;
+            default :
+                if(randomPosition1 == randomPosition2)
+                    return true;
+                break;
+        }
+        return false;
     }
 
     public Case getCaseByPosition(Position p) {
@@ -80,8 +146,8 @@ public class Plateau {
     }
 
     private void creerPlateau() {
-        for(int i = 2; i <= xTaille; i++) {
-            for(int j = 2; j <= yTaille; j++) {
+        for(int i = 1; i <= xTaille; i++) {
+            for(int j = 1; j <= yTaille; j++) {
                 casesDuPlateau.add(new CaseNormale(new Position(i,j)));
             }
         }
@@ -182,6 +248,16 @@ public class Plateau {
         }
     }
 
+    public void creerJoueurs() {
+        for(Joueur joueur : listeDeJoueurs) {
+            Case caseASupprimer = getCaseByPosition(joueur.getPosition());
+            if(!caseASupprimer.getType().equals("CaseJoueur")) {
+                casesDuPlateau.remove(caseASupprimer);
+                casesDuPlateau.add(new CaseJoueur(joueur, joueur.getImageJoueur()));
+            }
+        }
+    }
+
     private int lancerUnDe() {
         int lance = 1 + (int)(Math.random() * ((6 - 1) + 1));
         return lance;
@@ -205,8 +281,31 @@ public class Plateau {
         return lance;
     }
 
-    public ArrayList<CaseJoueur> getListeDeJoueurs(){
+    public void setCasesDuPlateau(ArrayList<Case> casesDuPlateau) {
+        this.casesDuPlateau = casesDuPlateau;
+    }
+
+    public ArrayList<Joueur> getListeDeJoueurs() {
         return listeDeJoueurs;
     }
 
+    public void setListeDeJoueurs(ArrayList<Joueur> listeDeJoueurs) {
+        this.listeDeJoueurs = listeDeJoueurs;
+    }
+
+    public int getxTaille() {
+        return xTaille;
+    }
+
+    public void setxTaille(int xTaille) {
+        this.xTaille = xTaille;
+    }
+
+    public int getyTaille() {
+        return yTaille;
+    }
+
+    public void setyTaille(int yTaille) {
+        this.yTaille = yTaille;
+    }
 }
