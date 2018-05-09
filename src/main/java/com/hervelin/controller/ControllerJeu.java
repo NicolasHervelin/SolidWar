@@ -1,5 +1,6 @@
 package com.hervelin.controller;
 
+import com.hervelin.model.CaseJoueur;
 import com.hervelin.model.Joueur;
 import com.hervelin.model.Plateau;
 import com.hervelin.model.Position;
@@ -29,6 +30,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class ControllerJeu implements ControlledScreen {
@@ -86,19 +88,6 @@ public class ControllerJeu implements ControlledScreen {
         double scaleY = gridPlateau.getScaleY();
 
 
-        /*
-        if(!myController.getData("NomDuJoueur1").equals(""))
-            nomJoueur1 = myController.getData("NomDuJoueur1");
-        if(!myController.getData("NomDuJoueur2").equals(""))
-            nomJoueur2 = myController.getData("NomDuJoueur2");
-        if(!myController.getData("NomDuJoueur3").equals(""))
-            nomJoueur3 = myController.getData("NomDuJoueur3");
-        if(!myController.getData("NomDuJoueur4").equals(""))
-            nomJoueur4 = myController.getData("NomDuJoueur4");
-        if(!myController.getData("NombreDeJoueurs").equals(""))
-            nombreDeJoueurs = myController.getData("NombreDeJoueurs");
-        */
-
         switch (nombreDeJoueurs) {
             case "2" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
@@ -116,8 +105,10 @@ public class ControllerJeu implements ControlledScreen {
         }
 
         Image img;
-        for (int row = 1; row <= nombreCaseX; row++) {
-            for (int col = 1; col <= nombreCaseY; col ++) {
+        ArrayList<CaseJoueur> listeDeJoueurs=plateau.getListeDeJoueurs();
+
+        for (int row = 1; row < nombreCaseX; row++) {
+            for (int col = 1; col < nombreCaseY; col ++) {
                 StackPane square = new StackPane();
                 Button bouton = new Button();
                 Rectangle rectangle = new Rectangle();
@@ -141,16 +132,17 @@ public class ControllerJeu implements ControlledScreen {
                     img = new Image("images/TexturePopoBleue.png");
                     rectangle.setFill(new ImagePattern(img));
                 }
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseJoueur")){
-                    img = new Image("images/perso1.png");
-                    rectangle.setFill(new ImagePattern(img));
-                }
+
 
                 gridPlateau.add(rectangle, col, row);
 
                 rectangle.widthProperty().bind(gridPlateau.widthProperty().divide(nombreCaseX/1.5));
                 rectangle.heightProperty().bind(gridPlateau.heightProperty().divide(nombreCaseY/1.5));
             }
+        }
+        for (CaseJoueur joueur:listeDeJoueurs) {
+            Rectangle rectangle = new Rectangle();
+            rectangle.setFill(new ImagePattern(joueur.getImg()));
         }
         /*EventHandler handler = new EventHandler() {
             @Override

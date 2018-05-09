@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 public class Joueur {
     private String name;
-    private Pion pion;
     private Position position;
     private ArrayList<Arme> armes = new ArrayList<>();
     private int ptMouvement;
@@ -15,7 +14,6 @@ public class Joueur {
     public Joueur(String name,Position p) {
         this.name = name;
         this.position=p;
-        this.pion = new Pion(p,Color.BLUE);
         this.ptMouvement = 0;
         this.ptAttaque = 0;
         this.ptSante = 100;
@@ -41,13 +39,6 @@ public class Joueur {
         this.name = name;
     }
 
-    public Pion getPion() {
-        return pion;
-    }
-
-    public void setPion(Pion pion) {
-        this.pion = pion;
-    }
 
     public ArrayList<Arme> getArmes() {
         return armes;
@@ -85,4 +76,11 @@ public class Joueur {
         this.ptSante = ptSante;
     }
 
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position p){
+        position=p;
+    }
 }
