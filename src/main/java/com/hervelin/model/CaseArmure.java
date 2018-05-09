@@ -1,12 +1,13 @@
 package com.hervelin.model;
 
-import javafx.scene.paint.Color;
+
+import javafx.scene.image.Image;
 
 public class CaseArmure extends Case {
     private int volume;
 
     public CaseArmure(Position p, int volume) {
-        super(p, "CaseArmure", Color.LIGHTCYAN);
+        super(p, "CaseArmure",new Image("images/TextureBouclierBleu.png"));
         this.volume = volume;
     }
 

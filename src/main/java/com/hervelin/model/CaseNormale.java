@@ -1,13 +1,13 @@
 package com.hervelin.model;
 
-import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 
 public class CaseNormale extends Case {
     private boolean isMine;
     private String joueurProprioDeLaMine;
 
     public CaseNormale(Position p) {
-        super(p,"CaseNormale",Color.WHITE);
+        super(p,"CaseNormale",new Image("images/TextureCaseNormale.png"));
         this.isMine = false;
         this.joueurProprioDeLaMine = "";
     }

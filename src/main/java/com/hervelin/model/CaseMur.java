@@ -1,12 +1,13 @@
 package com.hervelin.model;
 
-import javafx.scene.paint.Color;
+
+import javafx.scene.image.Image;
 
 public class CaseMur extends Case {
     private int ptStructure;
 
     public CaseMur(Position p) {
-        super(p,"CaseMur",Color.BLACK);
+        super(p,"CaseMur",new Image("images/TextureMur.png"));
         this.ptStructure = 10;
     }
 

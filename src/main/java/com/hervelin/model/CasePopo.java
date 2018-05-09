@@ -1,6 +1,6 @@
 package com.hervelin.model;
 
-import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 
 public class CasePopo extends Case {
     private int volume;
@@ -10,7 +10,7 @@ public class CasePopo extends Case {
     public static final int VOLUME_GRAND = 50;
 
     public CasePopo(Position p, int volume) {
-        super(p,"CasePopo",Color.BLUE);
+        super(p,"CasePopo",new Image("images/TextureBouclierBleu.png"));
         this.volume = volume;
     }
 

@@ -117,11 +117,11 @@ public class ControllerJeu implements ControlledScreen {
                 break;
         }
 
-        Image imgCoffre = new Image("images/TextureCoffre.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
+        /*Image imgCoffre = new Image("images/TextureCoffre.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgMur = new Image("images/TextureMur.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgPopo = new Image("images/TexturePopoBleue.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
         Image imgArmure = new Image("images/TextureBouclierBleu.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
-        Image imgWhite = new Image("images/TextureCaseNormale.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
+        Image imgWhite = new Image("images/TextureCaseNormale.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);*/
         ArrayList<CaseJoueur> listeDeJoueurs=plateau.getListeDeJoueurs();
 
         //Définition des cases du plateau
@@ -130,16 +130,7 @@ public class ControllerJeu implements ControlledScreen {
                 Button bouton = new Button();
                 bouton.setStyle("-fx-padding:2 2 2 2;");
                 Position positionActuelle = new Position(row,col);
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseNormale"))
-                    setImagePourLesBoutons(bouton, imgWhite);
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseArme"))
-                    setImagePourLesBoutons(bouton, imgCoffre);
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseMur"))
-                    setImagePourLesBoutons(bouton, imgMur);
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CasePopo"))
-                    setImagePourLesBoutons(bouton, imgPopo);
-                if(plateau.getCaseByPosition(positionActuelle).getType().equals("CaseArmure"))
-                    setImagePourLesBoutons(bouton, imgArmure);
+                setImagePourLesBoutons(bouton, plateau.getCaseByPosition(positionActuelle).getImg());
 
                 bouton.setPrefWidth(nombreCaseX/1.5);
                 bouton.setPrefHeight(nombreCaseY/1.5);

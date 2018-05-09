@@ -80,8 +80,8 @@ public class Plateau {
     }
 
     private void creerPlateau() {
-        for(int i = 1; i <= xTaille; i++) {
-            for(int j = 1; j <= yTaille; j++) {
+        for(int i = 2; i <= xTaille; i++) {
+            for(int j = 2; j <= yTaille; j++) {
                 casesDuPlateau.add(new CaseNormale(new Position(i,j)));
             }
         }

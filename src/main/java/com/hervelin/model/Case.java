@@ -1,30 +1,29 @@
 package com.hervelin.model;
 
-import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 
 public abstract class Case {
     public Position position;
-    private Color couleur;
+    private Image img;
     private String type;
 
 
-    public Case(Position p, String type,Color color) {
+    public Case(Position p, String type,Image img) {
         position=p;
         this.type=type;
-        couleur=color;
-    }
-
-
-    public Color getCouleur() {
-        return couleur;
-    }
-
-    public void setCouleur(Color couleur) {
-        this.couleur = couleur;
+        this.img=img;
     }
 
     public String getType() {
         return this.type;
+    }
+
+    public Image getImg(){
+        return img;
+    }
+
+    public void setImg(Image img){
+        this.img=img;
     }
 
 }
