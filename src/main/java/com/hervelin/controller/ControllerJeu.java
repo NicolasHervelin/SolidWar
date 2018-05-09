@@ -5,6 +5,7 @@ import com.sun.javafx.tk.TKSceneListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swt.FXCanvas;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -40,6 +41,8 @@ public class ControllerJeu implements ControlledScreen {
     private Joueur joueur2;
     private Joueur joueur3;
     private Joueur joueur4;
+    private boolean isCaseDejaSelectionnee = false;
+    private Case caseDejaSelectionnee;
 
     /**
      * The zoom factor.
@@ -134,6 +137,12 @@ public class ControllerJeu implements ControlledScreen {
                 setImagePourLesBoutons(bouton, plateau.getCaseByPosition(positionActuelle).getImg());
                 bouton.setPrefWidth(nombreCaseX/1.5);
                 bouton.setPrefHeight(nombreCaseY/1.5);
+                bouton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event){
+                        AnalysePosition(positionActuelle);
+                    }
+                });
                 gridPlateau.add(bouton, col, row);
             }
         }
@@ -152,7 +161,6 @@ public class ControllerJeu implements ControlledScreen {
 
         //Gestion clic sur les cases
         /*gridPlateau.setOnMouseClicked(event -> {
-            event.
             event.consume();
         });*/
 
@@ -166,6 +174,47 @@ public class ControllerJeu implements ControlledScreen {
         imageView.setFitHeight(nombreCaseY / 1.5);
         bouton.setGraphic(imageView);
     }
+
+    public void AnalysePosition(Position position) {
+        System.out.println(position.getX());
+        System.out.println(position.getY());
+        if(isCaseJoueur(position)) {
+            System.out.println("c'est un joueur");
+
+            /*if(isCaseDejaSelectionnee) {
+                //attaquer le joueur
+                isCaseDejaSelectionnee = false;
+            }
+            else {
+                caseDejaSelectionnee = new Case()
+                isCaseDejaSelectionnee = true;
+
+            }*/
+        }
+        else {
+            if(isCaseDejaSelectionnee);
+
+        }
+    }
+
+
+
+    public boolean isCaseDuJoueurActuel(Position position) {
+        return false;
+    }
+
+    public boolean isCaseDunAutreJoueur(Position position) {
+        return false;
+    }
+
+
+    public boolean isCaseJoueur(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseJoueur"))
+            return true;
+        return false;
+    }
+
+
 
     //Boutton permettant de retourner au menu
     public void backToMenu() {

@@ -120,7 +120,7 @@ public class Plateau {
             break;
 
             case "3" :
-                if(randomPosition1 == randomPosition2 || randomPosition1 == randomPosition3 || randomPosition3 == randomPosition3)
+                if(randomPosition1 == randomPosition2 || randomPosition1 == randomPosition3 || randomPosition2 == randomPosition3)
                     return true;
                 break;
 
