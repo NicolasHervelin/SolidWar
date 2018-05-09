@@ -5,10 +5,13 @@ public abstract class Arme {
     private int portée;
     private int dmg_dés;
     private int Pa;
+    private int isReturnDamage;
 
-    public Arme(String name, int portée, int dmg_dés, int pa) {
+
+    public Arme(String name, int portée, int dmg_dés, int pa,int isReturnDamage) {
         this.name = name;
         this.portée = portée;
+        this.isReturnDamage=isReturnDamage;
         this.dmg_dés = dmg_dés;
         Pa = pa;
     }
@@ -48,6 +51,14 @@ public abstract class Arme {
 
     public void setPa(int pa) {
         Pa = pa;
+    }
+
+    public int getIsReturnDamage() {
+        return isReturnDamage;
+    }
+
+    public void setIsReturnDamage(int isReturnDamage) {
+        this.isReturnDamage = isReturnDamage;
     }
 }
 
