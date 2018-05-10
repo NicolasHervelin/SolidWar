@@ -112,6 +112,16 @@ public class Plateau {
         creerJoueurs();
     }
 
+    public Joueur joueurSuivant(Joueur joueur, String nbJoueurs) {
+        for(int i = 0; i < Integer.valueOf(nbJoueurs); i++) {
+            if(i != (Integer.valueOf(nbJoueurs)-1))
+                if(listeDeJoueurs.indexOf(joueur) == i) return listeDeJoueurs.get(i+1);
+            else
+                if(listeDeJoueurs.indexOf(joueur) == i) return listeDeJoueurs.get(0);
+        }
+        return joueur;
+    }
+
     public boolean isDejaExistant(String nbJoueurs) {
         switch(nbJoueurs) {
             case "2" :
@@ -197,7 +207,7 @@ public class Plateau {
     }
 
     private void creerPopos() {
-        for(int i = 0; i <= xTaille/15; i++) {
+        for(int i = 0; i <= xTaille/5; i++) {
             int xRandom1 = 1 + (int)(Math.random() * ((xTaille - 1) + 1));
             int yRandom1 = 1 + (int)(Math.random() * ((yTaille - 1) + 1));
 
@@ -258,28 +268,50 @@ public class Plateau {
         }
     }
 
-    private int lancerUnDe() {
+    public int lancerUnDe() {
         int lance = 1 + (int)(Math.random() * ((6 - 1) + 1));
         return lance;
     }
 
-    private int lancerDeuxDes() {
+    public int lancerDeuxDes() {
         int lance1 = 1 + (int)(Math.random() * ((6 - 1) + 1));
         int lance2 = 1 + (int)(Math.random() * ((6 - 1) + 1));
         return lance1 + lance2;
     }
 
-    private int lancerTroisDes() {
+    public int lancerTroisDes() {
         int lance1 = 1 + (int)(Math.random() * ((6 - 1) + 1));
         int lance2 = 1 + (int)(Math.random() * ((6 - 1) + 1));
         int lance3 = 1 + (int)(Math.random() * ((6 - 1) + 1));
         return lance1 + lance2 + lance3;
     }
 
-    private int lancerUnDeAtroisChiffres() {
+    public int lancerUnDeAtroisChiffres() {
         int lance = 1 + (int)(Math.random() * ((3 - 1) + 1));
         return lance;
     }
+
+    public int calculDeDistance(Position positionJoueur, Position caseCible) {
+            int x_diff=caseCible.getX()-positionJoueur.getX();
+            int y_diff=caseCible.getY()-positionJoueur.getY();
+            if (x_diff<0){
+                x_diff=Math.abs(x_diff);
+            }
+            if (y_diff<0){
+                y_diff=Math.abs(y_diff);
+            }
+            return (x_diff+y_diff);
+    }
+
+    public Joueur getJoueurByPosition(Position position) {
+        for(Joueur joueur : listeDeJoueurs) {
+            if(position.getX() == joueur.getPosition().getX() && position.getY() == joueur.getPosition().getY())
+                return joueur;
+        }
+        return null;
+    }
+
+
 
     public void setCasesDuPlateau(ArrayList<Case> casesDuPlateau) {
         this.casesDuPlateau = casesDuPlateau;

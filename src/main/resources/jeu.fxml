@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet href="@style.css" type="text/css" ?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.PerspectiveCamera?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.control.ScrollPane?>
-
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerJeu">
+<?import javafx.scene.layout.AnchorPane?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.PerspectiveCamera?>
+<AnchorPane fx:id="anchorMain" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerJeu">
     <MenuBar id="MenuBar" prefWidth="950">
         <menus>
-            <Menu text="Game" id="MenuGame" >
+            <Menu id="MenuGame" text="Game">
                 <items>
-                    <MenuItem text="Nouvelle Partie" onAction="#backToJeu"/>
-                    <MenuItem text="Retour au menu" onAction="#backToMenu"/>
+                    <MenuItem onAction="#backToJeu" text="Nouvelle Partie" />
+                    <MenuItem onAction="#backToMenu" text="Retour au menu" />
                 </items>
             </Menu>
-            <Menu text="Help" fx:id="MenuHelp" >
+            <Menu fx:id="MenuHelp" text="Help">
                 <items>
-                    <MenuItem text="Règles"/>
+                    <MenuItem text="Règles" />
                 </items>
             </Menu>
         </menus>
@@ -30,11 +30,11 @@
         <ScrollPane fx:id="scrollPlateau" prefHeight="720.0" prefWidth="710.0" AnchorPane.topAnchor="29.0">
             <content>
                 <GridPane fx:id="gridPlateau" alignment="TOP_LEFT">
-                    <children>
-                        <PerspectiveCamera />
-                    </children>
                 </GridPane>
             </content>
         </ScrollPane>
+    </children>
+    <children>
+
     </children>
 </AnchorPane>

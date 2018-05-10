@@ -19,6 +19,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Light;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -37,12 +38,16 @@ import java.util.ResourceBundle;
 public class ControllerJeu implements ControlledScreen {
     ScreensController myController;
 
+    public Joueur turnPlayer;
+
     private Joueur joueur1;
     private Joueur joueur2;
     private Joueur joueur3;
     private Joueur joueur4;
     private boolean isCaseDejaSelectionnee = false;
     private Case caseDejaSelectionnee;
+    public String nombreDeJoueurs = "2";
+
 
     /**
      * The zoom factor.
@@ -70,6 +75,10 @@ public class ControllerJeu implements ControlledScreen {
     public GridPane gridPlateau;
     @FXML
     public ScrollPane scrollPlateau;
+    @FXML
+    public AnchorPane anchorMain;
+    @FXML
+    public Button finTourJoueur1, finTourJoueur2, finTourJoueur3, finTourJoueur4;
 
 
     @Override
@@ -83,7 +92,6 @@ public class ControllerJeu implements ControlledScreen {
         String nomJoueur2 = "Joueur 2";
         String nomJoueur3 = "Joueur 3";
         String nomJoueur4 = "Joueur 4";
-        String nombreDeJoueurs = "2";
 
         double scaleX = gridPlateau.getScaleX(); // I only store this to be able to revert the changes
         double scaleY = gridPlateau.getScaleY();
@@ -106,27 +114,32 @@ public class ControllerJeu implements ControlledScreen {
         switch (nombreDeJoueurs) {
             case "2" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
+                joueur1 = plateau.getListeDeJoueurs().get(0);
+                joueur2 = plateau.getListeDeJoueurs().get(1);
                 //System.out.println(plateau.getCaseByPosition(new Position(1, 1)).getCouleur());
                 break;
             case "3" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3);
+                joueur1 = plateau.getListeDeJoueurs().get(0);
+                joueur2 = plateau.getListeDeJoueurs().get(1);
+                joueur3 = plateau.getListeDeJoueurs().get(2);
                 break;
             case "4" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3, nomJoueur4);
+                joueur1 = plateau.getListeDeJoueurs().get(0);
+                joueur2 = plateau.getListeDeJoueurs().get(1);
+                joueur3 = plateau.getListeDeJoueurs().get(2);
+                joueur4 = plateau.getListeDeJoueurs().get(3);
                 break;
             default :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
+                joueur1 = plateau.getListeDeJoueurs().get(0);
+                joueur2 = plateau.getListeDeJoueurs().get(1);
                 break;
         }
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
-
-        /*Image imgCoffre = new Image("images/TextureCoffre.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
-        Image imgMur = new Image("images/TextureMur.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
-        Image imgPopo = new Image("images/TexturePopoBleue.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
-        Image imgArmure = new Image("images/TextureBouclierBleu.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);
-        Image imgWhite = new Image("images/TextureCaseNormale.png", nombreCaseX/1.5, nombreCaseY/1.5, true, true);*/
-        //ArrayList<CaseJoueur> listeDeJoueurs=plateau.getListeDeJoueurs();
+        turnPlayer = listeDesJoueurs.get(0);
 
         //Définition des cases du plateau
         for (int row = 1; row <= nombreCaseX; row++) {
@@ -137,10 +150,11 @@ public class ControllerJeu implements ControlledScreen {
                 setImagePourLesBoutons(bouton, plateau.getCaseByPosition(positionActuelle).getImg());
                 bouton.setPrefWidth(nombreCaseX/1.5);
                 bouton.setPrefHeight(nombreCaseY/1.5);
-                bouton.setOnAction(new EventHandler<ActionEvent>() {
+                bouton.setOnAction(new EventHandler<ActionEvent>(){
                     @Override
-                    public void handle(ActionEvent event){
+                    public void handle(ActionEvent event) {
                         AnalysePosition(positionActuelle);
+                        //setCaseDejaSelectionnee(positionActuelle);
                     }
                 });
                 gridPlateau.add(bouton, col, row);
@@ -159,10 +173,9 @@ public class ControllerJeu implements ControlledScreen {
             event.consume();
         });
 
-        //Gestion clic sur les cases
-        /*gridPlateau.setOnMouseClicked(event -> {
-            event.consume();
-        });*/
+        affichageDuJoueur(joueur1);
+        turnPlayer.setPtMouvement(7);
+        colorerCasesAPortee();
 
     }
 
@@ -178,18 +191,20 @@ public class ControllerJeu implements ControlledScreen {
     public void AnalysePosition(Position position) {
         System.out.println(position.getX());
         System.out.println(position.getY());
-        if(isCaseJoueur(position)) {
-            System.out.println("c'est un joueur");
+        if(isCaseEstAPortee(position)) {
+            if(isCaseJoueur(position)) {
+                System.out.println("c'est un joueur");
+                if(isCaseDuJoueurActuel(position)) {
+                    //Si le joueur clique sur son propre perso
+                    affichageDuJoueur(turnPlayer);
+                    turnPlayer.setPtMouvement(4);
+                    colorerCasesAPortee();
+                }
+                if(isCaseDunAutreJoueur(position)) {
+                    affichageDuJoueur(plateau.getJoueurByPosition(position));
+                }
 
-            /*if(isCaseDejaSelectionnee) {
-                //attaquer le joueur
-                isCaseDejaSelectionnee = false;
             }
-            else {
-                caseDejaSelectionnee = new Case()
-                isCaseDejaSelectionnee = true;
-
-            }*/
         }
         else {
             if(isCaseDejaSelectionnee);
@@ -197,16 +212,41 @@ public class ControllerJeu implements ControlledScreen {
         }
     }
 
-
+    public boolean isCaseEstAPortee(Position position) {
+        Position positionJoueur = turnPlayer.getPosition();
+        double ptMouvement = turnPlayer.getPtMouvement();
+        double distance = plateau.calculDeDistance(positionJoueur, position);
+        if(distance <= ptMouvement)
+            return true;
+        return false;
+    }
 
     public boolean isCaseDuJoueurActuel(Position position) {
+        if(position.getX() == turnPlayer.getPosition().getX() && position.getY() == turnPlayer.getPosition().getY())
+            return true;
         return false;
     }
 
     public boolean isCaseDunAutreJoueur(Position position) {
+        if(position.getX() != turnPlayer.getPosition().getX() || position.getY() != turnPlayer.getPosition().getY())
+            return true;
         return false;
     }
 
+    public Case getCaseDejaSelectionnee(){
+        return caseDejaSelectionnee;
+    }
+
+    public void setCaseDejaSelectionnee(Position position){
+        caseDejaSelectionnee = plateau.getCaseByPosition(position);
+    }
+
+    public boolean isCaseDejaSelectionnee() {
+        if(caseDejaSelectionnee != null)
+            return true;
+        else
+            return false;
+    }
 
     public boolean isCaseJoueur(Position position) {
         if(plateau.getCaseByPosition(position).getType().equals("CaseJoueur"))
@@ -214,6 +254,70 @@ public class ControllerJeu implements ControlledScreen {
         return false;
     }
 
+    private void changerDeJoueur(Joueur actuel) {
+        nonAffichageDuJoueur(actuel);
+        turnPlayer = plateau.joueurSuivant(actuel, nombreDeJoueurs);
+        affichageDuJoueur(turnPlayer);
+        //update();
+    }
+
+    //Refresh les valeurs
+    private void update() {
+        colorerCasesAPortee();
+
+    }
+
+    public void colorerCasesAPortee() {
+        int ptMouvement = turnPlayer.getPtMouvement();
+        System.out.println("colorerCases");
+        if(ptMouvement != 0) {
+            for (int row = 1; row <= nombreCaseX; row++) {
+                for (int col = 1; col <= nombreCaseY; col++) {
+                    Position tempPosition = new Position(row,col);
+                    int calculIndex = ((row-1) * nombreCaseX + col)-1;
+                    Node node = gridPlateau.getChildren().get(calculIndex);
+                    if (isCaseEstAPortee(tempPosition)) {
+                        System.out.println(tempPosition);
+                        DropShadow borderGlow= new DropShadow();
+                        borderGlow.setOffsetY(0);
+                        borderGlow.setOffsetX(0);
+                        borderGlow.setColor(Color.BLUE);
+                        borderGlow.setWidth((nombreCaseX/1.5));
+                        borderGlow.setHeight((nombreCaseY/1.5));
+
+                        node.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
+                        //System.out.println(calculIndex);
+                    }
+                    else {
+                        DropShadow borderGlow= new DropShadow();
+                        borderGlow.setOffsetY(0);
+                        borderGlow.setOffsetX(0);
+                        borderGlow.setColor(Color.TRANSPARENT);
+                        node.setEffect(borderGlow);
+                    }
+                }
+            }
+        }
+    }
+
+    private void affichageDuJoueur(Joueur joueur) {
+        Button boutonFinDuTour = new Button("Fin du tour");
+        boutonFinDuTour.setLayoutX(806);
+        boutonFinDuTour.setLayoutY(700);
+        boutonFinDuTour.setOnAction(event -> changerDeJoueur(joueur));
+        anchorMain.getChildren().add(boutonFinDuTour);
+    }
+
+    private void nonAffichageDuJoueur(Joueur joueur) {
+        //System.out.println(anchorMain.getChildren().get(0)); //MenuBar
+        //System.out.println(anchorMain.getChildren().get(1)); //ScrollPane
+        System.out.println(anchorMain.getChildren().get(2)); //Button
+        anchorMain.getChildren().remove(2);
+    }
+
+    private void affichageDesInfosDeLaCase() {
+
+    }
 
 
     //Boutton permettant de retourner au menu

@@ -35,6 +35,13 @@ public class Joueur {
         position.y += deplacementY;
     }
 
+    public void deplacerXY(int deplacementX, int deplacementY) {
+        deplacerX(deplacementX);
+        deplacerY(deplacementY);
+    }
+
+
+
     public String getName() {
         return name;
     }
