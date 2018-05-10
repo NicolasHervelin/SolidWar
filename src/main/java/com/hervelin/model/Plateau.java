@@ -311,15 +311,6 @@ public class Plateau {
             return (x_diff+y_diff);
     }
 
-    public Joueur getJoueurByPosition(Position position) {
-        for(Joueur joueur : listeDeJoueurs) {
-            if(position.getX() == joueur.getPosition().getX() && position.getY() == joueur.getPosition().getY())
-                return joueur;
-        }
-        return null;
-    }
-
-
 
     public void setCasesDuPlateau(ArrayList<Case> casesDuPlateau) {
         this.casesDuPlateau = casesDuPlateau;

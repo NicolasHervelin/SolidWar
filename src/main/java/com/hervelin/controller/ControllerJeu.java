@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.effect.Light;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -83,7 +84,11 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public Text nomJoueur;
     @FXML
-    public ImageView imageJoueur=new ImageView();
+    public ImageView imageJoueur;
+    @FXML
+    public Pane infoClick;
+    @FXML
+    public Pane pane = new Pane();
 
 
     @Override
@@ -145,10 +150,12 @@ public class ControllerJeu implements ControlledScreen {
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
         turnPlayer = listeDesJoueurs.get(0);
+        System.out.println(" ----- setup ----- ");
+        System.out.println("turnPlayer : " + turnPlayer.getName());
 
         //Définition des cases du plateau
         for (int row = 1; row <= nombreCaseX; row++) {
-            for (int col = 1; col <= nombreCaseY; col ++) {
+            for (int col = 1; col <= nombreCaseY; col++) {
                 Button bouton = new Button();
                 bouton.setStyle("-fx-padding:2 2 2 2;");
                 Position positionActuelle = new Position(row,col);
@@ -204,11 +211,12 @@ public class ControllerJeu implements ControlledScreen {
                 System.out.println("c'est une arme");
             }else if(isCaseNormale(position)) {
                 System.out.println("c'est une case");
-            }}
-      /*  else {
+            }
+        }
+        else {
             if(isCaseDejaSelectionnee);
 
-        }*/
+        }
     }
 
     public boolean isCaseEstAPortee(Position position) {
@@ -304,20 +312,17 @@ public class ControllerJeu implements ControlledScreen {
                     Node node = gridPlateau.getChildren().get(calculIndex);
                     if (isCaseEstAPortee(tempPosition)) {
                         System.out.println(tempPosition);
-                        DropShadow borderGlow= new DropShadow();
-                        borderGlow.setOffsetY(0);
-                        borderGlow.setOffsetX(0);
+                        InnerShadow borderGlow = new InnerShadow();
+                        borderGlow.setOffsetX(0f);
+                        borderGlow.setOffsetY(0f);
                         borderGlow.setColor(Color.BLUE);
-                        borderGlow.setWidth((nombreCaseX/1.5));
-                        borderGlow.setHeight((nombreCaseY/1.5));
-
                         node.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
                         //System.out.println(calculIndex);
                     }
                     else {
-                        DropShadow borderGlow= new DropShadow();
-                        borderGlow.setOffsetY(0);
-                        borderGlow.setOffsetX(0);
+                        InnerShadow borderGlow = new InnerShadow();
+                        borderGlow.setOffsetX(0f);
+                        borderGlow.setOffsetY(0f);
                         borderGlow.setColor(Color.TRANSPARENT);
                         node.setEffect(borderGlow);
                     }
@@ -331,14 +336,22 @@ public class ControllerJeu implements ControlledScreen {
         boutonFinDuTour.setLayoutX(806);
         boutonFinDuTour.setLayoutY(700);
         boutonFinDuTour.setOnAction(event -> changerDeJoueur(joueur));
-        anchorMain.getChildren().add(boutonFinDuTour);
+        pane.getChildren().add(boutonFinDuTour);
+        //anchorMain.getChildren().add(pane);
+
+        //System.out.println(joueur.getName());
+        //System.out.println(anchorMain.getChildren().indexOf(scrollPlateau));
+        //System.out.println(anchorMain.getChildren().get(0));
+        //System.out.println(anchorMain.getChildren().get(1));
+        //System.out.println(anchorMain.getChildren().get(2));
+        //System.out.println(anchorMain.getChildren().get(3));
     }
 
     private void nonAffichageDuJoueur(Joueur joueur) {
         //System.out.println(anchorMain.getChildren().get(0)); //MenuBar
         //System.out.println(anchorMain.getChildren().get(1)); //ScrollPane
-        System.out.println(anchorMain.getChildren().get(2)); //Button
-        anchorMain.getChildren().remove(2);
+        //System.out.println(anchorMain.getChildren().get(2)); //Button
+        //anchorMain.getChildren().remove(pane);
     }
 
     private void affichageDesInfosDeLaCase() {
