@@ -144,6 +144,14 @@ public class Plateau {
         }
         return null;
     }
+    public Joueur getJoueurByPosition(Position p) {
+        for (Joueur joueur : listeDeJoueurs) {
+            if((joueur.getPosition().getX() == p.x) && (joueur.getPosition().getY() == p.y)) {
+                return joueur;
+            }
+        }
+        return null;
+    }
 
     private void creerPlateau() {
         for(int i = 1; i <= xTaille; i++) {

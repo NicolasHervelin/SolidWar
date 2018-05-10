@@ -14,7 +14,7 @@
     <children>
         <Pane id="mainMenu" prefHeight="750.0" prefWidth="950.0" stylesheets="@style.css">
             <children>
-            <Pane prefHeight="750.0" prefWidth="443.0" visible="false">
+            <Pane prefHeight="750.0" prefWidth="443.0">
                <children>
                       <Button alignment="CENTER" layoutX="152.0" layoutY="280.0" mnemonicParsing="false" onAction="#goToJeu" prefHeight="69.0" prefWidth="152.0" text="Jouer" textFill="#575252">
                      <font>

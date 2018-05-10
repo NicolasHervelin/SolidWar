@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet href="@style.css" type="text/css" ?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.PerspectiveCamera?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.control.ScrollPane?>
-
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.PerspectiveCamera?>
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerJeu">
     <MenuBar id="MenuBar" prefWidth="950">
         <menus>
-            <Menu text="Game" id="MenuGame" >
+            <Menu id="MenuGame" text="Game">
                 <items>
-                    <MenuItem text="Nouvelle Partie" onAction="#backToJeu"/>
-                    <MenuItem text="Retour au menu" onAction="#backToMenu"/>
+                    <MenuItem onAction="#backToJeu" text="Nouvelle Partie" />
+                    <MenuItem onAction="#backToMenu" text="Retour au menu" />
                 </items>
             </Menu>
-            <Menu text="Help" fx:id="MenuHelp" >
+            <Menu fx:id="MenuHelp" text="Help">
                 <items>
-                    <MenuItem text="Règles"/>
+                    <MenuItem text="Règles" />
                 </items>
             </Menu>
         </menus>
     </MenuBar>
+   <Pane layoutX="708.0" layoutY="32.0" prefHeight="716.0" prefWidth="242.0">
+      <children>
+         <Text fx:id="nomJoueur" layoutX="98.0" layoutY="229.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+            <font>
+               <Font name="Autumn Regular" size="28.0" />
+            </font>
+         </Text>
+         <ImageView id="imageJoueur" fitHeight="150.0" fitWidth="200.0" layoutX="21.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" />
+      </children></Pane>
     <children>
         <ScrollPane fx:id="scrollPlateau" prefHeight="720.0" prefWidth="710.0" AnchorPane.topAnchor="29.0">
             <content>
@@ -36,5 +48,10 @@
                 </GridPane>
             </content>
         </ScrollPane>
+    </children>
+    <children>
+        <Pane fx:id="infosClick" prefHeight="100.0" prefWidth="90.0">
+
+        </Pane>
     </children>
 </AnchorPane>

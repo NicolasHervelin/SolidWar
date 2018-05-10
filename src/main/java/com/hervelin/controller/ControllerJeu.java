@@ -29,6 +29,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -70,6 +71,10 @@ public class ControllerJeu implements ControlledScreen {
     public GridPane gridPlateau;
     @FXML
     public ScrollPane scrollPlateau;
+    @FXML
+    public Text nomJoueur;
+    @FXML
+    public ImageView imageJoueur=new ImageView();
 
 
     @Override
@@ -137,12 +142,7 @@ public class ControllerJeu implements ControlledScreen {
                 setImagePourLesBoutons(bouton, plateau.getCaseByPosition(positionActuelle).getImg());
                 bouton.setPrefWidth(nombreCaseX/1.5);
                 bouton.setPrefHeight(nombreCaseY/1.5);
-                bouton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event){
-                        AnalysePosition(positionActuelle);
-                    }
-                });
+                bouton.setOnAction(event -> AnalysePosition(positionActuelle));
                 gridPlateau.add(bouton, col, row);
             }
         }
@@ -176,25 +176,29 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     public void AnalysePosition(Position position) {
-        System.out.println(position.getX());
-        System.out.println(position.getY());
         if(isCaseJoueur(position)) {
-            System.out.println("c'est un joueur");
+            nomJoueur.setText(plateau.getJoueurByPosition(position).getName());
 
-            /*if(isCaseDejaSelectionnee) {
-                //attaquer le joueur
-                isCaseDejaSelectionnee = false;
-            }
-            else {
-                caseDejaSelectionnee = new Case()
-                isCaseDejaSelectionnee = true;
-
-            }*/
-        }
-        else {
+        }else{
+        if(isCaseMur(position)) {
+            System.out.println("c'est un mur");
+        }else{
+        if(isCasePopo(position)) {
+            System.out.println("c'est une popo");
+        }else{
+        if(isCaseArmure(position)) {
+            System.out.println("c'est une armure");
+        }else{
+        if(isCaseArme(position)) {
+            System.out.println("c'est une arme");
+        }else{
+        if(isCaseNormale(position)) {
+            System.out.println("c'est une case");
+        }}}}}}
+      /*  else {
             if(isCaseDejaSelectionnee);
 
-        }
+        }*/
     }
 
 
@@ -210,6 +214,32 @@ public class ControllerJeu implements ControlledScreen {
 
     public boolean isCaseJoueur(Position position) {
         if(plateau.getCaseByPosition(position).getType().equals("CaseJoueur"))
+            return true;
+        return false;
+    }
+
+    public boolean isCaseMur(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseMur"))
+            return true;
+        return false;
+    }
+    public boolean isCaseNormale(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseNormale"))
+            return true;
+        return false;
+    }
+    public boolean isCaseArmure(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseArmure"))
+            return true;
+        return false;
+    }
+    public boolean isCasePopo(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CasePopo"))
+            return true;
+        return false;
+    }
+    public boolean isCaseArme(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseArme"))
             return true;
         return false;
     }
