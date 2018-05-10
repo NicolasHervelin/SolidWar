@@ -14,26 +14,60 @@
     <children>
         <Pane id="mainMenu" prefHeight="750.0" prefWidth="950.0" stylesheets="@style.css">
             <children>
-                <Button layoutX="161.0" layoutY="275.0" mnemonicParsing="false" onAction="#goToJeu" prefHeight="69.0" prefWidth="152.0" text="Jouer" textFill="#575252">
-               <font>
-                  <Font name="Autumn Regular" size="26.0" />
-               </font></Button>
-            <Button layoutX="161.0" layoutY="375.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Options" textFill="#514e4e">
-               <font>
-                  <Font name="Autumn Regular" size="26.0" />
-               </font></Button>
-            <Button layoutX="161.0" layoutY="470.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Quitter" textFill="#514f4f">
-               <font>
-                  <Font name="Autumn Regular" size="27.0" />
-               </font></Button>
-            <Text id="titre" fill="#273a9a" layoutX="62.0" layoutY="177.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="FORTNIQUE" textAlignment="CENTER" underline="true" wrappingWidth="349.2578125">
-               <font>
-                  <Font name="Autumn Regular" size="72.0" />
-               </font>
-               <effect>
-                  <DropShadow color="#7300ff" />
-               </effect>
-            </Text>
+            <Pane prefHeight="750.0" prefWidth="443.0">
+               <children>
+                      <Button alignment="CENTER" layoutX="152.0" layoutY="280.0" mnemonicParsing="false" onAction="#goToJeu" prefHeight="69.0" prefWidth="152.0" text="Jouer" textFill="#575252">
+                     <font>
+                        <Font name="Autumn Regular" size="26.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="152.0" layoutY="386.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Options" textFill="#514e4e">
+                     <font>
+                        <Font name="Autumn Regular" size="26.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="152.0" layoutY="508.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Quitter" textFill="#514f4f">
+                     <font>
+                        <Font name="Autumn Regular" size="27.0" />
+                     </font>
+                  </Button>
+                  <Text id="titre" fill="#273a9a" layoutX="53.0" layoutY="183.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="FORTNIQUE" textAlignment="CENTER" underline="true" wrappingWidth="349.2578125">
+                     <font>
+                        <Font name="Autumn Regular" size="72.0" />
+                     </font>
+                     <effect>
+                        <DropShadow color="#7300ff" />
+                     </effect>
+                  </Text>
+               </children>
+            </Pane>
+            <Pane prefHeight="750.0" prefWidth="443.0" visible="false">
+               <children>
+                  <Button alignment="CENTER" layoutX="152.0" layoutY="280.0" mnemonicParsing="false" onAction="#goToJeu" prefHeight="69.0" prefWidth="152.0" text="Jouer" textFill="#575252">
+                     <font>
+                        <Font name="Autumn Regular" size="26.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="152.0" layoutY="386.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Options" textFill="#514e4e">
+                     <font>
+                        <Font name="Autumn Regular" size="26.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="152.0" layoutY="508.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Quitter" textFill="#514f4f">
+                     <font>
+                        <Font name="Autumn Regular" size="27.0" />
+                     </font>
+                  </Button>
+                  <Text id="titre" fill="#273a9a" layoutX="53.0" layoutY="183.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="FORTNIQUE" textAlignment="CENTER" underline="true" wrappingWidth="349.2578125">
+                     <font>
+                        <Font name="Autumn Regular" size="72.0" />
+                     </font>
+                     <effect>
+                        <DropShadow color="#7300ff" />
+                     </effect>
+                  </Text>
+               </children>
+            </Pane>
             </children>
         </Pane>
     </children>
