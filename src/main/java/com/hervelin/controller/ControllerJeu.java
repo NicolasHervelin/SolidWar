@@ -195,7 +195,6 @@ public class ControllerJeu implements ControlledScreen {
             if(isCaseJoueur(position)) {
                 System.out.println("c'est un joueur");
                 nomJoueur.setText(plateau.getJoueurByPosition(position).getName());
-                changerDeJoueur(turnPlayer);
             }else if(isCaseMur(position)) {
                 System.out.println("c'est un mur");
             }else if(isCasePopo(position)) {
