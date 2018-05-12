@@ -103,10 +103,6 @@ public class ControllerJeu implements ControlledScreen {
         String nomJoueur3 = "Joueur 3";
         String nomJoueur4 = "Joueur 4";
 
-        double scaleX = gridPlateau.getScaleX(); // I only store this to be able to revert the changes
-        double scaleY = gridPlateau.getScaleY();
-
-
         /*
         if(!myController.getData("NomDuJoueur1").equals(""))
             nomJoueur1 = myController.getData("NomDuJoueur1");
@@ -150,8 +146,6 @@ public class ControllerJeu implements ControlledScreen {
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
         turnPlayer = listeDesJoueurs.get(0);
-        System.out.println(" ----- setup ----- ");
-        System.out.println("turnPlayer : " + turnPlayer.getName());
 
         //Définition des cases du plateau
         for (int row = 1; row <= nombreCaseX; row++) {
@@ -181,7 +175,7 @@ public class ControllerJeu implements ControlledScreen {
 
         affichageDuJoueur(joueur1);
         turnPlayer.setPtMouvement(7);
-        colorerCasesAPortee();
+        update();
 
     }
 
@@ -201,6 +195,7 @@ public class ControllerJeu implements ControlledScreen {
             if(isCaseJoueur(position)) {
                 System.out.println("c'est un joueur");
                 nomJoueur.setText(plateau.getJoueurByPosition(position).getName());
+                changerDeJoueur(turnPlayer);
             }else if(isCaseMur(position)) {
                 System.out.println("c'est un mur");
             }else if(isCasePopo(position)) {
@@ -220,10 +215,8 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     public boolean isCaseEstAPortee(Position position) {
-        Position positionJoueur = turnPlayer.getPosition();
-        double ptMouvement = turnPlayer.getPtMouvement();
-        double distance = plateau.calculDeDistance(positionJoueur, position);
-        if(distance <= ptMouvement)
+        double distance = plateau.calculDeDistance(turnPlayer.getPosition(), position);
+        if(distance <= turnPlayer.getPtMouvement())
             return true;
         return false;
     }
@@ -292,13 +285,13 @@ public class ControllerJeu implements ControlledScreen {
         nonAffichageDuJoueur(actuel);
         turnPlayer = plateau.joueurSuivant(actuel, nombreDeJoueurs);
         affichageDuJoueur(turnPlayer);
-        //update();
+        update();
+        System.out.println("changement de joueur");
     }
 
     //Refresh les valeurs
     private void update() {
         colorerCasesAPortee();
-
     }
 
     public void colorerCasesAPortee() {
@@ -320,11 +313,7 @@ public class ControllerJeu implements ControlledScreen {
                         //System.out.println(calculIndex);
                     }
                     else {
-                        InnerShadow borderGlow = new InnerShadow();
-                        borderGlow.setOffsetX(0f);
-                        borderGlow.setOffsetY(0f);
-                        borderGlow.setColor(Color.TRANSPARENT);
-                        node.setEffect(borderGlow);
+                        node.setEffect(null);
                     }
                 }
             }
@@ -332,11 +321,11 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void affichageDuJoueur(Joueur joueur) {
-        Button boutonFinDuTour = new Button("Fin du tour");
+        /*Button boutonFinDuTour = new Button("Fin du tour");
         boutonFinDuTour.setLayoutX(806);
         boutonFinDuTour.setLayoutY(700);
         boutonFinDuTour.setOnAction(event -> changerDeJoueur(joueur));
-        pane.getChildren().add(boutonFinDuTour);
+        pane.getChildren().add(boutonFinDuTour);*/
         //anchorMain.getChildren().add(pane);
 
         //System.out.println(joueur.getName());

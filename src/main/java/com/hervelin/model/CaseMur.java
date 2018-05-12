@@ -7,7 +7,7 @@ public class CaseMur extends Case {
     private int ptStructure;
 
     public CaseMur(Position p) {
-        super(p,"CaseMur",new Image("images/TextureMur.png"));
+        super(p,"CaseMur",new Image("images/TextureMurMini-min.png"));
         this.ptStructure = 10;
     }
 

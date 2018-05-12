@@ -7,7 +7,7 @@ public class CaseNormale extends Case {
     private String joueurProprioDeLaMine;
 
     public CaseNormale(Position p) {
-        super(p,"CaseNormale",new Image("images/TextureCaseNormale.png"));
+        super(p,"CaseNormale",new Image("images/TextureCaseNormaleMini-min.png"));
         this.isMine = false;
         this.joueurProprioDeLaMine = "";
     }
