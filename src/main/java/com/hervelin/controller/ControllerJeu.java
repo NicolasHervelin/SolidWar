@@ -2,6 +2,7 @@ package com.hervelin.controller;
 
 import com.hervelin.model.*;
 import com.sun.javafx.tk.TKSceneListener;
+import javafx.animation.PathTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swt.FXCanvas;
@@ -148,18 +149,7 @@ public class ControllerJeu implements ControlledScreen {
         turnPlayer = listeDesJoueurs.get(0);
 
         //Définition des cases du plateau
-        for (int row = 1; row <= nombreCaseX; row++) {
-            for (int col = 1; col <= nombreCaseY; col++) {
-                Button bouton = new Button();
-                bouton.setStyle("-fx-padding:2 2 2 2;");
-                Position positionActuelle = new Position(row,col);
-                setImagePourLesBoutons(bouton, plateau.getCaseByPosition(positionActuelle).getImg());
-                bouton.setPrefWidth(nombreCaseX/1.5);
-                bouton.setPrefHeight(nombreCaseY/1.5);
-                bouton.setOnAction(event -> AnalysePosition(positionActuelle));
-                gridPlateau.add(bouton, col, row);
-            }
-        }
+        definitionCaseDuPlateau();
 
         //Zoom sur le ScrollPane
         gridPlateau.setOnMouseMoved(event -> {
@@ -174,9 +164,25 @@ public class ControllerJeu implements ControlledScreen {
         });
 
         affichageDuJoueur(joueur1);
-        turnPlayer.setPtMouvement(7);
-        update();
+        obtenirPointsDeMouvement();
+        colorerCasesAPortee();
 
+    }
+
+    //Définition des cases du plateau
+    public void definitionCaseDuPlateau() {
+        for (int row = 1; row <= nombreCaseX; row++) {
+            for (int col = 1; col <= nombreCaseY; col++) {
+                Button bouton = new Button();
+                bouton.setStyle("-fx-padding:2 2 2 2;");
+                Position positionActuelle = new Position(row,col);
+                setImagePourLesBoutons(bouton, plateau.getCaseByPosition(positionActuelle).getImg());
+                bouton.setPrefWidth(nombreCaseX/1.5);
+                bouton.setPrefHeight(nombreCaseY/1.5);
+                bouton.setOnAction(event -> AnalysePosition(positionActuelle));
+                gridPlateau.add(bouton, col, row);
+            }
+        }
     }
 
     //Assigne à chaque bouton l'image correspondante
@@ -204,6 +210,9 @@ public class ControllerJeu implements ControlledScreen {
             }else if(isCaseArme(position)) {
                 System.out.println("c'est une arme");
             }else if(isCaseNormale(position)) {
+                System.out.println("position" + turnPlayer.getPosition());
+                deplacerPionJoueur(position);
+                System.out.println("position" + turnPlayer.getPosition());
                 System.out.println("c'est une case");
             }
         }
@@ -285,17 +294,20 @@ public class ControllerJeu implements ControlledScreen {
         turnPlayer = plateau.joueurSuivant(actuel, nombreDeJoueurs);
         affichageDuJoueur(turnPlayer);
         update();
+        obtenirPointsDeMouvement();
         System.out.println("changement de joueur");
     }
 
     //Refresh les valeurs
     private void update() {
+        definitionCaseDuPlateau();
         colorerCasesAPortee();
     }
 
     public void colorerCasesAPortee() {
         int ptMouvement = turnPlayer.getPtMouvement();
         System.out.println("colorerCases");
+        System.out.println("Points de mouvements : "+turnPlayer.getPtMouvement());
         if(ptMouvement != 0) {
             for (int row = 1; row <= nombreCaseX; row++) {
                 for (int col = 1; col <= nombreCaseY; col++) {
@@ -303,12 +315,14 @@ public class ControllerJeu implements ControlledScreen {
                     int calculIndex = ((row-1) * nombreCaseX + col)-1;
                     Node node = gridPlateau.getChildren().get(calculIndex);
                     if (isCaseEstAPortee(tempPosition)) {
-                        System.out.println(tempPosition);
+                        System.out.println("case doit etre colorée !!"+ tempPosition.getX() + "," + tempPosition.getY());
+                        System.out.println("node "+ node.getEffect());
                         InnerShadow borderGlow = new InnerShadow();
                         borderGlow.setOffsetX(0f);
                         borderGlow.setOffsetY(0f);
                         borderGlow.setColor(Color.BLUE);
                         node.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
+                        System.out.println("node "+ node.getEffect());
                         //System.out.println(calculIndex);
                     }
                     else {
@@ -346,6 +360,40 @@ public class ControllerJeu implements ControlledScreen {
 
     }
 
+    private void obtenirPointsDeMouvement() {
+        String messageDeLancer = "Résultats obtenus : ";
+        int lancer1 = plateau.lancerUnDe();
+        int lancer2 = plateau.lancerUnDe();
+        ArrayList<Integer> listeDesLancers = new ArrayList<>();
+        listeDesLancers.add(lancer1);
+        listeDesLancers.add(lancer2);
+
+        AlertBox.afficherLancer(listeDesLancers, messageDeLancer);
+        turnPlayer.setPtMouvement(lancer1+lancer2);
+    }
+
+    private void deplacerPionJoueur(Position destination) {
+        Position positionInitiale = turnPlayer.getPosition();
+        //PathTransition pathTransition = new PathTransition();
+        //Transition déplacement pion du joueur
+        //remplace par case normale
+        Case caseOrigine = plateau.getCaseByPosition(turnPlayer.getPosition());
+        Case caseOrigineNouvelle = new CaseNormale(turnPlayer.getPosition());
+        plateau.remplacerCase(caseOrigine, caseOrigineNouvelle);
+
+        //remplace par case joueur
+        Case caseDestination = plateau.getCaseByPosition(destination);
+        turnPlayer.setPosition(destination);
+        Case caseDestinationNouvelle = new CaseJoueur(turnPlayer, turnPlayer.getImageJoueur());
+        plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
+
+        int distanceParcourue = destination.distance(positionInitiale, destination);
+        System.out.println("distance parcourue : " + distanceParcourue);
+        turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - distanceParcourue);
+
+        update();
+
+    }
 
     //Boutton permettant de retourner au menu
     public void backToMenu() {
