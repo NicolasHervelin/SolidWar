@@ -4,6 +4,10 @@ import com.hervelin.model.*;
 import com.sun.javafx.tk.TKSceneListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swt.FXCanvas;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -16,9 +20,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.Control;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.effect.Light;
@@ -32,6 +34,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,8 +51,6 @@ public class ControllerJeu implements ControlledScreen {
     private Joueur joueur4;
     private boolean isCaseDejaSelectionnee = false;
     private Case caseDejaSelectionnee;
-    public String nombreDeJoueurs = "2";
-
 
     /**
      * The zoom factor.
@@ -82,6 +83,8 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public Button finTourJoueur1, finTourJoueur2, finTourJoueur3, finTourJoueur4;
     @FXML
+    public ListView<Arme> listArmes;
+    @FXML
     public Text nomJoueur;
     @FXML
     public ImageView imageJoueur;
@@ -98,10 +101,10 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void setUp() {
-        String nomJoueur1 = "Joueur 1";
-        String nomJoueur2 = "Joueur 2";
-        String nomJoueur3 = "Joueur 3";
-        String nomJoueur4 = "Joueur 4";
+        String nomJoueur1 = myController.getData("joueur1");
+        String nomJoueur2 = myController.getData("joueur2");
+        String nomJoueur3 = myController.getData("joueur3");
+        String nomJoueur4 = myController.getData("joueur4");
 
         /*
         if(!myController.getData("NomDuJoueur1").equals(""))
@@ -117,20 +120,20 @@ public class ControllerJeu implements ControlledScreen {
         */
 
         //Initialisation du plateau
-        switch (nombreDeJoueurs) {
-            case "2" :
+        switch (myController.getData("nbjoueurs")) {
+            case "2 joueurs" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
                 joueur1 = plateau.getListeDeJoueurs().get(0);
                 joueur2 = plateau.getListeDeJoueurs().get(1);
                 //System.out.println(plateau.getCaseByPosition(new Position(1, 1)).getCouleur());
                 break;
-            case "3" :
+            case "3 joueurs" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3);
                 joueur1 = plateau.getListeDeJoueurs().get(0);
                 joueur2 = plateau.getListeDeJoueurs().get(1);
                 joueur3 = plateau.getListeDeJoueurs().get(2);
                 break;
-            case "4" :
+            case "4 joueurs" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3, nomJoueur4);
                 joueur1 = plateau.getListeDeJoueurs().get(0);
                 joueur2 = plateau.getListeDeJoueurs().get(1);
@@ -146,6 +149,17 @@ public class ControllerJeu implements ControlledScreen {
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
         turnPlayer = listeDesJoueurs.get(0);
+        turnPlayer.ajouterArme(new Bazooka());
+
+      /*  listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
+            public void changed(ObservableValue<? extends Arme> ov, final Arme oldvalue, final Arme newvalue) {
+                ArmeChanged(ov, oldvalue, newvalue);
+            }
+        });*/
+
+
+
+
 
         //Définition des cases du plateau
         for (int row = 1; row <= nombreCaseX; row++) {
@@ -187,31 +201,40 @@ public class ControllerJeu implements ControlledScreen {
         imageView.setFitHeight(nombreCaseY / 1.5);
         bouton.setGraphic(imageView);
     }
+  /*  public void ArmeChanged(ObservableValue<? extends Arme> ov,Arme oldValue,Arme newValue) {
+    }*/
 
     public void AnalysePosition(Position position) {
         System.out.println(position.getX());
         System.out.println(position.getY());
-        if(isCaseEstAPortee(position)) {
+     //   if(isCaseEstAPortee(position)) {
             if(isCaseJoueur(position)) {
-                System.out.println("c'est un joueur");
-                nomJoueur.setText(plateau.getJoueurByPosition(position).getName());
-            }else if(isCaseMur(position)) {
-                System.out.println("c'est un mur");
-            }else if(isCasePopo(position)) {
-                System.out.println("c'est une popo");
-            }else if(isCaseArmure(position)) {
-                System.out.println("c'est une armure");
-            }else if(isCaseArme(position)) {
-                System.out.println("c'est une arme");
-            }else if(isCaseNormale(position)) {
-                System.out.println("c'est une case");
+                Joueur j=plateau.getJoueurByPosition(position);
+                nomJoueur.setText(j.getName());
+                imageJoueur.setImage(j.getImageJoueur());
+                listArmes.setVisible(true);
+                listArmes.getItems().setAll(j.getArmes());
+                listArmes.setCellFactory(new ArmeCellFactory());
+
+            }else  {
+                nomJoueur.setText(plateau.getCaseByPosition(position).getType());
+                listArmes.setVisible(false);
+                imageJoueur.setImage(plateau.getCaseByPosition(position).getImg());
             }
-        }
-        else {
+
+    /*    else {
             if(isCaseDejaSelectionnee);
 
-        }
+        }*/
     }
+   /* private void handleItemClicks()
+    {
+        listArmes.setOnMouseClicked(event -> {
+            String selectedItem = listArmes.getSelectionModel().getSelectedItem().toString();
+            Dialog d=new Alert(Alert.AlertType.INFORMATION,selectedItem);
+            d.show();
+        });
+    }*/
 
     public boolean isCaseEstAPortee(Position position) {
         double distance = plateau.calculDeDistance(turnPlayer.getPosition(), position);
@@ -282,7 +305,7 @@ public class ControllerJeu implements ControlledScreen {
 
     private void changerDeJoueur(Joueur actuel) {
         nonAffichageDuJoueur(actuel);
-        turnPlayer = plateau.joueurSuivant(actuel, nombreDeJoueurs);
+        turnPlayer = plateau.joueurSuivant(actuel, myController.getData("nbjoueurs"));
         affichageDuJoueur(turnPlayer);
         update();
         System.out.println("changement de joueur");
@@ -320,19 +343,11 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void affichageDuJoueur(Joueur joueur) {
-        /*Button boutonFinDuTour = new Button("Fin du tour");
-        boutonFinDuTour.setLayoutX(806);
-        boutonFinDuTour.setLayoutY(700);
-        boutonFinDuTour.setOnAction(event -> changerDeJoueur(joueur));
-        pane.getChildren().add(boutonFinDuTour);*/
-        //anchorMain.getChildren().add(pane);
-
-        //System.out.println(joueur.getName());
-        //System.out.println(anchorMain.getChildren().indexOf(scrollPlateau));
-        //System.out.println(anchorMain.getChildren().get(0));
-        //System.out.println(anchorMain.getChildren().get(1));
-        //System.out.println(anchorMain.getChildren().get(2));
-        //System.out.println(anchorMain.getChildren().get(3));
+        nomJoueur.setText(joueur.getName());
+        imageJoueur.setImage(joueur.getImageJoueur());
+        listArmes.setVisible(true);
+        listArmes.getItems().setAll(joueur.getArmes());
+        listArmes.setCellFactory(new ArmeCellFactory());
     }
 
     private void nonAffichageDuJoueur(Joueur joueur) {

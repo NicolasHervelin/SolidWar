@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet href="@style.css" type="text/css" ?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.PerspectiveCamera?>
 <AnchorPane fx:id="anchorMain" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerJeu">
     <children>
         <MenuBar id="MenuBar" prefWidth="950">
@@ -32,12 +32,16 @@
         </MenuBar>
         <Pane layoutX="708.0" layoutY="32.0" prefHeight="716.0" prefWidth="242.0">
             <children>
-                <Text fx:id="nomJoueur" layoutX="98.0" layoutY="229.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+                <Text fx:id="nomJoueur" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="250.0" y="220.0">
                     <font>
                         <Font name="Autumn Regular" size="28.0" />
                     </font>
                 </Text>
-                <ImageView id="imageJoueur" fitHeight="150.0" fitWidth="200.0" layoutX="21.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true" />
+                <ImageView fx:id="imageJoueur" fitHeight="150.0" fitWidth="150.0" layoutX="50.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
+            <ListView fx:id="listArmes" layoutX="25.0" layoutY="258.0" prefHeight="354.0" prefWidth="200.0" visible="false">
+                <items>
+                </items>
+            </ListView>
             </children>
         </Pane>
         <ScrollPane fx:id="scrollPlateau" prefHeight="720.0" prefWidth="710.0" AnchorPane.topAnchor="29.0">

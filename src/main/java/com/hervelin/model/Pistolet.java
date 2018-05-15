@@ -1,7 +1,9 @@
 package com.hervelin.model;
 
+import javafx.scene.image.Image;
+
 public class Pistolet extends Arme {
     public Pistolet() {
-        super("pistolet",3,2,2,1);
+        super("pistolet",3,2,2,1,new Image("images/Solid_war/COFFRE/ARMES/PISTOLET/CLASSE1.png"));
     }
 }

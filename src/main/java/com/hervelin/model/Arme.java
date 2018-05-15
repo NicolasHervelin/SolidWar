@@ -1,15 +1,19 @@
 package com.hervelin.model;
 
+import javafx.scene.image.Image;
+
 public abstract class Arme {
     private String name;
     private int portée;
     private int dmg_dés;
+    private Image image;
     private int Pa;
     private int isReturnDamage;
 
 
-    public Arme(String name, int portée, int dmg_dés, int pa,int isReturnDamage) {
+    public Arme(String name, int portée, int dmg_dés, int pa,int isReturnDamage,Image img) {
         this.name = name;
+        image=img;
         this.portée = portée;
         this.isReturnDamage=isReturnDamage;
         this.dmg_dés = dmg_dés;
@@ -24,6 +28,10 @@ public abstract class Arme {
     public String getName() {
         return name;
     }
+
+    public Image getImage(){ return image; }
+
+    public void setImage(Image img){ image=img; }
 
     public void setName(String name) {
         this.name = name;
