@@ -154,6 +154,22 @@ public class Plateau {
         }
         return null;
     }
+
+    public void remplacerCase(Case origine, Case nouvelle) {
+        //int xOrigine = origine.position.getX();
+        //int yOrigine = origine.position.getY();
+        //int xNouvelle = nouvelle.position.getX();
+        //int yNouvelle = nouvelle.position.getY();
+
+        int indexCaseOrigine = getIndexOfCase(origine);
+        casesDuPlateau.remove(origine);
+        casesDuPlateau.add(indexCaseOrigine, nouvelle);
+    }
+
+    public int getIndexOfCase(Case laCase) {
+        return casesDuPlateau.indexOf(laCase);
+    }
+
     public Joueur getJoueurByPosition(Position p) {
         for (Joueur joueur : listeDeJoueurs) {
             if((joueur.getPosition().getX() == p.x) && (joueur.getPosition().getY() == p.y)) {
@@ -298,6 +314,7 @@ public class Plateau {
         int lance = 1 + (int)(Math.random() * ((3 - 1) + 1));
         return lance;
     }
+
 
     public int calculDeDistance(Position positionJoueur, Position caseCible) {
             int x_diff=caseCible.getX()-positionJoueur.getX();
