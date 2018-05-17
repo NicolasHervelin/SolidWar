@@ -38,7 +38,7 @@
                     </font>
                 </Text>
                 <ImageView fx:id="imageJoueur" fitHeight="150.0" fitWidth="150.0" layoutX="50.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
-            <ListView fx:id="listArmes" layoutX="25.0" layoutY="258.0" prefHeight="354.0" prefWidth="200.0" visible="false">
+            <ListView fx:id="listArmes"  layoutX="25.0" layoutY="258.0" prefHeight="354.0" prefWidth="200.0" visible="false">
                 <items>
                 </items>
             </ListView>

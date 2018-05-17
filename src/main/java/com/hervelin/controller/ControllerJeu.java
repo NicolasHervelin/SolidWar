@@ -90,10 +90,11 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public ImageView imageJoueur;
     @FXML
-    public Pane infoClick;
-    @FXML
     public Pane pane = new Pane();
 
+    /*@FXML public void handleMouseClick(MouseEvent arg0) {
+
+    }*/
 
     @Override
     public void setScreenParent(ScreensController screenParent) {
@@ -216,11 +217,11 @@ public class ControllerJeu implements ControlledScreen {
      //   if(isCaseEstAPortee(position)) {
             if(isCaseJoueur(position)) {
                 Joueur j=plateau.getJoueurByPosition(position);
-                nomJoueur.setText(j.getName());
-                imageJoueur.setImage(j.getImageJoueur());
-                listArmes.setVisible(true);
-                listArmes.getItems().setAll(j.getArmes());
-                listArmes.setCellFactory(new ArmeCellFactory());
+                affichageDuJoueur(j);
+                if (j!=turnPlayer){
+                    listArmes.setVisible(false);
+                }
+
 
             }else  {
                 nomJoueur.setText(plateau.getCaseByPosition(position).getType());
@@ -310,8 +311,8 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void changerDeJoueur(Joueur actuel) {
-        nonAffichageDuJoueur(actuel);
-        turnPlayer = plateau.joueurSuivant(actuel, nombreDeJoueurs);
+     //   nonAffichageDuJoueur(actuel);
+        turnPlayer = plateau.joueurSuivant(actuel, myController.getData("nbjoueurs"));
         affichageDuJoueur(turnPlayer);
         update();
         obtenirPointsDeMouvement();
@@ -359,16 +360,12 @@ public class ControllerJeu implements ControlledScreen {
         listArmes.setVisible(true);
         listArmes.getItems().setAll(joueur.getArmes());
         listArmes.setCellFactory(new ArmeCellFactory());
-    }
-
-    private void nonAffichageDuJoueur(Joueur joueur) {
-        //System.out.println(anchorMain.getChildren().get(0)); //MenuBar
-        //System.out.println(anchorMain.getChildren().get(1)); //ScrollPane
-        //System.out.println(anchorMain.getChildren().get(2)); //Button
-        //anchorMain.getChildren().remove(pane);
-    }
-
-    private void affichageDesInfosDeLaCase() {
+        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
+            @Override
+            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
+                AlertBox.afficherDetailArme(newValue);
+            }
+        });
 
     }
 
