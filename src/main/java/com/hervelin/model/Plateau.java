@@ -162,8 +162,12 @@ public class Plateau {
         //int yNouvelle = nouvelle.position.getY();
 
         int indexCaseOrigine = getIndexOfCase(origine);
-        casesDuPlateau.remove(origine);
-        casesDuPlateau.add(indexCaseOrigine, nouvelle);
+        //System.out.println("Index Origine : " + getIndexOfCase(origine));
+
+        //System.out.println("index remplace :"+ indexCaseOrigine);
+        casesDuPlateau.set(indexCaseOrigine, nouvelle);
+        //System.out.println("Index Destination : " + getIndexOfCase(nouvelle));
+
     }
 
     public int getIndexOfCase(Case laCase) {
