@@ -1,0 +1,100 @@
+public boolean isCaseDuJoueurActuel(Position position) {
+        if(position.getX() == turnPlayer.getPosition().getX() && position.getY() == turnPlayer.getPosition().getY())
+            return true;
+        return false;
+}
+
+public boolean isCaseDunAutreJoueur(Position position) {
+        if(position.getX() != turnPlayer.getPosition().getX() || position.getY() != turnPlayer.getPosition().getY())
+            return true;
+        return false;
+}
+
+public Case getCaseDejaSelectionnee(){
+        return caseDejaSelectionnee;
+}
+
+public void setCaseDejaSelectionnee(Position position){
+        caseDejaSelectionnee = plateau.getCaseByPosition(position);
+}
+
+public boolean isCaseDejaSelectionnee() {
+        if(caseDejaSelectionnee != null)
+            return true;
+        else
+            return false;
+}
+
+
+    /*public boolean isCaseMur(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseMur"))
+            return true;
+        return false;
+    }
+
+    public boolean isCaseArmure(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseArmure"))
+            return true;
+        return false;
+    }
+    public boolean isCasePopo(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CasePopo"))
+            return true;
+        return false;
+    }
+    public boolean isCaseArme(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseArme"))
+            return true;
+        return false;
+    }
+
+    private void changerDeJoueur(Joueur actuel) {
+     // nonAffichageDuJoueur(actuel);
+        turnPlayer = plateau.joueurSuivant(actuel, myController.getData("nbjoueurs"));
+        affichageDuJoueur(turnPlayer);
+        update();
+        obtenirPointsDeMouvement();
+        System.out.println("changement de joueur");
+    }
+
+    //Refresh les valeurs
+    private void update() {
+        definitionCaseDuPlateau();
+        colorerCasesAPortee();
+    }
+
+    public void colorerCasesAPortee() {
+        int ptMouvement = turnPlayer.getPtMouvement();
+        System.out.println("colorerCases");
+        System.out.println("Points de mouvements : "+turnPlayer.getPtMouvement());
+        if(ptMouvement != 0) {
+            for (int row = 1; row <= plateau.getxTaille(); row++) {
+                for (int col = 1; col <= plateau.getyTaille(); col++) {
+                    Position tempPosition = new Position(row,col);
+                    int calculIndex = ((row-1) * plateau.getxTaille() + col)-1;
+                    Node node = gridPlateau.getChildren().get(calculIndex);
+                    if (isCaseEstAPortee(tempPosition)) {
+                        InnerShadow borderGlow = new InnerShadow();
+                        borderGlow.setOffsetX(0f);
+                        borderGlow.setOffsetY(0f);
+                        borderGlow.setColor(Color.BLUE);
+                        node.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
+                        //System.out.println(calculIndex);
+                    }
+                    else {
+                        node.setEffect(null);
+                    }
+                }
+            }
+        }
+        else {
+            for (int row = 1; row <= plateau.getxTaille(); row++) {
+                for (int col = 1; col <= plateau.getyTaille(); col++) {
+                    Position tempPosition = new Position(row, col);
+                    int calculIndex = ((row - 1) * plateau.getxTaille() + col) - 1;
+                    gridPlateau.getChildren().get(calculIndex).setEffect(null);
+                }
+            }
+            System.out.println("Plus de mouvement dispo !");
+        }
+    }*/
