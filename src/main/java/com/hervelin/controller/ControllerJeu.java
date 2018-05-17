@@ -112,8 +112,15 @@ public class ControllerJeu implements ControlledScreen {
             gridPlateau.setScaleY(gridPlateau.getScaleY()*event.getZoomFactor());
             event.consume();
         });
-
-        affichageDuJoueur(joueur1);
+        listArmes.getItems().setAll(turnPlayer.getArmes());
+        listArmes.setCellFactory(new ArmeCellFactory());
+        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
+            @Override
+            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
+                AlertBox.afficherDetailArme(newValue);
+            }
+        });
+        affichageDuJoueur(turnPlayer);
         obtenirPointsDeMouvement();
         definitionCaseDuPlateau();
 
@@ -161,11 +168,14 @@ public class ControllerJeu implements ControlledScreen {
     public void AnalysePosition(Position position) {
         if(isCaseJoueur(position)) {
             Joueur j=plateau.getJoueurByPosition(position);
-            affichageDuJoueur(j);
             if (j!=turnPlayer){
+                affichageDuJoueur(j);
                 listArmes.setVisible(false);
+            }else {
+                affichageDuJoueur(j);
+                listArmes.setVisible(true);
             }
-        }else if(isCaseNormale(position)) {
+            }else if(isCaseNormale(position)) {
             if(isCaseEstAPortee(position)) {
                 deplacerPionJoueur(position);
             }else {
@@ -206,14 +216,7 @@ public class ControllerJeu implements ControlledScreen {
         nomJoueur.setText(joueur.getName());
         imageJoueur.setImage(joueur.getImageJoueur());
         listArmes.setVisible(true);
-        listArmes.getItems().setAll(joueur.getArmes());
-        listArmes.setCellFactory(new ArmeCellFactory());
-        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
-            @Override
-            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
-                AlertBox.afficherDetailArme(newValue);
-            }
-        });
+
 
     }
 
