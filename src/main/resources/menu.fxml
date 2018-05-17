@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?xml-stylesheet href="@style.css" type="text/css" ?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -10,66 +14,103 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerMenu">
+<GridPane id="mainMenu" alignment="center" hgap="10" prefHeight="789.0" prefWidth="948.0" stylesheets="@style.css" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerMenu">
     <children>
-        <Pane id="mainMenu" prefHeight="750.0" prefWidth="950.0" stylesheets="@style.css">
-            <children>
-            <Pane prefHeight="750.0" prefWidth="443.0">
-               <children>
-                      <Button alignment="CENTER" layoutX="152.0" layoutY="280.0" mnemonicParsing="false" onAction="#goToJeu" prefHeight="69.0" prefWidth="152.0" text="Jouer" textFill="#575252">
-                     <font>
-                        <Font name="Autumn Regular" size="26.0" />
-                     </font>
-                  </Button>
-                  <Button layoutX="152.0" layoutY="386.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Options" textFill="#514e4e">
-                     <font>
-                        <Font name="Autumn Regular" size="26.0" />
-                     </font>
-                  </Button>
-                  <Button layoutX="152.0" layoutY="508.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Quitter" textFill="#514f4f">
-                     <font>
-                        <Font name="Autumn Regular" size="27.0" />
-                     </font>
-                  </Button>
-                  <Text id="titre" fill="#273a9a" layoutX="53.0" layoutY="183.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="FORTNIQUE" textAlignment="CENTER" underline="true" wrappingWidth="349.2578125">
-                     <font>
-                        <Font name="Autumn Regular" size="72.0" />
-                     </font>
-                     <effect>
-                        <DropShadow color="#7300ff" />
-                     </effect>
-                  </Text>
-               </children>
-            </Pane>
-            <Pane prefHeight="750.0" prefWidth="443.0" visible="false">
-               <children>
-                  <Button alignment="CENTER" layoutX="152.0" layoutY="280.0" mnemonicParsing="false" onAction="#goToJeu" prefHeight="69.0" prefWidth="152.0" text="Jouer" textFill="#575252">
-                     <font>
-                        <Font name="Autumn Regular" size="26.0" />
-                     </font>
-                  </Button>
-                  <Button layoutX="152.0" layoutY="386.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Options" textFill="#514e4e">
-                     <font>
-                        <Font name="Autumn Regular" size="26.0" />
-                     </font>
-                  </Button>
-                  <Button layoutX="152.0" layoutY="508.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Quitter" textFill="#514f4f">
-                     <font>
-                        <Font name="Autumn Regular" size="27.0" />
-                     </font>
-                  </Button>
-                  <Text id="titre" fill="#273a9a" layoutX="53.0" layoutY="183.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="FORTNIQUE" textAlignment="CENTER" underline="true" wrappingWidth="349.2578125">
-                     <font>
-                        <Font name="Autumn Regular" size="72.0" />
-                     </font>
-                     <effect>
-                        <DropShadow color="#7300ff" />
-                     </effect>
-                  </Text>
-               </children>
-            </Pane>
-            </children>
-        </Pane>
+      <Pane fx:id="pane1" prefHeight="826.0" prefWidth="948.0">
+         <children>
+                <Button alignment="CENTER" layoutX="152.0" layoutY="280.0" mnemonicParsing="false" onAction="#nextPane" prefHeight="69.0" prefWidth="152.0" text="Jouer" textFill="#575252">
+               <font>
+                  <Font name="Autumn Regular" size="26.0" />
+               </font>
+            </Button>
+            <Button layoutX="152.0" layoutY="386.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Options" textFill="#514e4e">
+               <font>
+                  <Font name="Autumn Regular" size="26.0" />
+               </font>
+            </Button>
+            <Button layoutX="152.0" layoutY="508.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="152.0" text="Quitter" textFill="#514f4f">
+               <font>
+                  <Font name="Autumn Regular" size="27.0" />
+               </font>
+            </Button>
+            <Text id="titre" fill="#273a9a" layoutX="53.0" layoutY="183.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="SOLID WAR" textAlignment="CENTER" underline="true" wrappingWidth="349.2578125">
+               <font>
+                  <Font name="Autumn Regular" size="72.0" />
+               </font>
+               <effect>
+                  <DropShadow color="#7300ff" />
+               </effect>
+            </Text>
+         </children>
+      </Pane>
+      <Pane fx:id="pane2" prefHeight="823.0" prefWidth="948.0" visible="false">
+         <children>
+            <Button alignment="CENTER" layoutX="234.0" layoutY="620.0" mnemonicParsing="false" onAction="#goToJeu" prefHeight="99.0" prefWidth="216.0" text="Jouer" textFill="#575252">
+               <font>
+                  <Font name="Autumn Regular" size="26.0" />
+               </font>
+            </Button>
+            <Button layoutX="36.0" layoutY="644.0" mnemonicParsing="false" onAction="#returnPane" opacity="0.45" prefHeight="24.0" prefWidth="152.0" text="Retour" textFill="#514f4f">
+               <font>
+                  <Font name="Autumn Regular" size="27.0" />
+               </font>
+            </Button>
+            <Text id="titre" fill="#273a9a" layoutX="82.0" layoutY="79.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Nombre de joueurs:" textAlignment="CENTER" underline="true" wrappingWidth="289.2578125">
+               <font>
+                  <Font name="Autumn Regular" size="48.0" />
+               </font>
+               <effect>
+                  <DropShadow color="#7300ff" />
+               </effect>
+            </Text>
+            <ChoiceBox fx:id="choixNbJoueur" layoutX="152.0" layoutY="169.0" prefWidth="150.0" value="2 joueurs">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="1 joueur" />
+                     <String fx:value="2 joueurs" />
+                     <String fx:value="3 joueurs" />
+                     <String fx:value="4 joueurs" />
+                  </FXCollections>
+               </items>
+            </ChoiceBox>
+            <Text fx:id="titreJoueur1" fill="#273a9a" layoutX="22.0" layoutY="319.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Joueur 1 :" textAlignment="CENTER" wrappingWidth="179.2578125">
+               <font>
+                  <Font name="Autumn Regular" size="39.0" />
+               </font>
+               <effect>
+                  <DropShadow color="#7300ff" />
+               </effect>
+            </Text>
+            <Text fx:id="titreJoueur2" fill="#273a9a" layoutX="22.0" layoutY="398.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Joueur 2 :" textAlignment="CENTER" wrappingWidth="179.25781309604645">
+               <font>
+                  <Font name="Autumn Regular" size="39.0" />
+               </font>
+               <effect>
+                  <DropShadow color="#7300ff" />
+               </effect>
+            </Text>
+            <Text fx:id="titreJoueur3" fill="#273a9a" layoutX="22.0" layoutY="485.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Joueur 3 :" textAlignment="CENTER" visible="false" wrappingWidth="179.25781309604645">
+               <font>
+                  <Font name="Autumn Regular" size="39.0" />
+               </font>
+               <effect>
+                  <DropShadow color="#7300ff" />
+               </effect>
+            </Text>
+            <Text fx:id="titreJoueur4" fill="#273a9a" layoutX="22.0" layoutY="566.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Joueur 4 :" textAlignment="CENTER" visible="false" wrappingWidth="179.25781309604645">
+               <font>
+                  <Font name="Autumn Regular" size="39.0" />
+               </font>
+               <effect>
+                  <DropShadow color="#7300ff" />
+               </effect>
+            </Text>
+            <TextArea fx:id="nomJoueur1" layoutX="213.0" layoutY="288.0" prefHeight="31.0" prefWidth="179.0" text="joueur 1" />
+            <TextArea fx:id="nomJoueur2" layoutX="213.0" layoutY="367.0" prefHeight="31.0" prefWidth="179.0" text="joueur 2" />
+            <TextArea fx:id="nomJoueur3" layoutX="213.0" layoutY="454.0" prefHeight="31.0" prefWidth="179.0" text="joueur 3" visible="false" />
+            <TextArea fx:id="nomJoueur4" layoutX="213.0" layoutY="535.0" prefHeight="31.0" prefWidth="179.0" text="joueur 4" visible="false" />
+         </children>
+      </Pane>
     </children>
    <columnConstraints>
       <ColumnConstraints />

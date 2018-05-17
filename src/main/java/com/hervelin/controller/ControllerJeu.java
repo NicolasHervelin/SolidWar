@@ -2,10 +2,13 @@ package com.hervelin.controller;
 
 import com.hervelin.model.*;
 import com.sun.javafx.tk.TKSceneListener;
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 import javafx.animation.PathTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swt.FXCanvas;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -18,9 +21,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.Control;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.effect.Light;
@@ -34,6 +35,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,8 +52,6 @@ public class ControllerJeu implements ControlledScreen {
     private Joueur joueur4;
     private boolean isCaseDejaSelectionnee = false;
     private Case caseDejaSelectionnee;
-    public String nombreDeJoueurs = "2";
-
 
     /**
      * The zoom factor.
@@ -84,14 +84,17 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public Button finTourJoueur1, finTourJoueur2, finTourJoueur3, finTourJoueur4;
     @FXML
+    public ListView<Arme> listArmes;
+    @FXML
     public Text nomJoueur;
     @FXML
     public ImageView imageJoueur;
     @FXML
-    public Pane infoClick;
-    @FXML
     public Pane pane = new Pane();
 
+    /*@FXML public void handleMouseClick(MouseEvent arg0) {
+
+    }*/
 
     @Override
     public void setScreenParent(ScreensController screenParent) {
@@ -100,10 +103,10 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void setUp() {
-        String nomJoueur1 = "Joueur 1";
-        String nomJoueur2 = "Joueur 2";
-        String nomJoueur3 = "Joueur 3";
-        String nomJoueur4 = "Joueur 4";
+        String nomJoueur1 = myController.getData("joueur1");
+        String nomJoueur2 = myController.getData("joueur2");
+        String nomJoueur3 = myController.getData("joueur3");
+        String nomJoueur4 = myController.getData("joueur4");
 
         /*
         if(!myController.getData("NomDuJoueur1").equals(""))
@@ -119,20 +122,20 @@ public class ControllerJeu implements ControlledScreen {
         */
 
         //Initialisation du plateau
-        switch (nombreDeJoueurs) {
-            case "2" :
+        switch (myController.getData("nbjoueurs")) {
+            case "2 joueurs" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
                 joueur1 = plateau.getListeDeJoueurs().get(0);
                 joueur2 = plateau.getListeDeJoueurs().get(1);
                 //System.out.println(plateau.getCaseByPosition(new Position(1, 1)).getCouleur());
                 break;
-            case "3" :
+            case "3 joueurs" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3);
                 joueur1 = plateau.getListeDeJoueurs().get(0);
                 joueur2 = plateau.getListeDeJoueurs().get(1);
                 joueur3 = plateau.getListeDeJoueurs().get(2);
                 break;
-            case "4" :
+            case "4 joueurs" :
                 plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3, nomJoueur4);
                 joueur1 = plateau.getListeDeJoueurs().get(0);
                 joueur2 = plateau.getListeDeJoueurs().get(1);
@@ -148,6 +151,17 @@ public class ControllerJeu implements ControlledScreen {
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
         turnPlayer = listeDesJoueurs.get(0);
+        turnPlayer.ajouterArme(new Bazooka());
+
+      /*  listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
+            public void changed(ObservableValue<? extends Arme> ov, final Arme oldvalue, final Arme newvalue) {
+                ArmeChanged(ov, oldvalue, newvalue);
+            }
+        });*/
+
+
+
+
 
         //Définition des cases du plateau
 
@@ -210,10 +224,25 @@ public class ControllerJeu implements ControlledScreen {
         imageView.setFitHeight(plateau.getyTaille() / 1.5);
         bouton.setGraphic(imageView);
     }
+  /*  public void ArmeChanged(ObservableValue<? extends Arme> ov,Arme oldValue,Arme newValue) {
+    }*/
 
     public void AnalysePosition(Position position) {
         System.out.println(position.getX());
         System.out.println(position.getY());
+        if(isCaseJoueur(position)) {
+            Joueur j=plateau.getJoueurByPosition(position);
+            affichageDuJoueur(j);
+            if (j!=turnPlayer){
+                listArmes.setVisible(false);
+            }
+
+
+        }else  {
+            nomJoueur.setText(plateau.getCaseByPosition(position).getType());
+            listArmes.setVisible(false);
+            imageJoueur.setImage(plateau.getCaseByPosition(position).getImg());
+        }
         if(isCaseEstAPortee(position)) {
             if(isCaseJoueur(position)) {
                 System.out.println("c'est un joueur");
@@ -232,10 +261,6 @@ public class ControllerJeu implements ControlledScreen {
                 System.out.println("position" + turnPlayer.getPosition());
                 System.out.println("c'est une case");
             }
-        }
-        else {
-            if(isCaseDejaSelectionnee);
-
         }
     }
 
@@ -307,8 +332,8 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void changerDeJoueur(Joueur actuel) {
-        //nonAffichageDuJoueur(actuel);
-        turnPlayer = plateau.joueurSuivant(actuel, nombreDeJoueurs);
+     // nonAffichageDuJoueur(actuel);
+        turnPlayer = plateau.joueurSuivant(actuel, myController.getData("nbjoueurs"));
         affichageDuJoueur(turnPlayer);
         update();
         obtenirPointsDeMouvement();
@@ -324,7 +349,7 @@ public class ControllerJeu implements ControlledScreen {
     public void colorerCasesAPortee() {
         int ptMouvement = turnPlayer.getPtMouvement();
         System.out.println("colorerCases");
-        System.out.println("Points de mouvements : "+ ptMouvement);
+        System.out.println("Points de mouvements : "+turnPlayer.getPtMouvement());
         if(ptMouvement != 0) {
             for (int row = 1; row <= plateau.getxTaille(); row++) {
                 for (int col = 1; col <= plateau.getyTaille(); col++) {
@@ -332,7 +357,6 @@ public class ControllerJeu implements ControlledScreen {
                     int calculIndex = ((row-1) * plateau.getxTaille() + col)-1;
                     Node node = gridPlateau.getChildren().get(calculIndex);
                     if (isCaseEstAPortee(tempPosition)) {
-                        //System.out.println("case doit etre colorée !!  "+ tempPosition.getX() + ", " + tempPosition.getY());
                         InnerShadow borderGlow = new InnerShadow();
                         borderGlow.setOffsetX(0f);
                         borderGlow.setOffsetY(0f);
@@ -359,6 +383,17 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void affichageDuJoueur(Joueur joueur) {
+        nomJoueur.setText(joueur.getName());
+        imageJoueur.setImage(joueur.getImageJoueur());
+        listArmes.setVisible(true);
+        listArmes.getItems().setAll(joueur.getArmes());
+        listArmes.setCellFactory(new ArmeCellFactory());
+        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
+            @Override
+            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
+                AlertBox.afficherDetailArme(newValue);
+            }
+        });
 
     }
 
@@ -384,7 +419,6 @@ public class ControllerJeu implements ControlledScreen {
         Case caseOrigine = plateau.getCaseByPosition(turnPlayer.getPosition());
         Case caseOrigineNouvelle = new CaseNormale(turnPlayer.getPosition());
         plateau.remplacerCase(caseOrigine, caseOrigineNouvelle);
-
 
         //remplace par case joueur
         Case caseDestination = plateau.getCaseByPosition(destination);
