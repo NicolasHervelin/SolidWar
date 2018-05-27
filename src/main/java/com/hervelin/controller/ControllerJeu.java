@@ -45,7 +45,7 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public ScrollPane scrollPlateau;
     @FXML
-    public AnchorPane anchorMain;
+    public GridPane anchorMain;
     @FXML
     public Button finTourJoueur1, finTourJoueur2, finTourJoueur3, finTourJoueur4;
     @FXML

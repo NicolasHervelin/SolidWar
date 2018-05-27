@@ -11,7 +11,9 @@ public class Joueur {
     private int ptMouvement;
     private int ptAttaque;
     private int ptSante;
+    private int ptArmure;
     private Image imageJoueur;
+    private int ptConstruction;
 
     public Joueur(String name, Position p, Image image) {
         this.name = name;
@@ -19,7 +21,9 @@ public class Joueur {
         this.ptMouvement = 0;
         this.ptAttaque = 0;
         this.ptSante = 100;
+        this.ptArmure = 0;
         this.imageJoueur = image;
+        this.ptConstruction = 0;
 
         Couteau armeDeBase = new Couteau();
         armes.add(armeDeBase);
@@ -40,7 +44,31 @@ public class Joueur {
         deplacerY(deplacementY);
     }
 
+    public void attaquerJoueur(Joueur other, int degats, boolean isLancerParfait) {
+        if(isLancerParfait)
+            other.setPtSante(other.getPtSante() - degats);
+        else {
+            if(other.getPtArmure() < degats) {
+                other.setPtSante(other.getPtSante() - (degats - other.getPtArmure()));
+                other.setPtArmure(0);
+            }
+            else {
+                other.setPtArmure(other.getPtArmure() - degats);
+            }
+        }
+    }
 
+    public void attaquerMur(Mur mur, int degats, boolean isLancerParfait) {
+        if(isLancerParfait) {
+            mur.setPtStructure(0);
+        }
+        else {
+            if(mur.getPtStructure() < degats)
+                mur.setPtStructure(0);
+            else
+                mur.setPtStructure(mur.getPtStructure() - degats);
+        }
+    }
 
     public String getName() {
         return name;
@@ -101,5 +129,21 @@ public class Joueur {
 
     public void setImageJoueur(Image imageJoueur) {
         this.imageJoueur = imageJoueur;
+    }
+
+    public int getPtConstruction() {
+        return ptConstruction;
+    }
+
+    public void setPtConstruction(int ptConstruction) {
+        this.ptConstruction = ptConstruction;
+    }
+
+    public int getPtArmure() {
+        return ptArmure;
+    }
+
+    public void setPtArmure(int ptArmure) {
+        this.ptArmure = ptArmure;
     }
 }

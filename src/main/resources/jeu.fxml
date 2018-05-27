@@ -13,11 +13,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="anchorMain" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerJeu">
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<GridPane fx:id="anchorMain" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerJeu">
     <children>
-        <MenuBar id="MenuBar" prefWidth="950">
+        <MenuBar fx:id="MenuBar" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <menus>
-                <Menu id="MenuGame" text="Game">
+                <Menu fx:id="MenuGame" text="Game">
                     <items>
                         <MenuItem onAction="#backToJeu" text="Nouvelle Partie" />
                         <MenuItem onAction="#backToMenu" text="Retour au menu" />
@@ -30,25 +32,49 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <Pane layoutX="708.0" layoutY="32.0" prefHeight="716.0" prefWidth="242.0">
+        <GridPane fx:id="gridContainer" GridPane.columnIndex="0" GridPane.rowIndex="1">
             <children>
-                <Text fx:id="nomJoueur" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="250.0" y="220.0">
-                    <font>
-                        <Font name="Autumn Regular" size="28.0" />
-                    </font>
-                </Text>
-                <ImageView fx:id="imageJoueur" fitHeight="150.0" fitWidth="150.0" layoutX="50.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
-            <ListView fx:id="listArmes"  layoutX="25.0" layoutY="258.0" prefHeight="354.0" prefWidth="200.0" visible="false">
-                <items>
-                </items>
-            </ListView>
+                <ScrollPane fx:id="scrollPlateau" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <content>
+                        <GridPane fx:id="gridPlateau" alignment="TOP_LEFT">
+                        </GridPane>
+                    </content>
+                </ScrollPane>
+                <Pane GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <children>
+                        <Text fx:id="nomJoueur" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="250.0" y="220.0">
+                            <font>
+                                <Font name="Autumn Regular" size="28.0" />
+                            </font>
+                        </Text>
+                        <ImageView fx:id="imageJoueur" fitHeight="150.0" fitWidth="150.0" layoutX="50.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
+                        <ListView fx:id="listArmes"  layoutX="25.0" layoutY="258.0" prefHeight="354.0" prefWidth="200.0" visible="false">
+                            <items>
+                            </items>
+                        </ListView>
+                    </children>
+                </Pane>
+                <Pane fx:id="zoneLancer" GridPane.columnIndex="2" GridPane.rowIndex="0"></Pane>
+                <Pane GridPane.columnIndex="1" GridPane.rowIndex="0"></Pane>
+                <Pane GridPane.columnIndex="0" GridPane.rowIndex="1"></Pane>
             </children>
-        </Pane>
-        <ScrollPane fx:id="scrollPlateau" prefHeight="720.0" prefWidth="710.0" AnchorPane.topAnchor="29.0">
-            <content>
-                <GridPane fx:id="gridPlateau" alignment="TOP_LEFT">
-                </GridPane>
-            </content>
-        </ScrollPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="400.0" percentWidth="48.0" prefWidth="20.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" percentWidth="14.0" prefWidth="10.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" percentWidth="14.0" prefWidth="10.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="400.0" percentHeight="85.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" percentHeight="15.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+        </GridPane>
     </children>
-</AnchorPane>
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="400.0" percentWidth="95.0" prefWidth="200.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" percentWidth="5.0" prefWidth="10.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="50.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" percentHeight="95.0" prefHeight="800.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+</GridPane>

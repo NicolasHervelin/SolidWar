@@ -14,9 +14,10 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane id="mainMenu" alignment="center" hgap="10" prefHeight="789.0" prefWidth="948.0" stylesheets="@style.css" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerMenu">
-    <children>
-      <Pane fx:id="pane1" prefHeight="826.0" prefWidth="948.0">
+<?import javafx.scene.layout.AnchorPane?>
+<GridPane id="mainMenu" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerMenu">
+   <children>
+      <Pane fx:id="pane1" GridPane.columnIndex="0" GridPane.rowIndex="0">
          <children>
                 <Button alignment="CENTER" layoutX="152.0" layoutY="280.0" mnemonicParsing="false" onAction="#nextPane" prefHeight="69.0" prefWidth="152.0" text="Jouer" textFill="#575252">
                <font>
@@ -43,7 +44,7 @@
             </Text>
          </children>
       </Pane>
-      <Pane fx:id="pane2" prefHeight="823.0" prefWidth="948.0" visible="false">
+      <Pane fx:id="pane2" GridPane.columnIndex="0" GridPane.rowIndex="0" visible="false">
          <children>
             <Button alignment="CENTER" layoutX="234.0" layoutY="620.0" mnemonicParsing="false" onAction="#goToJeu" prefHeight="99.0" prefWidth="216.0" text="Jouer" textFill="#575252">
                <font>
@@ -113,9 +114,11 @@
       </Pane>
     </children>
    <columnConstraints>
-      <ColumnConstraints />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" percentWidth="99.0" prefWidth="200.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" percentWidth="1.0" prefWidth="10.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints />
+      <RowConstraints minHeight="10.0" percentHeight="99.0" prefHeight="950.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" percentHeight="1.0" prefHeight="10.0" vgrow="SOMETIMES" />
    </rowConstraints>
 </GridPane>

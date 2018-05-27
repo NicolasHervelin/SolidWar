@@ -2,6 +2,17 @@
 
 }
 
+#anchorMain {
+}
+
+#zoneLancer {
+    -fx-background-color: #000000;
+}
+
+#gridContainer {
+    -fx-padding: 2 2 2 2;
+}
+
 #MenuGame {
     -fx-pref-width:70;
     -fx-background-size: 20 20;
@@ -38,9 +49,7 @@
 
 #mainMenu {
     -fx-background-image: url("images/Font.jpg");
-    -fx-background-repeat: stretch;
-    -fx-background-size: 950 750;
-    -fx-background-position: center center;
+    -fx-background-size: 1500 950;
    /* -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); */
 }
 

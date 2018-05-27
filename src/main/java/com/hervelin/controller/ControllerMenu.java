@@ -3,12 +3,16 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.Pane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,6 +21,8 @@ public class ControllerMenu implements Initializable, ControlledScreen {
     ScreensController myController;
     String test=new String("fff");
 
+    @FXML
+    private GridPane mainMenu;
     @FXML
     private ChoiceBox choixNbJoueur;
     @FXML
@@ -69,9 +75,10 @@ public class ControllerMenu implements Initializable, ControlledScreen {
         myController = screenParent;
         setUp();
     }
-    private void setUp() {
 
+    private void setUp() {
     }
+
     public void nextPane(){
         pane1.setVisible(false);
         pane2.setVisible(true);
