@@ -98,3 +98,18 @@ public boolean isCaseDejaSelectionnee() {
             System.out.println("Plus de mouvement dispo !");
         }
     }*/
+
+    public boolean isCaseEstDansLeTerrain(Case c){
+            if(0<c.getPosition().getX() && c.getPosition().getX()<=plateau.getxTaille()){
+                if(0<c.getPosition().getY() && c.getPosition().getY()<=plateau.getyTaille()){
+                    return true;
+                }else return false;
+            }else return false;
+        }
+
+        public boolean isCaseEstAPortee(Position position) {
+            double distance = plateau.calculDeDistance(turnPlayer.getPosition(), position);
+            if(distance <= turnPlayer.getPtMouvement())
+                return true;
+            return false;
+        }

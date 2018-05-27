@@ -17,6 +17,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ControllerJeu implements ControlledScreen {
     ScreensController myController;
@@ -39,6 +40,12 @@ public class ControllerJeu implements ControlledScreen {
     public int nombreCaseX = 40;
     public int nombreCaseY = 40;
     private ArrayList<Joueur> listeDesJoueurs;
+    private ArrayList<Case> openList;
+    private ArrayList<Case> closedList;
+
+
+
+
 
     @FXML
     public GridPane gridPlateau;
@@ -123,7 +130,7 @@ public class ControllerJeu implements ControlledScreen {
         affichageDuJoueur(turnPlayer);
         obtenirPointsDeMouvement();
         definitionCaseDuPlateau();
-
+        pathfinding();
     }
 
     //Définition des cases du plateau
@@ -134,23 +141,15 @@ public class ControllerJeu implements ControlledScreen {
                 Button bouton = new Button();
                 bouton.setStyle("-fx-padding:2 2 2 2;");
                 Position positionActuelle = new Position(row,col);
-                setImagePourLesBoutons(bouton, plateau.getCaseByPosition(positionActuelle).getImg());
+                Case caseActuelle =plateau.getCaseByPosition(positionActuelle);
+                setImagePourLesBoutons(bouton, caseActuelle.getImg());
                 bouton.setPrefWidth(plateau.getxTaille()/1.5);
                 bouton.setPrefHeight(plateau.getyTaille()/1.5);
                 bouton.setOnAction(event -> AnalysePosition(positionActuelle));
-                if (isCaseEstAPortee(positionActuelle)) {
-                    InnerShadow borderGlow = new InnerShadow();
-                    borderGlow.setOffsetX(0f);
-                    borderGlow.setOffsetY(0f);
-                    borderGlow.setColor(Color.BLUE);
-                    bouton.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
-                }
-                else {
-                    bouton.setEffect(null);
-                }
                 GridPane.setColumnIndex(bouton, col);
                 GridPane.setRowIndex(bouton, row);
                 gridPlateau.add(bouton, col, row);
+                caseActuelle.setBouton(bouton);
             }
         }
     }
@@ -164,7 +163,63 @@ public class ControllerJeu implements ControlledScreen {
         bouton.setGraphic(imageView);
     }
 
-    //Clicl sur une case
+// Affiche en bleu les cases où le joueur peut se déplacer
+    public void pathfinding(){
+        openList=new ArrayList<Case>();
+        closedList=new ArrayList<Case>();
+        Case positionactuelle;
+        int i;
+        Case Right;
+        Case Left;
+        Case Up;
+        Case Down;
+        openList.add(plateau.getCaseByPosition(turnPlayer.getPosition()));
+        while (openList.size()>0) {
+            positionactuelle=openList.get(openList.size()-1);
+            openList.remove(positionactuelle);
+            closedList.add(positionactuelle);
+            i=positionactuelle.getCout();
+            Right=plateau.getCaseRight(positionactuelle.getPosition());
+            Left=plateau.getCaseLeft(positionactuelle.getPosition());
+            Up=plateau.getCaseUp(positionactuelle.getPosition());
+            Down=plateau.getCaseDown(positionactuelle.getPosition());
+            AnalyseCase(Right,i);
+            AnalyseCase(Left,i);
+            AnalyseCase(Up,i);
+            AnalyseCase(Down,i);
+        }
+        turnPlayer.setListPortée(closedList);
+        for (Case temp:closedList) {
+            InnerShadow borderGlow = new InnerShadow();
+            Button bouton =temp.getBouton();
+            borderGlow.setOffsetX(0f);
+            borderGlow.setOffsetY(0f);
+            borderGlow.setColor(Color.BLUE);
+            bouton.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
+            temp.setBouton(bouton);
+        }
+    }
+
+    //Code pour le pathfinding
+    public void AnalyseCase(Case Right, int i){
+        if (Right!=null && !openList.contains(Right) && !closedList.contains(Right) &&  Right.getType() != "CaseMur") {
+            if(Right.getCout()>0){
+                Right.setCout(0);
+            }
+            Right.setCout(i+1);
+            if(Right.getCout()<=turnPlayer.getPtMouvement()) {
+                openList.add(Right);
+            }else Right.setCout(0);
+        }else if (openList.contains(Right) && (i+1)<Right.getCout()){
+            Right.setCout(i+1);
+        }else if (closedList.contains(Right) && (i+1)<Right.getCout()){
+            closedList.remove(Right);
+            Right.setCout(i+1);
+            openList.add(Right);
+        }
+    }
+
+    //Clic sur une case
     public void AnalysePosition(Position position) {
         if(isCaseJoueur(position)) {
             Joueur j=plateau.getJoueurByPosition(position);
@@ -176,7 +231,7 @@ public class ControllerJeu implements ControlledScreen {
                 listArmes.setVisible(true);
             }
             }else if(isCaseNormale(position)) {
-            if(isCaseEstAPortee(position)) {
+            if(turnPlayer.getListPortée().contains(plateau.getCaseByPosition(position))) {
                 deplacerPionJoueur(position);
             }else {
                 nomJoueur.setText(plateau.getCaseByPosition(position).getType());
@@ -188,13 +243,6 @@ public class ControllerJeu implements ControlledScreen {
             listArmes.setVisible(false);
             imageJoueur.setImage(plateau.getCaseByPosition(position).getImg());
         }
-    }
-
-    public boolean isCaseEstAPortee(Position position) {
-        double distance = plateau.calculDeDistance(turnPlayer.getPosition(), position);
-        if(distance <= turnPlayer.getPtMouvement())
-            return true;
-        return false;
     }
 
 
@@ -249,10 +297,9 @@ public class ControllerJeu implements ControlledScreen {
         Case caseDestinationNouvelle = new CaseJoueur(turnPlayer, turnPlayer.getImageJoueur());
         plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
 
-        int distanceParcourue = destination.distance(positionInitiale, destination);
-        turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - distanceParcourue);
-
-        definitionCaseDuPlateau();
+        //int distanceParcourue = destination.distance(positionInitiale, destination);
+        turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - caseDestination.getCout());definitionCaseDuPlateau();
+        pathfinding();
     }
 
     //Boutton permettant de retourner au menu

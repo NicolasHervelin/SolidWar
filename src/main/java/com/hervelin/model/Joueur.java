@@ -9,6 +9,7 @@ public class Joueur {
     private Position position;
     private ArrayList<Arme> armes = new ArrayList<>();
     private int ptMouvement;
+    private ArrayList<Case> listPortée;
     private int ptAttaque;
     private int ptSante;
     private int ptArmure;
@@ -145,5 +146,13 @@ public class Joueur {
 
     public void setPtArmure(int ptArmure) {
         this.ptArmure = ptArmure;
+    }
+
+    public ArrayList<Case> getListPortée() {
+        return listPortée;
+    }
+
+    public void setListPortée(ArrayList<Case> listPortée) {
+        this.listPortée = listPortée;
     }
 }

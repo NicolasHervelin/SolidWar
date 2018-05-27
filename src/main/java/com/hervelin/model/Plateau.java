@@ -155,6 +155,40 @@ public class Plateau {
         return null;
     }
 
+    public Case getCaseDown(Position p) {
+        for (Case temp : casesDuPlateau) {
+            if((temp.position.getX() == (p.x)+1) && (temp.position.getY() == p.y)) {
+                return temp;
+            }
+
+        }
+        return null;
+    }
+    public Case getCaseUp(Position p) {
+        for (Case temp : casesDuPlateau) {
+            if((temp.position.getX() == (p.x)-1) && (temp.position.getY() == p.y)) {
+                return temp;
+            }
+        }
+        return null;
+    }
+    public Case getCaseRight(Position p) {
+        for (Case temp : casesDuPlateau) {
+            if((temp.position.getX() == p.x) && (temp.position.getY() == (p.y)+1)) {
+                return temp;
+            }
+        }
+        return null;
+    }
+    public Case getCaseLeft(Position p) {
+        for (Case temp : casesDuPlateau) {
+            if((temp.position.getX() == p.x) && (temp.position.getY() == (p.y)-1)) {
+                return temp;
+            }
+        }
+        return null;
+    }
+
     public void remplacerCase(Case origine, Case nouvelle) {
         //int xOrigine = origine.position.getX();
         //int yOrigine = origine.position.getY();
