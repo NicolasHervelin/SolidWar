@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane id="mainMenu" alignment="center" hgap="10" prefHeight="789.0" prefWidth="948.0" stylesheets="@style.css" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerMenu">
+<GridPane id="mainMenu" alignment="center" hgap="10" stylesheets="@style.css" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hervelin.controller.ControllerMenu">
     <children>
       <Pane fx:id="pane1" prefHeight="826.0" prefWidth="948.0">
          <children>

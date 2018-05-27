@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 
 public abstract class Arme {
     private String name;
+    private String typeTir;
     private int portée;
     private int dmg_dés;
     private Image image;
@@ -11,9 +12,10 @@ public abstract class Arme {
     private int isReturnDamage;
 
 
-    public Arme(String name, int portée, int dmg_dés, int pa,int isReturnDamage,Image img) {
+    public Arme(String name,String typeTir, int portée, int dmg_dés, int pa,int isReturnDamage,Image img) {
         this.name = name;
         image=img;
+        this.typeTir=typeTir;
         this.portée = portée;
         this.isReturnDamage=isReturnDamage;
         this.dmg_dés = dmg_dés;
@@ -67,6 +69,10 @@ public abstract class Arme {
 
     public void setIsReturnDamage(int isReturnDamage) {
         this.isReturnDamage = isReturnDamage;
+    }
+
+    public String getTypeTir() {
+        return typeTir;
     }
 }
 

@@ -34,7 +34,7 @@ public class Main extends Application {
         scene.getStylesheets().add("/style.css");
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);
-        primaryStage.setFullScreen(true);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 

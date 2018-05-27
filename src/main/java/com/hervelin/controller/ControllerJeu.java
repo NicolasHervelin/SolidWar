@@ -44,9 +44,6 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> closedList;
 
 
-
-
-
     @FXML
     public GridPane gridPlateau;
     @FXML
@@ -125,6 +122,7 @@ public class ControllerJeu implements ControlledScreen {
             @Override
             public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
                 AlertBox.afficherDetailArme(newValue);
+               // shoot_pathfinding(newValue);
             }
         });
         affichageDuJoueur(turnPlayer);
@@ -164,6 +162,52 @@ public class ControllerJeu implements ControlledScreen {
     }
 
 // Affiche en bleu les cases où le joueur peut se déplacer
+
+    public void shoot_pathfinding(Arme arme){
+        switch(arme.getTypeTir()){
+            case "droit":
+                int row;
+                Position depart=turnPlayer.getPosition();
+                Case next;
+                openList=new ArrayList<Case>();
+                closedList=new ArrayList<Case>();
+                openList.add(plateau.getCaseByPosition(turnPlayer.getPosition()));
+                for (row = depart.getX(); row >= depart.getX()-arme.getPortée(); row--) {
+                    next = plateau.getCaseLeft(new Position(row - 1, depart.getY()));
+                    if (next != null && (next.getType().equals("CaseNormale") || next.getType().equals("CaseJoueur"))) {
+                        openList.add(next);
+                    }
+                }
+                for (row = depart.getX(); row <= depart.getX()-arme.getPortée(); row++) {
+                    next = plateau.getCaseLeft(new Position(row +1, depart.getY()));
+                    if (next != null && (next.getType().equals("CaseNormale") || next.getType().equals("CaseJoueur"))) {
+                        openList.add(next);
+                    }
+                }
+                for (row = depart.getY(); row >= depart.getY()-arme.getPortée(); row--) {
+                    next = plateau.getCaseLeft(new Position(depart.getX(),row-1));
+                    if (next != null && (next.getType().equals("CaseNormale") || next.getType().equals("CaseJoueur"))) {
+                        openList.add(next);
+                    }
+                }
+                for (row = depart.getY(); row >= depart.getY()-arme.getPortée(); row++) {
+                    next = plateau.getCaseLeft(new Position(depart.getX(),row+1));
+                    if (next != null && (next.getType().equals("CaseNormale") || next.getType().equals("CaseJoueur"))) {
+                        openList.add(next);
+                    }
+                }
+                for (Case temp:closedList) {
+                    InnerShadow borderGlow = new InnerShadow();
+                    Button bouton =temp.getBouton();
+                    borderGlow.setOffsetX(0f);
+                    borderGlow.setOffsetY(0f);
+                    borderGlow.setColor(Color.RED);
+                    bouton.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
+                    temp.setBouton(bouton);
+                }
+        }
+    }
+
     public void pathfinding(){
         openList=new ArrayList<Case>();
         closedList=new ArrayList<Case>();
@@ -221,27 +265,29 @@ public class ControllerJeu implements ControlledScreen {
 
     //Clic sur une case
     public void AnalysePosition(Position position) {
-        if(isCaseJoueur(position)) {
-            Joueur j=plateau.getJoueurByPosition(position);
-            if (j!=turnPlayer){
-                affichageDuJoueur(j);
-                listArmes.setVisible(false);
-            }else {
-                affichageDuJoueur(j);
-                listArmes.setVisible(true);
-            }
-            }else if(isCaseNormale(position)) {
-            if(turnPlayer.getListPortée().contains(plateau.getCaseByPosition(position))) {
-                deplacerPionJoueur(position);
-            }else {
+        switch (plateau.getCaseByPosition(position).getType()){
+            case "CaseJoueur":
+                Joueur j=plateau.getJoueurByPosition(position);
+                if (j!=turnPlayer){
+                    affichageDuJoueur(j);
+                    listArmes.setVisible(false);
+                }else {
+                    affichageDuJoueur(j);
+                    listArmes.setVisible(true);
+                }break;
+            case  "CaseNormale":
+                if(turnPlayer.getListPortée().contains(plateau.getCaseByPosition(position))) {
+                    deplacerPionJoueur(position);
+                }else {
+                    nomJoueur.setText(plateau.getCaseByPosition(position).getType());
+                    listArmes.setVisible(false);
+                    imageJoueur.setImage(plateau.getCaseByPosition(position).getImg());
+                }break;
+            default:
                 nomJoueur.setText(plateau.getCaseByPosition(position).getType());
                 listArmes.setVisible(false);
                 imageJoueur.setImage(plateau.getCaseByPosition(position).getImg());
-            }
-        }else {
-            nomJoueur.setText(plateau.getCaseByPosition(position).getType());
-            listArmes.setVisible(false);
-            imageJoueur.setImage(plateau.getCaseByPosition(position).getImg());
+                break;
         }
     }
 
@@ -298,7 +344,8 @@ public class ControllerJeu implements ControlledScreen {
         plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
 
         //int distanceParcourue = destination.distance(positionInitiale, destination);
-        turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - caseDestination.getCout());definitionCaseDuPlateau();
+        turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - caseDestination.getCout());
+        definitionCaseDuPlateau();
         pathfinding();
     }
 
