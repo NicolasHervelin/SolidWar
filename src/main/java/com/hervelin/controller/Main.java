@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -25,12 +26,15 @@ public class Main extends Application {
         mainContainer.loadScreen(Menu_ID, Menu_FILE);
         mainContainer.setScreen(Menu_ID);
 
+        int width = (int) Screen.getPrimary().getBounds().getWidth();
+        int height = (int) Screen.getPrimary().getBounds().getHeight();
+
         Group root = new Group();
         root.getChildren().addAll(mainContainer.stack);
         //primaryStage.getIcons().add(new Image("images/fond.png"));
         primaryStage.setTitle("The Game");
         //primaryStage.getIcons().add(new Image("images/fond.png"));
-        Scene scene = new Scene(root, 950, 750);
+        Scene scene = new Scene(root, width, height);
         scene.getStylesheets().add("/style.css");
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);

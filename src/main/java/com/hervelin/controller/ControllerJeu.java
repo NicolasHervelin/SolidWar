@@ -49,7 +49,7 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public ScrollPane scrollPlateau;
     @FXML
-    public AnchorPane anchorMain;
+    public GridPane anchorMain;
     @FXML
     public Button finTourJoueur1, finTourJoueur2, finTourJoueur3, finTourJoueur4;
     @FXML
@@ -133,7 +133,7 @@ public class ControllerJeu implements ControlledScreen {
 
     //Définition des cases du plateau
     public void definitionCaseDuPlateau() {
-        gridPlateau.getChildren().removeAll();
+        gridPlateau.getChildren().clear();
         for (int row = 1; row <= plateau.getxTaille(); row++) {
             for (int col = 1; col <= plateau.getyTaille(); col++) {
                 Button bouton = new Button();
