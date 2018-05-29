@@ -52,7 +52,7 @@
                             <items>
                             </items>
                         </ListView>
-                  <Button fx:id="move" layoutX="50.0" layoutY="695.0" mnemonicParsing="false" onAction="#pathfinding" prefHeight="64.0" prefWidth="64.0">
+                  <Button fx:id="move" layoutX="50.0" layoutY="695.0" mnemonicParsing="false" onAction="#move" prefHeight="64.0" prefWidth="64.0">
                   </Button>
                   <Button fx:id="fight" layoutX="136.0" layoutY="695.0" mnemonicParsing="false" onAction="#fight" prefHeight="64.0" prefWidth="64.0">
                   </Button>

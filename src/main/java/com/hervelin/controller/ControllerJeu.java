@@ -30,6 +30,7 @@ public class ControllerJeu implements ControlledScreen {
     private Joueur joueur4;
     private boolean isCaseDejaSelectionnee = false;
     private Case caseDejaSelectionnee;
+    private int mode;
 
      //zoom factor
 
@@ -43,7 +44,10 @@ public class ControllerJeu implements ControlledScreen {
     public int nombreCaseY = 40;
     private ArrayList<Joueur> listeDesJoueurs;
     private ArrayList<Case> openList;
-    private ArrayList<Case> closedList;
+    private ArrayList<Case> ListPortee;
+    private ArrayList<Case> shoot;
+
+
 
 
     @FXML
@@ -124,6 +128,7 @@ public class ControllerJeu implements ControlledScreen {
             @Override
             public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
                 AlertBox.afficherDetailArme(newValue);
+                clean_pathfinding(shoot);
                 shoot_pathfinding(newValue);
             }
         });
@@ -147,8 +152,20 @@ public class ControllerJeu implements ControlledScreen {
 
     }
 
-    public void fight(){
+    public void move(){
+        if(mode==2){
+            clean_pathfinding(shoot);
+        }
+        mode=1;
+        pathfinding();
+    }
 
+    public void fight(){
+        if(mode==1){
+            clean_pathfinding(ListPortee);
+        }
+        mode=2;
+        shoot_pathfinding(turnPlayer.getArmes().get(0));
     }
 
     //Définition des cases du plateau
@@ -181,7 +198,20 @@ public class ControllerJeu implements ControlledScreen {
         bouton.setGraphic(imageView);
     }
 
+
     // Affiche en rouge les cases où le joueur peut tirer
+    public void clean_pathfinding(ArrayList<Case> l){
+        for (Case temp:l) {
+            InnerShadow borderGlow = new InnerShadow();
+            Button bouton =temp.getBouton();
+            borderGlow.setOffsetX(0f);
+            borderGlow.setOffsetY(0f);
+            borderGlow.setColor(null);
+            bouton.setEffect(null); //Apply the borderGlow effect to the JavaFX node
+            temp.setBouton(bouton);
+        }
+        l.clear();
+    }
 
     public void shoot_pathfinding(Arme arme){
         switch(arme.getTypeTir()){
@@ -190,13 +220,13 @@ public class ControllerJeu implements ControlledScreen {
                 Position depart=turnPlayer.getPosition();
                 Case next;
                 openList=new ArrayList<Case>();
-                closedList=new ArrayList<Case>();
+                shoot=new ArrayList<Case>();
                 Case positionactuelle;
                 openList.add(plateau.getCaseByPosition(depart));
                 while (openList.size()>0) {
                     positionactuelle = openList.get(openList.size() - 1);
                     openList.remove(positionactuelle);
-                    closedList.add(positionactuelle);
+                    shoot.add(positionactuelle);
                     next=plateau.getCaseLeft(positionactuelle.getPosition());
                     if (next != null && next.getPosition().getY()>=depart.getY()-arme.getPortée() && (next.getType()!="CaseMur")) {
                         openList.add(next);
@@ -206,7 +236,7 @@ public class ControllerJeu implements ControlledScreen {
                 while (openList.size()>0) {
                     positionactuelle = openList.get(openList.size() - 1);
                     openList.remove(positionactuelle);
-                    closedList.add(positionactuelle);
+                    shoot.add(positionactuelle);
                     next=plateau.getCaseRight(positionactuelle.getPosition());
                     if (next != null && next.getPosition().getY()<=depart.getY()+arme.getPortée() && (next.getType()!="CaseMur")) {
                         openList.add(next);
@@ -216,7 +246,7 @@ public class ControllerJeu implements ControlledScreen {
                 while (openList.size()>0) {
                     positionactuelle = openList.get(openList.size() - 1);
                     openList.remove(positionactuelle);
-                    closedList.add(positionactuelle);
+                    shoot.add(positionactuelle);
                     next=plateau.getCaseUp(positionactuelle.getPosition());
                     if (next != null && next.getPosition().getX()>=depart.getX()-arme.getPortée() && (next.getType()!="CaseMur")) {
                         openList.add(next);
@@ -226,13 +256,13 @@ public class ControllerJeu implements ControlledScreen {
                 while (openList.size()>0) {
                     positionactuelle = openList.get(openList.size() - 1);
                     openList.remove(positionactuelle);
-                    closedList.add(positionactuelle);
+                    shoot.add(positionactuelle);
                     next=plateau.getCaseDown(positionactuelle.getPosition());
-                    if (next != null && next.getPosition().getX()>=depart.getX()-arme.getPortée() && (next.getType()!="CaseMur")) {
+                    if (next != null && next.getPosition().getX()<=depart.getX()+arme.getPortée() && (next.getType()!="CaseMur")) {
                         openList.add(next);
                     }
                 }
-                coloration(Color.RED);
+                coloration(Color.RED,shoot);
                 break;
         }
     }
@@ -241,7 +271,7 @@ public class ControllerJeu implements ControlledScreen {
 
     public void pathfinding(){
         openList=new ArrayList<Case>();
-        closedList=new ArrayList<Case>();
+        ListPortee=new ArrayList<Case>();
         Case positionactuelle;
         int i;
         Case Right;
@@ -252,7 +282,7 @@ public class ControllerJeu implements ControlledScreen {
         while (openList.size()>0) {
             positionactuelle=openList.get(openList.size()-1);
             openList.remove(positionactuelle);
-            closedList.add(positionactuelle);
+            ListPortee.add(positionactuelle);
             i=positionactuelle.getCout();
             Right=plateau.getCaseRight(positionactuelle.getPosition());
             Left=plateau.getCaseLeft(positionactuelle.getPosition());
@@ -263,11 +293,10 @@ public class ControllerJeu implements ControlledScreen {
             AnalyseCase(Up,i);
             AnalyseCase(Down,i);
         }
-        turnPlayer.setListPortée(closedList);
-        coloration(Color.BLUE);
+        coloration(Color.BLUE,ListPortee);
     }
 
-    public void coloration(Color color){
+    public void coloration(Color color, ArrayList<Case> closedList){
         for (Case temp:closedList) {
             InnerShadow borderGlow = new InnerShadow();
             Button bouton =temp.getBouton();
@@ -281,7 +310,7 @@ public class ControllerJeu implements ControlledScreen {
 
     //Code pour le pathfinding
     public void AnalyseCase(Case Right, int i){
-        if (Right!=null && !openList.contains(Right) && !closedList.contains(Right) &&  Right.getType() != "CaseMur") {
+        if (Right!=null && !openList.contains(Right) && !ListPortee.contains(Right) &&  Right.getType() != "CaseMur") {
             if(Right.getCout()>0){
                 Right.setCout(0);
             }
@@ -291,11 +320,11 @@ public class ControllerJeu implements ControlledScreen {
             }else Right.setCout(0);
         }else if (openList.contains(Right) && (i+1)<Right.getCout()){
             Right.setCout(i+1);
-        }else if (closedList.contains(Right) && (i+1)<Right.getCout()){
+        }/*else if (closedList.contains(Right) && (i+1)<Right.getCout()){
             closedList.remove(Right);
             Right.setCout(i+1);
             openList.add(Right);
-        }
+        }*/
     }
 
     //Clic sur une case
@@ -307,7 +336,7 @@ public class ControllerJeu implements ControlledScreen {
                     affichageDuJoueur2(j);
                 }break;
             case  "CaseNormale":
-                if(turnPlayer.getListPortée().contains(plateau.getCaseByPosition(position))) {
+                if(ListPortee.contains(plateau.getCaseByPosition(position))) {
                     deplacerPionJoueur(position);
                 }else {
                     nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
@@ -377,6 +406,7 @@ public class ControllerJeu implements ControlledScreen {
         //int distanceParcourue = destination.distance(positionInitiale, destination);
         turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - caseDestination.getCout());
         definitionCaseDuPlateau();
+        clean_pathfinding(ListPortee);
         pathfinding();
     }
 
