@@ -5,10 +5,6 @@
 #anchorMain {
 }
 
-#zoneLancer {
-    -fx-background-color: #000000;
-}
-
 #gridContainer {
     -fx-padding: 2 2 2 2;
 }

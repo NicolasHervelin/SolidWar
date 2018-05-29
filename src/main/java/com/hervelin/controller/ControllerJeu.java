@@ -10,7 +10,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -51,13 +53,13 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public GridPane anchorMain;
     @FXML
-    public Button finTourJoueur1, finTourJoueur2, finTourJoueur3, finTourJoueur4;
+    public Button fight,move;
     @FXML
     public ListView<Arme> listArmes;
     @FXML
-    public Text nomJoueur;
+    public Text nomJoueur,nomJoueur2;
     @FXML
-    public ImageView imageJoueur;
+    public ImageView imageJoueur, imageJoueur2;
     @FXML
     public Pane pane = new Pane();
 
@@ -122,12 +124,31 @@ public class ControllerJeu implements ControlledScreen {
             @Override
             public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
                 AlertBox.afficherDetailArme(newValue);
+                shoot_pathfinding(newValue);
             }
         });
         affichageDuJoueur(turnPlayer);
         obtenirPointsDeMouvement();
         definitionCaseDuPlateau();
-        pathfinding();
+
+        Glow glow = new Glow(0.5);
+        Reflection reflection=new Reflection();
+        reflection.setInput(glow);
+        Image img=new Image("images/target.png");
+        ImageView imageView = new ImageView(img);
+        imageView.setPreserveRatio(true);
+        fight.setGraphic(imageView);
+        fight.setEffect(reflection);
+        Image img2=new Image("images/move.png");
+        ImageView imageView2 = new ImageView(img2);
+        imageView2.setPreserveRatio(true);
+        move.setGraphic(imageView2);
+        move.setEffect(reflection);
+
+    }
+
+    public void fight(){
+
     }
 
     //Définition des cases du plateau
@@ -160,7 +181,7 @@ public class ControllerJeu implements ControlledScreen {
         bouton.setGraphic(imageView);
     }
 
-
+    // Affiche en rouge les cases où le joueur peut tirer
 
     public void shoot_pathfinding(Arme arme){
         switch(arme.getTypeTir()){
@@ -212,6 +233,7 @@ public class ControllerJeu implements ControlledScreen {
                     }
                 }
                 coloration(Color.RED);
+                break;
         }
     }
 
@@ -281,26 +303,19 @@ public class ControllerJeu implements ControlledScreen {
         switch (plateau.getCaseByPosition(position).getType()){
             case "CaseJoueur":
                 Joueur j=plateau.getJoueurByPosition(position);
-                if (j!=turnPlayer){
-                    affichageDuJoueur(j);
-                    listArmes.setVisible(false);
-                }else {
-                    affichageDuJoueur(j);
-                    listArmes.setVisible(true);
+                if (j!=turnPlayer) {
+                    affichageDuJoueur2(j);
                 }break;
             case  "CaseNormale":
                 if(turnPlayer.getListPortée().contains(plateau.getCaseByPosition(position))) {
                     deplacerPionJoueur(position);
                 }else {
-                    nomJoueur.setText(plateau.getCaseByPosition(position).getType());
-                    listArmes.setVisible(false);
-                    imageJoueur.setImage(plateau.getCaseByPosition(position).getImg());
-                    shoot_pathfinding(turnPlayer.getArmes().get(1));
+                    nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
+                    imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
                 }break;
             default:
-                nomJoueur.setText(plateau.getCaseByPosition(position).getType());
-                listArmes.setVisible(false);
-                imageJoueur.setImage(plateau.getCaseByPosition(position).getImg());
+                nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
+                imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
                 break;
         }
     }
@@ -323,10 +338,12 @@ public class ControllerJeu implements ControlledScreen {
     private void affichageDuJoueur(Joueur joueur) {
         nomJoueur.setText(joueur.getName());
         imageJoueur.setImage(joueur.getImageJoueur());
-        listArmes.setVisible(true);
-
-
     }
+    private void affichageDuJoueur2(Joueur joueur) {
+        nomJoueur2.setText(joueur.getName());
+        imageJoueur2.setImage(joueur.getImageJoueur());
+    }
+
 
     private void obtenirPointsDeMouvement() {
         String messageDeLancer = "Résultats obtenus : ";
