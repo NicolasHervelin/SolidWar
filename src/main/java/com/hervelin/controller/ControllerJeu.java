@@ -129,6 +129,7 @@ public class ControllerJeu implements ControlledScreen {
             public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
                 AlertBox.afficherDetailArme(newValue);
                 clean_pathfinding(shoot);
+                clean_pathfinding(ListPortee);
                 shoot_pathfinding(newValue);
             }
         });
@@ -219,6 +220,7 @@ public class ControllerJeu implements ControlledScreen {
                 int row;
                 Position depart=turnPlayer.getPosition();
                 Case next;
+                int i=0;
                 openList=new ArrayList<Case>();
                 shoot=new ArrayList<Case>();
                 Case positionactuelle;
@@ -228,37 +230,52 @@ public class ControllerJeu implements ControlledScreen {
                     openList.remove(positionactuelle);
                     shoot.add(positionactuelle);
                     next=plateau.getCaseLeft(positionactuelle.getPosition());
-                    if (next != null && next.getPosition().getY()>=depart.getY()-arme.getPortée() && (next.getType()!="CaseMur")) {
+                    if (next != null && next.getPosition().getY()>=depart.getY()-arme.getPortée() && i==0) {
+                        if (next.getType()=="CaseMur"){
+                            i=1;
+                        }
                         openList.add(next);
                     }
                 }
+                i=0;
                 openList.add(plateau.getCaseByPosition(depart));
                 while (openList.size()>0) {
                     positionactuelle = openList.get(openList.size() - 1);
                     openList.remove(positionactuelle);
                     shoot.add(positionactuelle);
                     next=plateau.getCaseRight(positionactuelle.getPosition());
-                    if (next != null && next.getPosition().getY()<=depart.getY()+arme.getPortée() && (next.getType()!="CaseMur")) {
+                    if (next != null && next.getPosition().getY()<=depart.getY()+arme.getPortée() && i==0) {
+                        if (next.getType()=="CaseMur"){
+                            i=1;
+                        }
                         openList.add(next);
                     }
                 }
+                i=0;
                 openList.add(plateau.getCaseByPosition(depart));
                 while (openList.size()>0) {
                     positionactuelle = openList.get(openList.size() - 1);
                     openList.remove(positionactuelle);
                     shoot.add(positionactuelle);
                     next=plateau.getCaseUp(positionactuelle.getPosition());
-                    if (next != null && next.getPosition().getX()>=depart.getX()-arme.getPortée() && (next.getType()!="CaseMur")) {
+                    if (next != null && next.getPosition().getX()>=depart.getX()-arme.getPortée() && i==0) {
+                        if (next.getType()=="CaseMur"){
+                            i=1;
+                        }
                         openList.add(next);
                     }
                 }
+                i=0;
                 openList.add(plateau.getCaseByPosition(depart));
                 while (openList.size()>0) {
                     positionactuelle = openList.get(openList.size() - 1);
                     openList.remove(positionactuelle);
                     shoot.add(positionactuelle);
                     next=plateau.getCaseDown(positionactuelle.getPosition());
-                    if (next != null && next.getPosition().getX()<=depart.getX()+arme.getPortée() && (next.getType()!="CaseMur")) {
+                    if (next != null && next.getPosition().getX()<=depart.getX()+arme.getPortée() && i==0) {
+                        if (next.getType()=="CaseMur"){
+                            i=1;
+                        }
                         openList.add(next);
                     }
                 }
@@ -329,19 +346,53 @@ public class ControllerJeu implements ControlledScreen {
 
     //Clic sur une case
     public void AnalysePosition(Position position) {
-        switch (plateau.getCaseByPosition(position).getType()){
-            case "CaseJoueur":
-                Joueur j=plateau.getJoueurByPosition(position);
-                if (j!=turnPlayer) {
-                    affichageDuJoueur2(j);
-                }break;
-            case  "CaseNormale":
-                if(ListPortee.contains(plateau.getCaseByPosition(position))) {
-                    deplacerPionJoueur(position);
-                }else {
-                    nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
-                    imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
-                }break;
+        switch (mode) {
+            case 1:
+                nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
+                imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
+                switch (plateau.getCaseByPosition(position).getType()) {
+                    case "CaseJoueur":
+                        Joueur j = plateau.getJoueurByPosition(position);
+                        if (j != turnPlayer) {
+                            affichageDuJoueur2(j);
+                        }
+                        break;
+                    case "CaseNormale":
+                        if (ListPortee.contains(plateau.getCaseByPosition(position))) {
+                            deplacerPionJoueur(position);
+                        }
+                        break;
+                    case "CaseArme":
+                        if (ListPortee.contains(plateau.getCaseByPosition(position))) {
+                            deplacerPionJoueur(position);
+                            //ouvrirCoffre();
+                        }
+                        break;
+                    case "CasePopo":
+                        if (ListPortee.contains(plateau.getCaseByPosition(position))) {
+                            deplacerPionJoueur(position);
+                           // prendrePotion();
+                        }
+                        break;
+                }
+                break;
+            case 2:
+                nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
+                imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
+                switch (plateau.getCaseByPosition(position).getType()) {
+                    case "CaseJoueur":
+                        Joueur j = plateau.getJoueurByPosition(position);
+                        if(shoot.contains(plateau.getCaseByPosition(position))){
+                            if (j != turnPlayer) {
+                          //      Tirer(j);
+                            }
+                        }break;
+                    case "CaseMur":
+                        if(shoot.contains(plateau.getCaseByPosition(position))){
+                         //   TirerMur(position);
+                        }break;
+                }
+                break;
             default:
                 nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
                 imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
