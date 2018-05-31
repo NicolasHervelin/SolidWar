@@ -72,3 +72,12 @@
     -fx-background-size: 100%;
     -fx-background-position: center center;
 }
+
+.SanteProgressBar  {
+    -fx-accent: #28d628;
+    -fx-pref-width: 200;
+}
+.ArmureProgressBar {
+    -fx-accent: #20aeea;
+    -fx-pref-width: 200;
+}

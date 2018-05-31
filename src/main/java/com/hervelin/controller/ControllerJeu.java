@@ -8,6 +8,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
@@ -66,6 +68,12 @@ public class ControllerJeu implements ControlledScreen {
     public ImageView imageJoueur, imageJoueur2;
     @FXML
     public Pane pane = new Pane();
+    @FXML
+    public VBox vBoxLancers;
+    @FXML
+    public HBox hBoxLancers;
+    @FXML
+    public VBox vBoxSanteArmure;
 
     @Override
     public void setScreenParent(ScreensController screenParent) {
@@ -135,6 +143,7 @@ public class ControllerJeu implements ControlledScreen {
         });
         affichageDuJoueur(turnPlayer);
         obtenirPointsDeMouvement();
+        mettreAjourSanteArmure();
         definitionCaseDuPlateau(null);
 
         Glow glow = new Glow(0.5);
@@ -429,15 +438,36 @@ public class ControllerJeu implements ControlledScreen {
 
 
     private void obtenirPointsDeMouvement() {
-        String messageDeLancer = "Résultats obtenus : ";
         int lancer1 = plateau.lancerUnDe();
         int lancer2 = plateau.lancerUnDe();
         ArrayList<Integer> listeDesLancers = new ArrayList<>();
         listeDesLancers.add(lancer1);
         listeDesLancers.add(lancer2);
 
-        AlertBox.afficherLancer(listeDesLancers, messageDeLancer);
+        mettreAjourLeLancer(listeDesLancers);
         turnPlayer.setPtMouvement(lancer1+lancer2);
+    }
+
+    private void mettreAjourLeLancer(ArrayList<Integer> listeDesLancers) {
+        /*String messageDeLancer = "Dernier lancer";
+        Label l = new Label(messageDeLancer);
+        l.setTextFill(Color.GRAY);
+        l.setStyle("-fx-font: 22 'Autumn Regular';" +
+                "-fx-text-alignment: center;");*/
+
+        vBoxLancers.getChildren().clear();
+        //vBoxLancers.getChildren().add(l);
+        hBoxLancers.getChildren().clear();
+        for(int lancer : listeDesLancers) {
+            hBoxLancers.getChildren().add(new ImageView(new Image("images/ResultatLancer" + lancer + ".png", 72, 72, true, true)));
+        }
+
+        // fill background with java
+        BackgroundFill fill = new BackgroundFill(Color.TRANSPARENT, new CornerRadii(1), new Insets(0, 0, 0, 0));
+        vBoxLancers.setBackground(new Background(fill));
+        hBoxLancers.setBackground(new Background(fill));
+        vBoxLancers.getChildren().add(hBoxLancers);
+        vBoxLancers.setBorder(new Border(new BorderStroke(Color.GRAY, null, new CornerRadii(1), new BorderWidths(2))));
     }
 
     private void deplacerPionJoueur(Position destination) {
@@ -462,6 +492,19 @@ public class ControllerJeu implements ControlledScreen {
         definitionCaseDuPlateau(turnPlayer.getPosition());
         clean_pathfinding(ListPortee);
         pathfinding();
+    }
+
+    private void mettreAjourSanteArmure() {
+        vBoxSanteArmure.getChildren().clear();
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", turnPlayer.getPtArmure()/100));
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("SanteProgressBar", turnPlayer.getPtSante()/100));
+    }
+
+    class ColoredProgressBar extends ProgressBar {
+        ColoredProgressBar(String styleClass, double progress) {
+            super(progress);
+            getStyleClass().add(styleClass);
+        }
     }
 
     //Boutton permettant de retourner au menu
