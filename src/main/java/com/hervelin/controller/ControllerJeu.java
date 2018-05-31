@@ -135,7 +135,7 @@ public class ControllerJeu implements ControlledScreen {
         });
         affichageDuJoueur(turnPlayer);
         obtenirPointsDeMouvement();
-        definitionCaseDuPlateau();
+        definitionCaseDuPlateau(null);
 
         Glow glow = new Glow(0.5);
         Reflection reflection=new Reflection();
@@ -170,7 +170,7 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     //Définition des cases du plateau
-    public void definitionCaseDuPlateau() {
+    public void definitionCaseDuPlateau(Position positionAConserver) {
         gridPlateau.getChildren().clear();
         for (int row = 1; row <= plateau.getxTaille(); row++) {
             for (int col = 1; col <= plateau.getyTaille(); col++) {
@@ -186,6 +186,9 @@ public class ControllerJeu implements ControlledScreen {
                 GridPane.setRowIndex(bouton, row);
                 gridPlateau.add(bouton, col, row);
                 caseActuelle.setBouton(bouton);
+                if(positionAConserver != null && positionAConserver.getX() == row && positionAConserver.getY() == col) {
+                    bouton.requestFocus();
+                }
             }
         }
     }
@@ -456,7 +459,7 @@ public class ControllerJeu implements ControlledScreen {
 
         //int distanceParcourue = destination.distance(positionInitiale, destination);
         turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - caseDestination.getCout());
-        definitionCaseDuPlateau();
+        definitionCaseDuPlateau(turnPlayer.getPosition());
         clean_pathfinding(ListPortee);
         pathfinding();
     }
