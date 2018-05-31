@@ -52,14 +52,14 @@
                             </font>
                         </Text>
                         <ImageView fx:id="imageJoueur" fitHeight="150.0" fitWidth="150.0" layoutX="50.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
-                        <VBox fx:id="vBoxSanteArmure" layoutX="34.0" layoutY="245.0" spacing="10.0"></VBox>
-                        <ListView fx:id="listArmes" layoutX="34.0" layoutY="318.0" prefHeight="354.0" prefWidth="200.0">
+                        <VBox fx:id="vBoxSanteArmure" layoutX="29.0" layoutY="245.0" spacing="10.0"></VBox>
+                        <ListView fx:id="listArmes" layoutX="29.0" layoutY="318.0" prefHeight="354.0" prefWidth="200.0">
                             <items>
                             </items>
                         </ListView>
-                        <Button fx:id="move" layoutX="50.0" layoutY="695.0" mnemonicParsing="false" onAction="#move" prefHeight="64.0" prefWidth="64.0">
+                        <Button fx:id="move" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#move" prefHeight="64.0" prefWidth="64.0">
                         </Button>
-                        <Button fx:id="fight" layoutX="136.0" layoutY="695.0" mnemonicParsing="false" onAction="#fight" prefHeight="64.0" prefWidth="64.0">
+                        <Button fx:id="fight" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#fight" prefHeight="64.0" prefWidth="64.0">
                         </Button>
                     </children>
                 </Pane>
@@ -71,8 +71,8 @@
                                 <Font name="Autumn Regular" size="28.0" />
                             </font>
                         </Text>
-                        <VBox fx:id="vBoxLancers" alignment="TOP_CENTER" layoutY="695.0" spacing="8.0">
-                            <HBox fx:id="hBoxLancers" alignment="TOP_CENTER" spacing="10.0">
+                        <VBox fx:id="vBoxLancers" layoutY="695.0" spacing="5.0">
+                            <HBox fx:id="hBoxLancers" layoutX="65.0" spacing="5.0">
                                 <effect>
                            <Reflection topOffset="1.8" />
                                 </effect>
