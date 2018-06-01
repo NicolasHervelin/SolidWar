@@ -7,7 +7,7 @@ public class CaseArmure extends Case {
     private int volume;
 
     public CaseArmure(Position p, int volume) {
-        super(p, "CaseArmure",new Image("images/TextureBouclierBleuMini-min.png"));
+        super(p, "CaseArmure",new Image("images/TextureBouclier40-min.png"));
         this.volume = volume;
     }
 

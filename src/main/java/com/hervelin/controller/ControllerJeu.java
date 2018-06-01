@@ -25,7 +25,6 @@ import java.util.List;
 
 public class ControllerJeu implements ControlledScreen {
     ScreensController myController;
-    public Joueur turnPlayer;
     private Joueur joueur1;
     private Joueur joueur2;
     private Joueur joueur3;
@@ -48,6 +47,7 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> openList;
     private ArrayList<Case> ListPortee = new ArrayList<Case>();
     private ArrayList<Case> shoot = new ArrayList<Case>();
+    private ArrayList<Case> casesDansExplosion = new ArrayList<Case>();
 
 
 
@@ -117,8 +117,7 @@ public class ControllerJeu implements ControlledScreen {
         }
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
-        turnPlayer = listeDesJoueurs.get(0);
-        turnPlayer.ajouterArme(new Bazooka());
+        plateau.turnPlayer.ajouterArme(new Bazooka());
 
 
         //Zoom sur le ScrollPane
@@ -132,7 +131,7 @@ public class ControllerJeu implements ControlledScreen {
             gridPlateau.setScaleY(gridPlateau.getScaleY()*event.getZoomFactor());
             event.consume();
         });
-        listArmes.getItems().setAll(turnPlayer.getArmes());
+        listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
         listArmes.setCellFactory(new ArmeCellFactory());
         listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
             @Override
@@ -152,8 +151,9 @@ public class ControllerJeu implements ControlledScreen {
                 shoot_pathfinding(newValue);
             }
         });
-        affichageDuJoueur(turnPlayer);
+        affichageDuJoueur(plateau.turnPlayer);
         obtenirPointsDeMouvement();
+        obtenirPointsAttaque();
         mettreAjourSanteArmure();
         definitionCaseDuPlateau(null);
 
@@ -188,13 +188,25 @@ public class ControllerJeu implements ControlledScreen {
         imageJoueur2.setImage(mur.getImg());
         nomJoueur2.setText("Mur");
     }
+
     public void afficherCaseNormale(Case cn){
         imageJoueur2.setImage(cn.getImg());
         nomJoueur2.setText("Case");
     }
+
     public void afficherPopo(Case Popo){
-        imageJoueur2.setImage(Popo.getImg());
+        imageJoueur2.setImage(Popo.getImage128());
         nomJoueur2.setText("Potion");
+    }
+
+    public void afficherCoffre(Case coffre){
+        imageJoueur2.setImage(coffre.getImage128());
+        nomJoueur2.setText("Coffre");
+    }
+
+    public void afficherArmure(Case armure){
+        imageJoueur2.setImage(armure.getImage128());
+        nomJoueur2.setText("Armure");
     }
 
     public void move(){
@@ -268,7 +280,7 @@ public class ControllerJeu implements ControlledScreen {
         switch(arme.getTypeTir()){
             case "droit":
                 int row;
-                Position depart=turnPlayer.getPosition();
+                Position depart=plateau.turnPlayer.getPosition();
                 Case next;
                 int i=0;
                 openList=new ArrayList<Case>();
@@ -345,7 +357,7 @@ public class ControllerJeu implements ControlledScreen {
         Case Left;
         Case Up;
         Case Down;
-        openList.add(plateau.getCaseByPosition(turnPlayer.getPosition()));
+        openList.add(plateau.getCaseByPosition(plateau.turnPlayer.getPosition()));
         while (openList.size()>0) {
             positionactuelle=openList.get(openList.size()-1);
             openList.remove(positionactuelle);
@@ -382,7 +394,7 @@ public class ControllerJeu implements ControlledScreen {
                 nextCase.setCout(0);
             }
             nextCase.setCout(i+1);
-            if(nextCase.getCout()<=turnPlayer.getPtMouvement()) {
+            if(nextCase.getCout()<=plateau.turnPlayer.getPtMouvement()) {
                 openList.add(nextCase);
             }else nextCase.setCout(0);
         }else if (openList.contains(nextCase) && (i+1)<nextCase.getCout()){
@@ -397,12 +409,13 @@ public class ControllerJeu implements ControlledScreen {
     //Clic sur une case
     public void AnalysePosition(Position position) {
         Case analyse=plateau.getCaseByPosition(position);
+        //A checker
         switch (mode) {
             case 1:
                 switch (analyse.getType()) {
                     case "CaseJoueur":
                         Joueur j = plateau.getJoueurByPosition(position);
-                        if (j != turnPlayer) {
+                        if (j != plateau.turnPlayer) {
                             affichageDuJoueur2(j);
                         }
                         break;
@@ -418,6 +431,8 @@ public class ControllerJeu implements ControlledScreen {
                             deplacerPionJoueur(position);
                             //ouvrirCoffre();
                         }
+                        else
+                            afficherCoffre(analyse);
                         break;
                     case "CasePopo":
                         if (ListPortee.contains(analyse)) {
@@ -427,6 +442,14 @@ public class ControllerJeu implements ControlledScreen {
                             afficherPopo(analyse);
                         }
                         break;
+                    case "CaseArmure":
+                        if (ListPortee.contains(analyse)) {
+                            deplacerPionJoueur(position);
+                            // prendreArmure();
+                        }else{
+                            afficherArmure(analyse);
+                        }
+                        break;
                 }
                 break;
             case 2:
@@ -434,7 +457,7 @@ public class ControllerJeu implements ControlledScreen {
                     case "CaseJoueur":
                         Joueur j = plateau.getJoueurByPosition(position);
                         if(shoot.contains(analyse)){
-                            if (j != turnPlayer) {
+                            if (j != plateau.turnPlayer) {
                           //      Tirer(j);
                             }
                         }break;
@@ -444,11 +467,44 @@ public class ControllerJeu implements ControlledScreen {
                         }else{
                             afficherMur(analyse);
                         }break;
+                    case "CaseNormale":
+                        Arme armeSelectionnee = listArmes.getSelectionModel().getSelectedItem();
+                        if(armeSelectionnee.getName().equals("bazooka") || armeSelectionnee.getName().equals("grenade")) {
+                            ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
+                            int dommageTotal = 0;
+                            for(Integer lancer : listeDesLancers) {
+                                dommageTotal += lancer;
+                            }
+                            plateau.appliquerDegatsExplosion(analyse.getPosition(), armeSelectionnee, dommageTotal, listeDesLancers);
+                        }
                 }
+                break;
+        }
+        switch (analyse.getType()) {
+            case "CaseJoueur":
+                Joueur j = plateau.getJoueurByPosition(position);
+                if (j != plateau.turnPlayer) {
+                    affichageDuJoueur2(j);
+                }
+                break;
+            case "CaseNormale":
+                afficherCaseNormale(analyse);
+                break;
+            case "CaseArme":
+                afficherCoffre(analyse);
+                break;
+            case "CasePopo":
+                afficherPopo(analyse);
+                break;
+            case "CaseArmure":
+                afficherArmure(analyse);
                 break;
         }
     }
 
+    private void explosion(Position position) {
+
+    }
 
     private void affichageDuJoueur(Joueur joueur) {
         nomJoueur.setText(joueur.getName());
@@ -459,7 +515,6 @@ public class ControllerJeu implements ControlledScreen {
         imageJoueur2.setImage(joueur.getImageJoueur());
     }
 
-
     private void obtenirPointsDeMouvement() {
         int lancer1 = plateau.lancerUnDe();
         int lancer2 = plateau.lancerUnDe();
@@ -468,7 +523,21 @@ public class ControllerJeu implements ControlledScreen {
         listeDesLancers.add(lancer2);
 
         mettreAjourLeLancer(listeDesLancers);
-        turnPlayer.setPtMouvement(lancer1+lancer2);
+        plateau.turnPlayer.setPtMouvement(lancer1+lancer2);
+    }
+
+    private void obtenirPointsAttaque() {
+        int lancer = plateau.lancerUnDe();
+        plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque() + lancer);
+    }
+
+    private ArrayList<Integer> obtenirPointsDommage(int nombreDeLancers) {
+        ArrayList<Integer> listeDesLancers = new ArrayList<>();
+        for(int i = 0; i < nombreDeLancers; i++) {
+            listeDesLancers.add(plateau.lancerUnDe());
+        }
+        mettreAjourLeLancer(listeDesLancers);
+        return listeDesLancers;
     }
 
     private void mettreAjourLeLancer(ArrayList<Integer> listeDesLancers) {
@@ -490,33 +559,33 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void deplacerPionJoueur(Position destination) {
-        Position positionInitiale = turnPlayer.getPosition();
+        Position positionInitiale = plateau.turnPlayer.getPosition();
         //PathTransition pathTransition = new PathTransition();
 
         //Transition déplacement pion du joueur
 
         //remplace par case normale
-        Case caseOrigine = plateau.getCaseByPosition(turnPlayer.getPosition());
-        Case caseOrigineNouvelle = new CaseNormale(turnPlayer.getPosition());
+        Case caseOrigine = plateau.getCaseByPosition(plateau.turnPlayer.getPosition());
+        Case caseOrigineNouvelle = new CaseNormale(plateau.turnPlayer.getPosition());
         plateau.remplacerCase(caseOrigine, caseOrigineNouvelle);
 
         //remplace par case joueur
         Case caseDestination = plateau.getCaseByPosition(destination);
-        turnPlayer.setPosition(destination);
-        Case caseDestinationNouvelle = new CaseJoueur(turnPlayer, turnPlayer.getImageJoueur());
+        plateau.turnPlayer.setPosition(destination);
+        Case caseDestinationNouvelle = new CaseJoueur(plateau.turnPlayer, plateau.turnPlayer.getImageJoueur());
         plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
 
         //int distanceParcourue = destination.distance(positionInitiale, destination);
-        turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - caseDestination.getCout());
-        definitionCaseDuPlateau(turnPlayer.getPosition());
+        plateau.turnPlayer.setPtMouvement(plateau.turnPlayer.getPtMouvement() - caseDestination.getCout());
+        definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
         clean_pathfinding(ListPortee);
         pathfinding();
     }
 
     private void mettreAjourSanteArmure() {
         vBoxSanteArmure.getChildren().clear();
-        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", 1));
-        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("SanteProgressBar", turnPlayer.getPtSante()/100));
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", (double)plateau.turnPlayer.getPtArmure() /100));
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("SanteProgressBar", (double)plateau.turnPlayer.getPtSante() /100));
     }
 
     class ColoredProgressBar extends ProgressBar {
@@ -527,17 +596,17 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void update() {
-        affichageDuJoueur(turnPlayer);
+        affichageDuJoueur(plateau.turnPlayer);
         mettreAjourSanteArmure();
         obtenirPointsDeMouvement();
+        obtenirPointsAttaque();
     }
 
     //FIN DU TOUR ET CHANGEMENT DE JOUEUR ACTIF
     public void finDuTour() {
-        turnPlayer.setPtMouvement(0);
-        turnPlayer = plateau.joueurSuivant(turnPlayer, myController.getData("nbjoueurs").substring(0,1));
-        System.out.println(turnPlayer.getName());
-        //gridPlateau.getChildren().get(plateau.getIndexOfCase(plateau.getCaseByPosition(turnPlayer.getPosition()))).requestFocus();
+        plateau.turnPlayer.setPtMouvement(0);
+        plateau.joueurSuivant(myController.getData("nbjoueurs").substring(0,1));
+        //gridPlateau.getChildren().get(plateau.getIndexOfCase(plateau.getCaseByPosition(plateau.turnPlayer.getPosition()))).requestFocus();
         clean_pathfinding(ListPortee);
         clean_pathfinding(shoot);
         update();

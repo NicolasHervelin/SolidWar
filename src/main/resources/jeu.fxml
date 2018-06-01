@@ -40,7 +40,7 @@
             <children>
                 <ScrollPane fx:id="scrollPlateau" GridPane.columnIndex="0" GridPane.rowIndex="0">
                     <content>
-                        <GridPane fx:id="gridPlateau" alignment="TOP_LEFT">
+                        <GridPane fx:id="gridPlateau" alignment="TOP_LEFT" gridLinesVisible="false">
                         </GridPane>
                     </content>
                 </ScrollPane>

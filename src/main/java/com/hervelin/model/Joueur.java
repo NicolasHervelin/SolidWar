@@ -9,7 +9,7 @@ public class Joueur {
     private Position position;
     private ArrayList<Arme> armes = new ArrayList<>();
     private int ptMouvement;
-    private ArrayList<Case> listPortée;
+    private ArrayList<Case> listPortee;
     private int ptAttaque;
     private int ptSante;
     private int ptArmure;
@@ -43,32 +43,6 @@ public class Joueur {
     public void deplacerXY(int deplacementX, int deplacementY) {
         deplacerX(deplacementX);
         deplacerY(deplacementY);
-    }
-
-    public void attaquerJoueur(Joueur other, int degats, boolean isLancerParfait) {
-        if(isLancerParfait)
-            other.setPtSante(other.getPtSante() - degats);
-        else {
-            if(other.getPtArmure() < degats) {
-                other.setPtSante(other.getPtSante() - (degats - other.getPtArmure()));
-                other.setPtArmure(0);
-            }
-            else {
-                other.setPtArmure(other.getPtArmure() - degats);
-            }
-        }
-    }
-
-    public void attaquerMur(Mur mur, int degats, boolean isLancerParfait) {
-        if(isLancerParfait) {
-            mur.setPtStructure(0);
-        }
-        else {
-            if(mur.getPtStructure() < degats)
-                mur.setPtStructure(0);
-            else
-                mur.setPtStructure(mur.getPtStructure() - degats);
-        }
     }
 
     public String getName() {
@@ -148,11 +122,11 @@ public class Joueur {
         this.ptArmure = ptArmure;
     }
 
-    public ArrayList<Case> getListPortée() {
-        return listPortée;
+    public ArrayList<Case> getListPortee() {
+        return listPortee;
     }
 
-    public void setListPortée(ArrayList<Case> listPortée) {
-        this.listPortée = listPortée;
+    public void setListPortee(ArrayList<Case> listPortee) {
+        this.listPortee = listPortee;
     }
 }

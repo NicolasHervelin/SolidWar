@@ -30,7 +30,6 @@
 #gridPlateau {
     -fx-padding: 5 5 5 5;
     -fx-background-color: #ffffff;
-    -fx-grid-lines-visible: true;
     -fx-pref-width:900;
     -fx-pref-height:900;
 }
@@ -81,3 +80,4 @@
     -fx-accent: #20aeea;
     -fx-pref-width: 200;
 }
+

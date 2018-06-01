@@ -6,6 +6,7 @@ public abstract class Arme {
     private String name;
     private String typeTir;
     private int portée;
+    private int rayon = 0;
     private int dmg_dés;
     private Image image;
     private int Pa;
@@ -20,6 +21,10 @@ public abstract class Arme {
         this.isReturnDamage=isReturnDamage;
         this.dmg_dés = dmg_dés;
         Pa = pa;
+        if(name.equals("bazooka"))
+            rayon = 2;
+        if(name.equals("grenade"))
+            rayon = 1;
     }
 
 
@@ -45,6 +50,10 @@ public abstract class Arme {
 
     public void setPortée(int portée) {
         this.portée = portée;
+    }
+
+    public int getRayon() {
+        return rayon;
     }
 
     public int getDmg_dés() {

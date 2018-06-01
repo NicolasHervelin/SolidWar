@@ -19,6 +19,8 @@ public class Plateau {
     private Position randomPosition3;
     private Position randomPosition4;
 
+    public  Joueur turnPlayer;
+
 
     public Plateau(int xTaille, int yTaille, String joueur1, String joueur2) {
         this.xTaille = xTaille;
@@ -104,6 +106,7 @@ public class Plateau {
     }
 
     public void initialize() {
+        turnPlayer = listeDeJoueurs.get(0);
         creerPlateau();
         creerMurs();
         creerArmes();
@@ -112,12 +115,14 @@ public class Plateau {
         creerJoueurs();
     }
 
-    public Joueur joueurSuivant(Joueur joueur, String nbJoueurs) {
-        int indexDuJoueurActuel = listeDeJoueurs.indexOf(joueur);
-        if(indexDuJoueurActuel != (Integer.valueOf(nbJoueurs)-1))
-            return listeDeJoueurs.get(indexDuJoueurActuel + 1);
-        else
-            return listeDeJoueurs.get(0);
+    public void joueurSuivant(String nbJoueurs) {
+        int indexDuJoueurActuel = listeDeJoueurs.indexOf(turnPlayer);
+        if(indexDuJoueurActuel != (Integer.valueOf(nbJoueurs)-1)) {
+            turnPlayer = listeDeJoueurs.get(indexDuJoueurActuel +1);
+        }
+        else {
+            turnPlayer = listeDeJoueurs.get(0);
+        }
     }
 
     public boolean isDejaExistant(String nbJoueurs) {
@@ -364,6 +369,108 @@ public class Plateau {
             return (x_diff+y_diff);
     }
 
+    public boolean isLancerParfait(ArrayList<Integer> listeDeLancers) {
+        if(listeDeLancers.size() > 1) {
+            Integer premierLancer = listeDeLancers.get(0);
+            for(Integer lancer : listeDeLancers) {
+                if(lancer != premierLancer)
+                    return false;
+            }
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public void attaquerJoueur(Joueur other, int degats, boolean isLancerParfait) {
+        if(isLancerParfait)
+            other.setPtSante(other.getPtSante() - degats);
+        else {
+            if(other.getPtArmure() < degats) {
+                other.setPtSante(other.getPtSante() - (degats - other.getPtArmure()));
+                other.setPtArmure(0);
+            }
+            else {
+                other.setPtArmure(other.getPtArmure() - degats);
+            }
+        }
+    }
+
+    public void attaquerMur(Mur mur, int degats, boolean isLancerParfait) {
+        if(isLancerParfait) {
+            mur.setPtStructure(0);
+        }
+        else {
+            if(mur.getPtStructure() < degats)
+                mur.setPtStructure(0);
+            else
+                mur.setPtStructure(mur.getPtStructure() - degats);
+        }
+    }
+
+    private ArrayList<Case> casesDansLeRayon(Position positionExplosion, int rayon, ArrayList<Case> casesDansExplosion) {
+
+        Case droite = getCaseRight(positionExplosion);
+        Case gauche = getCaseLeft(positionExplosion);
+        Case haut = getCaseUp(positionExplosion);
+        Case bas = getCaseDown(positionExplosion);
+        if(droite != null && !casesDansExplosion.contains(droite))
+            casesDansExplosion.add(droite);
+        if(gauche != null && !casesDansExplosion.contains(gauche))
+            casesDansExplosion.add(gauche);
+        if(haut != null && !casesDansExplosion.contains(haut))
+            casesDansExplosion.add(haut);
+        if(bas != null && !casesDansExplosion.contains(bas))
+            casesDansExplosion.add(bas);
+        if(rayon == 2) { //while i < rayon
+            casesDansLeRayon(droite.getPosition(), 1, casesDansExplosion);
+            casesDansLeRayon(gauche.getPosition(), 1, casesDansExplosion);
+            casesDansLeRayon(haut.getPosition(), 1, casesDansExplosion);
+            casesDansLeRayon(bas.getPosition(), 1, casesDansExplosion);
+        }
+        return casesDansExplosion;
+    }
+
+    private boolean isPointsAttaqueSuffisants(int ptAttaqueNecessaires){
+        if(turnPlayer.getPtAttaque() >= ptAttaqueNecessaires) {
+            return true;
+        }
+        return false;
+    }
+
+    public void appliquerDegatsExplosion(Position positionExplosion, Arme arme, int degats, ArrayList<Integer> listeDeLancers) {
+        //if(isPointsAttaqueSuffisants(arme.getPa())) {
+            for(Case caseActuelle : casesDansLeRayon(positionExplosion, arme.getRayon(), new ArrayList<>())){
+                if(caseActuelle.getType().equals("CaseJoueur")){
+                    //Check pour infliger dégats aux joueurs présents dans l'explosion
+                    CaseJoueur caseJoueur = (CaseJoueur) caseActuelle;
+                    Joueur joueur = caseJoueur.getJoueur();
+                    attaquerJoueur(joueur, degats, isLancerParfait(listeDeLancers));
+                }
+                if(caseActuelle.getType().equals("CaseMur")){
+                    //Check pour infliger dégats aux murs présents dans l'explosion
+                    CaseMur caseMur = (CaseMur) caseActuelle;
+                    Mur mur = caseMur.getMur();
+                    attaquerMur(mur, degats, isLancerParfait(listeDeLancers));
+                }
+            }
+            turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
+        //}
+    }
+
+    public void appliquerDegatsClassiques(Case caseSelectionnee, Arme arme, int degats, ArrayList<Integer> listeDeLancers) {
+        if (isPointsAttaqueSuffisants(arme.getPa())) {
+            if (caseSelectionnee.getType().equals("CaseJoueur")) {
+                CaseJoueur caseJoueur = (CaseJoueur) caseSelectionnee;
+                attaquerJoueur(caseJoueur.getJoueur(), degats, isLancerParfait(listeDeLancers));
+            }
+            if (caseSelectionnee.getType().equals("CaseMur")) {
+                CaseMur caseMur = (CaseMur) caseSelectionnee;
+                attaquerMur(caseMur.getMur(), degats, isLancerParfait(listeDeLancers));
+            }
+            turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
+        }
+    }
 
     public void setCasesDuPlateau(ArrayList<Case> casesDuPlateau) {
         this.casesDuPlateau = casesDuPlateau;

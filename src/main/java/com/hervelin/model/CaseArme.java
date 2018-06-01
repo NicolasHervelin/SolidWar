@@ -6,6 +6,6 @@ import javafx.scene.paint.Color;
 public class CaseArme extends Case {
 
     public CaseArme(Position p) {
-        super(p,"CaseArme", new Image("images/TextureCoffreMini-min.png"));
+        super(p,"CaseArme", new Image("images/TextureCoffre40-min.png"));
     }
 }
