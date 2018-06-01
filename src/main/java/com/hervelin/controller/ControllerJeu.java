@@ -30,7 +30,7 @@ public class ControllerJeu implements ControlledScreen {
     private Joueur joueur4;
     private boolean isCaseDejaSelectionnee = false;
     private Case caseDejaSelectionnee;
-    private int mode;
+    private int mode=0;
 
      //zoom factor
 
@@ -61,7 +61,9 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public ListView<Arme> listArmes;
     @FXML
-    public Text nomJoueur,nomJoueur2;
+    public Text nomJoueur;
+    @FXML
+    public Text nomJoueur2;
     @FXML
     public ImageView imageJoueur, imageJoueur2;
     @FXML
@@ -127,9 +129,18 @@ public class ControllerJeu implements ControlledScreen {
         listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
             @Override
             public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
-                AlertBox.afficherDetailArme(newValue);
-                clean_pathfinding(shoot);
-                clean_pathfinding(ListPortee);
+             //   AlertBox.afficherDetailArme(newValue);
+                afficherArme(newValue);
+                switch (mode){
+                    case 1:
+                        clean_pathfinding(ListPortee);
+                        break;
+                    case 2:
+                        clean_pathfinding(shoot);
+                        break;
+                    default:break;
+                }
+                mode=2;
                 shoot_pathfinding(newValue);
             }
         });
@@ -153,6 +164,24 @@ public class ControllerJeu implements ControlledScreen {
 
     }
 
+    public void afficherArme(Arme arme){
+        imageJoueur2.setImage(arme.getImage());
+        nomJoueur2.setText(arme.getName());
+    }
+
+    public void afficherMur(Case mur){
+        imageJoueur2.setImage(mur.getImg());
+        nomJoueur2.setText("Mur");
+    }
+    public void afficherCaseNormale(Case cn){
+        imageJoueur2.setImage(cn.getImg());
+        nomJoueur2.setText("Case");
+    }
+    public void afficherPopo(Case Popo){
+        imageJoueur2.setImage(Popo.getImg());
+        nomJoueur2.setText("Potion");
+    }
+
     public void move(){
         if(mode==2){
             clean_pathfinding(shoot);
@@ -166,7 +195,8 @@ public class ControllerJeu implements ControlledScreen {
             clean_pathfinding(ListPortee);
         }
         mode=2;
-        shoot_pathfinding(turnPlayer.getArmes().get(0));
+        listArmes.getSelectionModel().select(0);
+        shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
     }
 
     //Définition des cases du plateau
@@ -202,14 +232,16 @@ public class ControllerJeu implements ControlledScreen {
 
     // Affiche en rouge les cases où le joueur peut tirer
     public void clean_pathfinding(ArrayList<Case> l){
-        for (Case temp:l) {
-            InnerShadow borderGlow = new InnerShadow();
-            Button bouton =temp.getBouton();
-            borderGlow.setOffsetX(0f);
-            borderGlow.setOffsetY(0f);
-            borderGlow.setColor(null);
-            bouton.setEffect(null); //Apply the borderGlow effect to the JavaFX node
-            temp.setBouton(bouton);
+        if(l!=null) {
+            for (Case temp : l) {
+                InnerShadow borderGlow = new InnerShadow();
+                Button bouton = temp.getBouton();
+                borderGlow.setOffsetX(0f);
+                borderGlow.setOffsetY(0f);
+                borderGlow.setColor(null);
+                bouton.setEffect(null); //Apply the borderGlow effect to the JavaFX node
+                temp.setBouton(bouton);
+            }
         }
         l.clear();
     }
@@ -337,20 +369,19 @@ public class ControllerJeu implements ControlledScreen {
             }else Right.setCout(0);
         }else if (openList.contains(Right) && (i+1)<Right.getCout()){
             Right.setCout(i+1);
-        }/*else if (closedList.contains(Right) && (i+1)<Right.getCout()){
-            closedList.remove(Right);
+        }else if (ListPortee.contains(Right) && (i+1)<Right.getCout()){
+            ListPortee.remove(Right);
             Right.setCout(i+1);
             openList.add(Right);
-        }*/
+        }
     }
 
     //Clic sur une case
     public void AnalysePosition(Position position) {
+        Case analyse=plateau.getCaseByPosition(position);
         switch (mode) {
             case 1:
-                nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
-                imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
-                switch (plateau.getCaseByPosition(position).getType()) {
+                switch (analyse.getType()) {
                     case "CaseJoueur":
                         Joueur j = plateau.getJoueurByPosition(position);
                         if (j != turnPlayer) {
@@ -358,60 +389,46 @@ public class ControllerJeu implements ControlledScreen {
                         }
                         break;
                     case "CaseNormale":
-                        if (ListPortee.contains(plateau.getCaseByPosition(position))) {
+                        if (ListPortee.contains(analyse)) {
                             deplacerPionJoueur(position);
+                        }else{
+                            afficherCaseNormale(analyse);
                         }
                         break;
                     case "CaseArme":
-                        if (ListPortee.contains(plateau.getCaseByPosition(position))) {
+                        if (ListPortee.contains(analyse)) {
                             deplacerPionJoueur(position);
                             //ouvrirCoffre();
                         }
                         break;
                     case "CasePopo":
-                        if (ListPortee.contains(plateau.getCaseByPosition(position))) {
+                        if (ListPortee.contains(analyse)) {
                             deplacerPionJoueur(position);
                            // prendrePotion();
+                        }else{
+                            afficherPopo(analyse);
                         }
                         break;
                 }
                 break;
             case 2:
-                nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
-                imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
-                switch (plateau.getCaseByPosition(position).getType()) {
+                switch (analyse.getType()) {
                     case "CaseJoueur":
                         Joueur j = plateau.getJoueurByPosition(position);
-                        if(shoot.contains(plateau.getCaseByPosition(position))){
+                        if(shoot.contains(analyse)){
                             if (j != turnPlayer) {
                           //      Tirer(j);
                             }
                         }break;
                     case "CaseMur":
-                        if(shoot.contains(plateau.getCaseByPosition(position))){
-                         //   TirerMur(position);
+                        if(shoot.contains(analyse)){
+                         //   TirerMur(analyse);
+                        }else{
+                            afficherMur(analyse);
                         }break;
                 }
                 break;
-            default:
-                nomJoueur2.setText(plateau.getCaseByPosition(position).getType());
-                imageJoueur2.setImage(plateau.getCaseByPosition(position).getImg());
-                break;
         }
-    }
-
-
-    public boolean isCaseJoueur(Position position) {
-        if(plateau.getCaseByPosition(position).getType().equals("CaseJoueur"))
-            return true;
-        return false;
-    }
-
-
-    public boolean isCaseNormale(Position position) {
-        if(plateau.getCaseByPosition(position).getType().equals("CaseNormale"))
-            return true;
-        return false;
     }
 
 

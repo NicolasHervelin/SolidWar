@@ -232,7 +232,7 @@ public class Plateau {
 
             Case caseASupprimer = getCaseByPosition(new Position(xRandom,yRandom));
             casesDuPlateau.remove(caseASupprimer);
-            casesDuPlateau.add(new CaseMur(new Position(xRandom,yRandom)));
+            casesDuPlateau.add(new CaseMur(new Mur(),new Position(xRandom,yRandom)));
         }
         for(int j=0;j<100;j++) {
             int xRandom = 1 + (int) (Math.random() * ((xTaille - 1) + 1));
@@ -240,7 +240,7 @@ public class Plateau {
             for (int i = 0; i < 6; i++) {
                 Case caseASupprimer = getCaseByPosition(new Position(xRandom, yRandom));
                 casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CaseMur(new Position(xRandom, yRandom)));
+                casesDuPlateau.add(new CaseMur(new Mur(),new Position(xRandom, yRandom)));
                 double alea = (Math.random() * ((1 + 1) -1));
                 if(alea<0.6) {
                     double x = (Math.random() * ((1 + 1) - 1));

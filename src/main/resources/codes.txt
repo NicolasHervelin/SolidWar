@@ -113,3 +113,17 @@ public boolean isCaseDejaSelectionnee() {
                 return true;
             return false;
         }
+
+
+    public boolean isCaseJoueur(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseJoueur"))
+            return true;
+        return false;
+    }
+
+
+    public boolean isCaseNormale(Position position) {
+        if(plateau.getCaseByPosition(position).getType().equals("CaseNormale"))
+            return true;
+        return false;
+    }
