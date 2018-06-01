@@ -46,8 +46,8 @@ public class ControllerJeu implements ControlledScreen {
     public int nombreCaseY = 40;
     private ArrayList<Joueur> listeDesJoueurs;
     private ArrayList<Case> openList;
-    private ArrayList<Case> ListPortee;
-    private ArrayList<Case> shoot;
+    private ArrayList<Case> ListPortee = new ArrayList<Case>();
+    private ArrayList<Case> shoot = new ArrayList<Case>();
 
 
 
@@ -338,22 +338,22 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     //Code pour le pathfinding
-    public void AnalyseCase(Case Right, int i){
-        if (Right!=null && !openList.contains(Right) && !ListPortee.contains(Right) &&  Right.getType() != "CaseMur") {
-            if(Right.getCout()>0){
-                Right.setCout(0);
+    public void AnalyseCase(Case nextCase, int i){
+        if (nextCase!=null && !openList.contains(nextCase) && !ListPortee.contains(nextCase) &&  nextCase.getType() != "CaseMur") {
+            if(nextCase.getCout()>0){
+                nextCase.setCout(0);
             }
-            Right.setCout(i+1);
-            if(Right.getCout()<=turnPlayer.getPtMouvement()) {
-                openList.add(Right);
-            }else Right.setCout(0);
-        }else if (openList.contains(Right) && (i+1)<Right.getCout()){
-            Right.setCout(i+1);
-        }/*else if (closedList.contains(Right) && (i+1)<Right.getCout()){
-            closedList.remove(Right);
-            Right.setCout(i+1);
-            openList.add(Right);
-        }*/
+            nextCase.setCout(i+1);
+            if(nextCase.getCout()<=turnPlayer.getPtMouvement()) {
+                openList.add(nextCase);
+            }else nextCase.setCout(0);
+        }else if (openList.contains(nextCase) && (i+1)<nextCase.getCout()){
+            nextCase.setCout(i+1);
+        }else if (ListPortee.contains(nextCase) && (i+1)<nextCase.getCout()){
+            ListPortee.remove(nextCase);
+            nextCase.setCout(i+1);
+            openList.add(nextCase);
+        }
     }
 
     //Clic sur une case
@@ -461,7 +461,6 @@ public class ControllerJeu implements ControlledScreen {
         for(int lancer : listeDesLancers) {
             hBoxLancers.getChildren().add(new ImageView(new Image("images/ResultatLancer" + lancer + ".png", 72, 72, true, true)));
         }
-
         // fill background with java
         BackgroundFill fill = new BackgroundFill(Color.TRANSPARENT, new CornerRadii(1), new Insets(0, 0, 0, 0));
         vBoxLancers.setBackground(new Background(fill));
