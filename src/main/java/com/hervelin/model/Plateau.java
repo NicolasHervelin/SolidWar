@@ -113,13 +113,11 @@ public class Plateau {
     }
 
     public Joueur joueurSuivant(Joueur joueur, String nbJoueurs) {
-        for(int i = 0; i < Integer.valueOf(nbJoueurs); i++) {
-            if(i != (Integer.valueOf(nbJoueurs)-1))
-                if(listeDeJoueurs.indexOf(joueur) == i) return listeDeJoueurs.get(i+1);
-            else
-                if(listeDeJoueurs.indexOf(joueur) == i) return listeDeJoueurs.get(0);
-        }
-        return joueur;
+        int indexDuJoueurActuel = listeDeJoueurs.indexOf(joueur);
+        if(indexDuJoueurActuel != (Integer.valueOf(nbJoueurs)-1))
+            return listeDeJoueurs.get(indexDuJoueurActuel + 1);
+        else
+            return listeDeJoueurs.get(0);
     }
 
     public boolean isDejaExistant(String nbJoueurs) {

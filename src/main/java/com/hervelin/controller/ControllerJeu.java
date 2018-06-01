@@ -59,7 +59,7 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public GridPane anchorMain;
     @FXML
-    public Button fight,move;
+    public Button fight,move, boutonFinDuTour;
     @FXML
     public ListView<Arme> listArmes;
     @FXML
@@ -170,6 +170,12 @@ public class ControllerJeu implements ControlledScreen {
         imageView2.setPreserveRatio(true);
         move.setGraphic(imageView2);
         move.setEffect(reflection);
+
+        Image img3=new Image("images/FinDuTour.png");
+        ImageView imageView3 = new ImageView(img3);
+        imageView2.setPreserveRatio(true);
+        boutonFinDuTour.setGraphic(imageView3);
+        boutonFinDuTour.setEffect(reflection);
 
     }
 
@@ -472,7 +478,6 @@ public class ControllerJeu implements ControlledScreen {
         l.setStyle("-fx-font: 22 'Autumn Regular';" +
                 "-fx-text-alignment: center;");*/
 
-        vBoxLancers.getChildren().clear();
         //vBoxLancers.getChildren().add(l);
         hBoxLancers.getChildren().clear();
         for(int lancer : listeDesLancers) {
@@ -480,10 +485,8 @@ public class ControllerJeu implements ControlledScreen {
         }
         // fill background with java
         BackgroundFill fill = new BackgroundFill(Color.TRANSPARENT, new CornerRadii(1), new Insets(0, 0, 0, 0));
-        vBoxLancers.setBackground(new Background(fill));
         hBoxLancers.setBackground(new Background(fill));
-        vBoxLancers.getChildren().add(hBoxLancers);
-        vBoxLancers.setBorder(new Border(new BorderStroke(Color.GRAY, null, new CornerRadii(1), new BorderWidths(2))));
+        hBoxLancers.setBorder(new Border(new BorderStroke(Color.GRAY, null, new CornerRadii(1), new BorderWidths(2))));
     }
 
     private void deplacerPionJoueur(Position destination) {
@@ -512,7 +515,7 @@ public class ControllerJeu implements ControlledScreen {
 
     private void mettreAjourSanteArmure() {
         vBoxSanteArmure.getChildren().clear();
-        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", turnPlayer.getPtArmure()/100));
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", 1));
         vBoxSanteArmure.getChildren().add(new ColoredProgressBar("SanteProgressBar", turnPlayer.getPtSante()/100));
     }
 
@@ -521,6 +524,23 @@ public class ControllerJeu implements ControlledScreen {
             super(progress);
             getStyleClass().add(styleClass);
         }
+    }
+
+    private void update() {
+        affichageDuJoueur(turnPlayer);
+        mettreAjourSanteArmure();
+        obtenirPointsDeMouvement();
+    }
+
+    //FIN DU TOUR ET CHANGEMENT DE JOUEUR ACTIF
+    public void finDuTour() {
+        turnPlayer.setPtMouvement(0);
+        turnPlayer = plateau.joueurSuivant(turnPlayer, myController.getData("nbjoueurs").substring(0,1));
+        System.out.println(turnPlayer.getName());
+        //gridPlateau.getChildren().get(plateau.getIndexOfCase(plateau.getCaseByPosition(turnPlayer.getPosition()))).requestFocus();
+        clean_pathfinding(ListPortee);
+        clean_pathfinding(shoot);
+        update();
     }
 
     //Boutton permettant de retourner au menu

@@ -71,8 +71,7 @@
                                 <Font name="Autumn Regular" size="28.0" />
                             </font>
                         </Text>
-                        <VBox fx:id="vBoxLancers" layoutY="695.0" spacing="5.0">
-                            <HBox fx:id="hBoxLancers" layoutX="65.0" spacing="5.0">
+                            <HBox fx:id="hBoxLancers" layoutY="318.0" layoutX="65.0" spacing="5.0">
                                 <effect>
                            <Reflection topOffset="1.8" />
                                 </effect>
@@ -80,7 +79,7 @@
                                    <Insets left="25.0" right="15.0" />
                                 </padding>
                             </HBox>
-                        </VBox>
+                        <Button fx:id="boutonFinDuTour" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0"/>
                     </children>
                 </Pane>
                 <Pane GridPane.columnIndex="0" GridPane.rowIndex="1" />
