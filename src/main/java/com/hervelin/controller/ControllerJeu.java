@@ -8,6 +8,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
@@ -44,8 +46,8 @@ public class ControllerJeu implements ControlledScreen {
     public int nombreCaseY = 40;
     private ArrayList<Joueur> listeDesJoueurs;
     private ArrayList<Case> openList;
-    private ArrayList<Case> ListPortee;
-    private ArrayList<Case> shoot;
+    private ArrayList<Case> ListPortee = new ArrayList<Case>();
+    private ArrayList<Case> shoot = new ArrayList<Case>();
 
 
 
@@ -68,6 +70,12 @@ public class ControllerJeu implements ControlledScreen {
     public ImageView imageJoueur, imageJoueur2;
     @FXML
     public Pane pane = new Pane();
+    @FXML
+    public VBox vBoxLancers;
+    @FXML
+    public HBox hBoxLancers;
+    @FXML
+    public VBox vBoxSanteArmure;
 
     @Override
     public void setScreenParent(ScreensController screenParent) {
@@ -146,7 +154,8 @@ public class ControllerJeu implements ControlledScreen {
         });
         affichageDuJoueur(turnPlayer);
         obtenirPointsDeMouvement();
-        definitionCaseDuPlateau();
+        mettreAjourSanteArmure();
+        definitionCaseDuPlateau(null);
 
         Glow glow = new Glow(0.5);
         Reflection reflection=new Reflection();
@@ -200,7 +209,7 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     //Définition des cases du plateau
-    public void definitionCaseDuPlateau() {
+    public void definitionCaseDuPlateau(Position positionAConserver) {
         gridPlateau.getChildren().clear();
         for (int row = 1; row <= plateau.getxTaille(); row++) {
             for (int col = 1; col <= plateau.getyTaille(); col++) {
@@ -216,6 +225,9 @@ public class ControllerJeu implements ControlledScreen {
                 GridPane.setRowIndex(bouton, row);
                 gridPlateau.add(bouton, col, row);
                 caseActuelle.setBouton(bouton);
+                if(positionAConserver != null && positionAConserver.getX() == row && positionAConserver.getY() == col) {
+                    bouton.requestFocus();
+                }
             }
         }
     }
@@ -358,21 +370,21 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     //Code pour le pathfinding
-    public void AnalyseCase(Case Right, int i){
-        if (Right!=null && !openList.contains(Right) && !ListPortee.contains(Right) &&  Right.getType() != "CaseMur") {
-            if(Right.getCout()>0){
-                Right.setCout(0);
+    public void AnalyseCase(Case nextCase, int i){
+        if (nextCase!=null && !openList.contains(nextCase) && !ListPortee.contains(nextCase) &&  nextCase.getType() != "CaseMur") {
+            if(nextCase.getCout()>0){
+                nextCase.setCout(0);
             }
-            Right.setCout(i+1);
-            if(Right.getCout()<=turnPlayer.getPtMouvement()) {
-                openList.add(Right);
-            }else Right.setCout(0);
-        }else if (openList.contains(Right) && (i+1)<Right.getCout()){
-            Right.setCout(i+1);
-        }else if (ListPortee.contains(Right) && (i+1)<Right.getCout()){
-            ListPortee.remove(Right);
-            Right.setCout(i+1);
-            openList.add(Right);
+            nextCase.setCout(i+1);
+            if(nextCase.getCout()<=turnPlayer.getPtMouvement()) {
+                openList.add(nextCase);
+            }else nextCase.setCout(0);
+        }else if (openList.contains(nextCase) && (i+1)<nextCase.getCout()){
+            nextCase.setCout(i+1);
+        }else if (ListPortee.contains(nextCase) && (i+1)<nextCase.getCout()){
+            ListPortee.remove(nextCase);
+            nextCase.setCout(i+1);
+            openList.add(nextCase);
         }
     }
 
@@ -443,15 +455,35 @@ public class ControllerJeu implements ControlledScreen {
 
 
     private void obtenirPointsDeMouvement() {
-        String messageDeLancer = "Résultats obtenus : ";
         int lancer1 = plateau.lancerUnDe();
         int lancer2 = plateau.lancerUnDe();
         ArrayList<Integer> listeDesLancers = new ArrayList<>();
         listeDesLancers.add(lancer1);
         listeDesLancers.add(lancer2);
 
-        AlertBox.afficherLancer(listeDesLancers, messageDeLancer);
+        mettreAjourLeLancer(listeDesLancers);
         turnPlayer.setPtMouvement(lancer1+lancer2);
+    }
+
+    private void mettreAjourLeLancer(ArrayList<Integer> listeDesLancers) {
+        /*String messageDeLancer = "Dernier lancer";
+        Label l = new Label(messageDeLancer);
+        l.setTextFill(Color.GRAY);
+        l.setStyle("-fx-font: 22 'Autumn Regular';" +
+                "-fx-text-alignment: center;");*/
+
+        vBoxLancers.getChildren().clear();
+        //vBoxLancers.getChildren().add(l);
+        hBoxLancers.getChildren().clear();
+        for(int lancer : listeDesLancers) {
+            hBoxLancers.getChildren().add(new ImageView(new Image("images/ResultatLancer" + lancer + ".png", 72, 72, true, true)));
+        }
+        // fill background with java
+        BackgroundFill fill = new BackgroundFill(Color.TRANSPARENT, new CornerRadii(1), new Insets(0, 0, 0, 0));
+        vBoxLancers.setBackground(new Background(fill));
+        hBoxLancers.setBackground(new Background(fill));
+        vBoxLancers.getChildren().add(hBoxLancers);
+        vBoxLancers.setBorder(new Border(new BorderStroke(Color.GRAY, null, new CornerRadii(1), new BorderWidths(2))));
     }
 
     private void deplacerPionJoueur(Position destination) {
@@ -473,9 +505,22 @@ public class ControllerJeu implements ControlledScreen {
 
         //int distanceParcourue = destination.distance(positionInitiale, destination);
         turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - caseDestination.getCout());
-        definitionCaseDuPlateau();
+        definitionCaseDuPlateau(turnPlayer.getPosition());
         clean_pathfinding(ListPortee);
         pathfinding();
+    }
+
+    private void mettreAjourSanteArmure() {
+        vBoxSanteArmure.getChildren().clear();
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", turnPlayer.getPtArmure()/100));
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("SanteProgressBar", turnPlayer.getPtSante()/100));
+    }
+
+    class ColoredProgressBar extends ProgressBar {
+        ColoredProgressBar(String styleClass, double progress) {
+            super(progress);
+            getStyleClass().add(styleClass);
+        }
     }
 
     //Boutton permettant de retourner au menu
