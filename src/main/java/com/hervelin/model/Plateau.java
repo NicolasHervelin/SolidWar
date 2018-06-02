@@ -7,6 +7,8 @@ import java.util.ArrayList;
 public class Plateau {
     private ArrayList<Case> casesDuPlateau = new ArrayList<>();
     private ArrayList<Joueur> listeDeJoueurs = new ArrayList<>(4);
+    private ArrayList<CaseMur> listeDeMurs = new ArrayList<>();
+
 
     private int xTaille;
     private int yTaille;
@@ -235,7 +237,9 @@ public class Plateau {
 
             Case caseASupprimer = getCaseByPosition(new Position(xRandom,yRandom));
             casesDuPlateau.remove(caseASupprimer);
-            casesDuPlateau.add(new CaseMur(new Mur(),new Position(xRandom,yRandom)));
+            CaseMur c=new CaseMur(new Mur(),new Position(xRandom,yRandom));
+            casesDuPlateau.add(c);
+            listeDeMurs.add(c);
         }
         for(int j=0;j<100;j++) {
             int xRandom = 1 + (int) (Math.random() * ((xTaille - 1) + 1));
@@ -243,7 +247,9 @@ public class Plateau {
             for (int i = 0; i < 6; i++) {
                 Case caseASupprimer = getCaseByPosition(new Position(xRandom, yRandom));
                 casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CaseMur(new Mur(),new Position(xRandom, yRandom)));
+                CaseMur c=new CaseMur(new Mur(),new Position(xRandom, yRandom));
+                casesDuPlateau.add(c);
+                listeDeMurs.add(c);
                 double alea = (Math.random() * ((1 + 1) -1));
                 if(alea<0.6) {
                     double x = (Math.random() * ((1 + 1) - 1));
@@ -258,6 +264,18 @@ public class Plateau {
                 }
             }
         }
+    }
+
+    public ArrayList<CaseMur> getListeDeMurs() {
+        return listeDeMurs;
+    }
+    public CaseMur getCaseMurByPosition(Position p){
+        for (CaseMur c:listeDeMurs) {
+            if (c.getPosition().getX()==p.getX() && c.getPosition().getY()==p.getY()) {
+                return c;
+            }
+        }
+        return null;
     }
 
     private void creerArmes() {

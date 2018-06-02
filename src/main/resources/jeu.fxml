@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.effect.Reflection?>
 <?import javafx.scene.image.ImageView?>
@@ -52,7 +53,7 @@
                             </font>
                         </Text>
                         <ImageView fx:id="imageJoueur" fitHeight="150.0" fitWidth="150.0" layoutX="50.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
-                        <VBox fx:id="vBoxSanteArmure" layoutX="29.0" layoutY="245.0" spacing="10.0"></VBox>
+                        <VBox fx:id="vBoxSanteArmure" layoutX="29.0" layoutY="245.0" spacing="10.0" />
                         <ListView fx:id="listArmes" layoutX="29.0" layoutY="318.0" prefHeight="354.0" prefWidth="200.0">
                             <items>
                             </items>
@@ -71,7 +72,7 @@
                                 <Font name="Autumn Regular" size="28.0" />
                             </font>
                         </Text>
-                            <HBox fx:id="hBoxLancers" layoutY="318.0" layoutX="65.0" spacing="5.0">
+                            <HBox fx:id="hBoxLancers" layoutX="65.0" layoutY="318.0" spacing="5.0">
                                 <effect>
                            <Reflection topOffset="1.8" />
                                 </effect>
@@ -79,7 +80,8 @@
                                    <Insets left="25.0" right="15.0" />
                                 </padding>
                             </HBox>
-                        <Button fx:id="boutonFinDuTour" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0"/>
+                        <Button fx:id="boutonFinDuTour" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0" />
+                  <ProgressBar fx:id="ptStructure" layoutX="33.0" layoutY="264.0" prefWidth="200.0" progress="0.0" visible="false" />
                     </children>
                 </Pane>
                 <Pane GridPane.columnIndex="0" GridPane.rowIndex="1" />

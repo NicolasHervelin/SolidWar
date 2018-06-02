@@ -69,6 +69,8 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public ImageView imageJoueur, imageJoueur2;
     @FXML
+    public ProgressBar ptStructure;
+    @FXML
     public Pane pane = new Pane();
     @FXML
     public VBox vBoxLancers;
@@ -462,8 +464,11 @@ public class ControllerJeu implements ControlledScreen {
                             }
                         }break;
                     case "CaseMur":
+                        CaseMur c=plateau.getCaseMurByPosition(position);
                         if(shoot.contains(analyse)){
-                         //   TirerMur(analyse);
+                            ptStructure.setVisible(true);
+                            afficherMur(analyse);
+                            TirerMur(c);
                         }else{
                             afficherMur(analyse);
                         }break;
@@ -503,6 +508,22 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void explosion(Position position) {
+
+    }
+    public void TirerMur(CaseMur c){
+        ArrayList<Integer> listeDesLancers = new ArrayList<>();
+        Mur mur=c.getMur();
+        int lancer;
+        int somme=0;
+        for (int i=0; i<listArmes.getSelectionModel().getSelectedItem().getDmg_dés();i++){
+            lancer=plateau.lancerUnDe();
+            somme=somme+lancer;
+            listeDesLancers.add(lancer);
+        }
+        mettreAjourLeLancer(listeDesLancers);
+
+        mur.setPtStructure(mur.getPtStructure()-somme);
+      //  ptStructure.setProgress(mur.getPtStructure()/10);
 
     }
 
