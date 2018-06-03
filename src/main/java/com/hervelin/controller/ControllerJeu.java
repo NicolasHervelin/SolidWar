@@ -117,7 +117,7 @@ public class ControllerJeu implements ControlledScreen {
         }
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
-        plateau.turnPlayer.ajouterArme(new Bazooka());
+        //plateau.turnPlayer.ajouterArme(new Bazooka());
 
         listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
         listArmes.setCellFactory(new ArmeCellFactory());
@@ -217,6 +217,8 @@ public class ControllerJeu implements ControlledScreen {
             }
         }
     }
+
+
 
     //Assigne à chaque bouton l'image correspondante
     private void setImagePourLesBoutons(Button bouton, Image img) {

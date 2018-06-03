@@ -1,6 +1,6 @@
 package com.hervelin.controller;
 
-import com.hervelin.model.Arme;
+import com.hervelin.model.*;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.event.EventType;
@@ -71,7 +71,6 @@ class AlertBox {
 
 
     /*static void afficherArme(int lancer1, int lancer2) {
-        int rareté;
         Stage messageBox = new Stage();
         messageBox.initStyle(StageStyle.TRANSPARENT);
 
@@ -79,10 +78,6 @@ class AlertBox {
         messageBox.setMinWidth(400);
         messageBox.setMinHeight(400);
 
-        switch(lancer1){
-            case 1:
-
-        }
 
         Label l = new Label(arme.getName());
         l.setTextFill(Color.RED);

@@ -26,7 +26,7 @@ public class Joueur {
         this.imageJoueur = image;
         this.brique=0;
 
-        Couteau armeDeBase = new Couteau();
+        Couteau armeDeBase = new Couteau("images/Solid_war/COFFRE/ARMES/COUTEAU/CLASSE1.png");
         armes.add(armeDeBase);
     }
 
