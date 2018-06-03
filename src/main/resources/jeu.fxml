@@ -75,23 +75,24 @@
                 </Pane>
                 <Pane fx:id="zoneLancer" GridPane.columnIndex="2" GridPane.rowIndex="0">
                     <children>
-                        <ImageView fx:id="imageJoueur2" fitHeight="150.0" fitWidth="150.0" layoutX="58.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
-                        <Text fx:id="nomJoueur2" layoutX="8.0" layoutY="-1.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="250.0" y="220.0">
+                        <ImageView fx:id="imageJoueur2" fitHeight="150.0" fitWidth="150.0" layoutX="63.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
+                        <Text fx:id="nomJoueur2" layoutX="13.0" layoutY="-1.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="250.0" y="220.0">
                             <font>
                                 <Font name="Autumn Regular" size="28.0" />
                             </font>
                         </Text>
-                        <Button fx:id="boutonLancerPM" layoutY="318.0" layoutX="52.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPM" text="Prends tes PM" wrapText="true">
+                        <VBox fx:id="vBoxSanteArmureJoueurAdverse" layoutX="42.0" layoutY="245.0" spacing="10.0"></VBox>
+                        <Button fx:id="boutonLancerPM" layoutY="318.0" layoutX="69.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPM" text="Prends tes PM" wrapText="true">
                             <font>
                                 <Font name="Autumn Regular" size="18.0" />
                             </font>
                         </Button>
-                        <Button fx:id="boutonLancerPA" visible="false" layoutY="318.0" layoutX="52.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPA" text="Prends tes PA">
+                        <Button fx:id="boutonLancerPA" visible="false" layoutY="318.0" layoutX="69.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPA" text="Prends tes PA">
                             <font>
                                 <Font name="Autumn Regular" size="18.0" />
                             </font>
                         </Button>
-                        <VBox fx:id="vBoxLancers" layoutY="395.0" layoutX="25.0">
+                        <VBox fx:id="vBoxLancers" layoutY="395.0" layoutX="42.0">
                             <HBox fx:id="hBoxLancers1" spacing="5.0">
                                 <padding>
                                     <Insets left="25.0" right="15.0" />
