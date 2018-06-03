@@ -1,8 +1,11 @@
 package com.hervelin.controller;
 
 import com.hervelin.model.*;
+import com.sun.javafx.geom.BaseBounds;
+import com.sun.javafx.geom.transform.BaseTransform;
+import com.sun.javafx.scene.BoundsAccessor;
 import com.sun.javafx.tk.TKSceneListener;
-import javafx.animation.PathTransition;
+import javafx.animation.*;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -12,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.effect.Reflection;
@@ -19,7 +23,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +43,10 @@ public class ControllerJeu implements ControlledScreen {
     private Case caseDejaSelectionnee;
     private int mode=0;
 
-     //zoom factor
-
-    private final DoubleProperty zoomProperty = new SimpleDoubleProperty(2000);
-    private final DoubleProperty mouseXProperty = new SimpleDoubleProperty();
-    private final DoubleProperty mouseYProperty = new SimpleDoubleProperty();
-
+    final static String MOUVEMENT = "Obtenir les PM";
+    final static String PA = "Obtenir les PA";
+    final static String DEGATS = "Obtenir les dommages";
+    final static String COULEURDARME = "Définir la puissance";
 
     public Plateau plateau;
     public int nombreCaseX = 40;
@@ -48,9 +56,8 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> ListPortee = new ArrayList<Case>();
     private ArrayList<Case> shoot = new ArrayList<Case>();
     private ArrayList<Case> casesDansExplosion = new ArrayList<Case>();
-
-
-
+    private Image imageExplosion = new Image("images/TextureExplosion40-min.png");
+    private String need = MOUVEMENT;
 
     @FXML
     public GridPane gridPlateau;
@@ -59,7 +66,7 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public GridPane anchorMain;
     @FXML
-    public Button fight,move, boutonFinDuTour;
+    public Button fight,move, boutonFinDuTour, boutonOuvrir, boutonLancerPM, boutonLancerPA;
     @FXML
     public ListView<Arme> listArmes;
     @FXML
@@ -71,11 +78,9 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public Pane pane = new Pane();
     @FXML
-    public VBox vBoxLancers;
+    public VBox vBoxLancers, vBoxSanteArmure;
     @FXML
-    public HBox hBoxLancers;
-    @FXML
-    public VBox vBoxSanteArmure;
+    public HBox hBoxLancers1, hBoxLancers2, hBoxInfoRessources, hBoxPA, hBoxPM, hBoxBrique;
 
     @Override
     public void setScreenParent(ScreensController screenParent) {
@@ -119,18 +124,6 @@ public class ControllerJeu implements ControlledScreen {
         listeDesJoueurs = plateau.getListeDeJoueurs();
         plateau.turnPlayer.ajouterArme(new Bazooka());
 
-
-        //Zoom sur le ScrollPane
-        gridPlateau.setOnMouseMoved(event -> {
-            mouseXProperty.set(event.getX());
-            mouseYProperty.set(event.getY());
-        });
-        gridPlateau.setOnZoom(event -> {
-            zoomProperty.set(zoomProperty.get() * event.getZoomFactor());
-            gridPlateau.setScaleX(gridPlateau.getScaleX()*event.getZoomFactor());
-            gridPlateau.setScaleY(gridPlateau.getScaleY()*event.getZoomFactor());
-            event.consume();
-        });
         listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
         listArmes.setCellFactory(new ArmeCellFactory());
         listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
@@ -152,10 +145,9 @@ public class ControllerJeu implements ControlledScreen {
             }
         });
         affichageDuJoueur(plateau.turnPlayer);
-        obtenirPointsDeMouvement();
-        obtenirPointsAttaque();
         mettreAjourSanteArmure();
         definitionCaseDuPlateau(null);
+        initialiserRessources();
 
         Glow glow = new Glow(0.5);
         Reflection reflection=new Reflection();
@@ -176,8 +168,14 @@ public class ControllerJeu implements ControlledScreen {
         imageView2.setPreserveRatio(true);
         boutonFinDuTour.setGraphic(imageView3);
         boutonFinDuTour.setEffect(reflection);
+        Image img4=new Image("images/Ouvrir.png");
+        ImageView imageView4 = new ImageView(img4);
+        imageView2.setPreserveRatio(true);
+        boutonOuvrir.setGraphic(imageView4);
+        boutonOuvrir.setEffect(reflection);
 
     }
+
 
     public void afficherArme(Arme arme){
         imageJoueur2.setImage(arme.getImage());
@@ -382,7 +380,7 @@ public class ControllerJeu implements ControlledScreen {
             borderGlow.setOffsetX(0f);
             borderGlow.setOffsetY(0f);
             borderGlow.setColor(color);
-            bouton.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
+            bouton.setEffect(borderGlow);//Apply the borderGlow effect to the JavaFX node
             temp.setBouton(bouton);
         }
     }
@@ -409,6 +407,7 @@ public class ControllerJeu implements ControlledScreen {
     //Clic sur une case
     public void AnalysePosition(Position position) {
         Case analyse=plateau.getCaseByPosition(position);
+        Arme armeSelectionnee = listArmes.getSelectionModel().getSelectedItem();
         //A checker
         switch (mode) {
             case 1:
@@ -422,8 +421,6 @@ public class ControllerJeu implements ControlledScreen {
                     case "CaseNormale":
                         if (ListPortee.contains(analyse)) {
                             deplacerPionJoueur(position);
-                        }else{
-                            afficherCaseNormale(analyse);
                         }
                         break;
                     case "CaseArme":
@@ -431,23 +428,17 @@ public class ControllerJeu implements ControlledScreen {
                             deplacerPionJoueur(position);
                             //ouvrirCoffre();
                         }
-                        else
-                            afficherCoffre(analyse);
                         break;
                     case "CasePopo":
                         if (ListPortee.contains(analyse)) {
                             deplacerPionJoueur(position);
                            // prendrePotion();
-                        }else{
-                            afficherPopo(analyse);
                         }
                         break;
                     case "CaseArmure":
                         if (ListPortee.contains(analyse)) {
                             deplacerPionJoueur(position);
                             // prendreArmure();
-                        }else{
-                            afficherArmure(analyse);
                         }
                         break;
                 }
@@ -459,24 +450,36 @@ public class ControllerJeu implements ControlledScreen {
                         if(shoot.contains(analyse)){
                             if (j != plateau.turnPlayer) {
                           //      Tirer(j);
+                                attaque(analyse, armeSelectionnee);
                             }
                         }break;
                     case "CaseMur":
                         if(shoot.contains(analyse)){
                          //   TirerMur(analyse);
-                        }else{
-                            afficherMur(analyse);
-                        }break;
-                    case "CaseNormale":
-                        Arme armeSelectionnee = listArmes.getSelectionModel().getSelectedItem();
-                        if(armeSelectionnee.getName().equals("bazooka") || armeSelectionnee.getName().equals("grenade")) {
-                            ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
-                            int dommageTotal = 0;
-                            for(Integer lancer : listeDesLancers) {
-                                dommageTotal += lancer;
-                            }
-                            plateau.appliquerDegatsExplosion(analyse.getPosition(), armeSelectionnee, dommageTotal, listeDesLancers);
+                            attaque(analyse, armeSelectionnee);
                         }
+                        break;
+                    case "CaseNormale":
+                        if(shoot.contains(analyse)) {
+
+                            attaque(analyse, armeSelectionnee);
+                        }
+                        break;
+                    case "CaseArme":
+                        if(shoot.contains(analyse)) {
+                            attaque(analyse, armeSelectionnee);
+                        }
+                        break;
+                    case "CasePopo":
+                        if(shoot.contains(analyse)) {
+                            attaque(analyse, armeSelectionnee);
+                        }
+                        break;
+                    case "CaseArmure":
+                        if(shoot.contains(analyse)) {
+                            attaque(analyse, armeSelectionnee);
+                        }
+                        break;
                 }
                 break;
         }
@@ -502,8 +505,39 @@ public class ControllerJeu implements ControlledScreen {
         }
     }
 
-    private void explosion(Position position) {
-
+    private void attaque(Case analyse, Arme armeSelectionnee) {
+        if(analyse.getType().equals("CaseJoueur") || analyse.getType().equals("CaseMur")) {
+            if(armeSelectionnee.getName().equals("bazooka") || armeSelectionnee.getName().equals("grenade")) {
+                ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
+                int dommageTotal = 0;
+                for(Integer lancer : listeDesLancers) {
+                    dommageTotal += lancer;
+                }
+                plateau.appliquerDegatsExplosion(analyse.getPosition(), armeSelectionnee, dommageTotal, listeDesLancers);
+                ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
+                animationExplosion(listDesCasesDansLeRayon, armeSelectionnee);
+            }
+            else {
+                ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
+                int dommageTotal = 0;
+                for(Integer lancer : listeDesLancers) {
+                    dommageTotal += lancer;
+                }
+                plateau.appliquerDegatsClassiques(analyse, armeSelectionnee, dommageTotal, listeDesLancers);
+            }
+        }
+        else {
+            if(armeSelectionnee.getName().equals("bazooka") || armeSelectionnee.getName().equals("grenade")) {
+                ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
+                int dommageTotal = 0;
+                for(Integer lancer : listeDesLancers) {
+                    dommageTotal += lancer;
+                }
+                plateau.appliquerDegatsExplosion(analyse.getPosition(), armeSelectionnee, dommageTotal, listeDesLancers);
+                ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
+                animationExplosion(listDesCasesDansLeRayon, armeSelectionnee);
+            }
+        }
     }
 
     private void affichageDuJoueur(Joueur joueur) {
@@ -527,7 +561,10 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void obtenirPointsAttaque() {
+        ArrayList<Integer> listeDesLancers = new ArrayList<>();
         int lancer = plateau.lancerUnDe();
+        listeDesLancers.add(lancer);
+        mettreAjourLeLancer(listeDesLancers);
         plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque() + lancer);
     }
 
@@ -541,21 +578,93 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void mettreAjourLeLancer(ArrayList<Integer> listeDesLancers) {
-        /*String messageDeLancer = "Dernier lancer";
-        Label l = new Label(messageDeLancer);
-        l.setTextFill(Color.GRAY);
-        l.setStyle("-fx-font: 22 'Autumn Regular';" +
-                "-fx-text-alignment: center;");*/
-
-        //vBoxLancers.getChildren().add(l);
-        hBoxLancers.getChildren().clear();
-        for(int lancer : listeDesLancers) {
-            hBoxLancers.getChildren().add(new ImageView(new Image("images/ResultatLancer" + lancer + ".png", 72, 72, true, true)));
+        hBoxLancers1.getChildren().clear();
+        hBoxLancers2.getChildren().clear();
+        if(listeDesLancers.size() <= 2) {
+            for(int lancer : listeDesLancers) {
+                hBoxLancers1.getChildren().add(new ImageView(new Image("images/ResultatLancer" + lancer + ".png", 72, 72, true, true)));
+            }
         }
-        // fill background with java
-        BackgroundFill fill = new BackgroundFill(Color.TRANSPARENT, new CornerRadii(1), new Insets(0, 0, 0, 0));
-        hBoxLancers.setBackground(new Background(fill));
-        hBoxLancers.setBorder(new Border(new BorderStroke(Color.GRAY, null, new CornerRadii(1), new BorderWidths(2))));
+        else {
+            for(int i = 0; i < 2; i++) {
+                hBoxLancers1.getChildren().add(new ImageView(new Image("images/ResultatLancer" + listeDesLancers.get(i) + ".png", 72, 72, true, true)));
+            }
+            for(int i = 2; i < listeDesLancers.size(); i++) {
+                hBoxLancers2.getChildren().add(new ImageView(new Image("images/ResultatLancer" + listeDesLancers.get(i) + ".png", 72, 72, true, true)));
+            }
+        }
+
+    }
+
+    private void mettreAjourSanteArmure() {
+        vBoxSanteArmure.getChildren().clear();
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", (double)plateau.turnPlayer.getPtArmure() /100));
+        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("SanteProgressBar", (double)plateau.turnPlayer.getPtSante() /100));
+    }
+
+    private void mettreAjourInfoRessources() {
+        hBoxPA.getChildren().clear();
+        hBoxPM.getChildren().clear();
+        hBoxBrique.getChildren().clear();
+        Font font = new Font("Autumn Regular", 14);
+
+        //Pour les PA
+        Rectangle paIcon = new Rectangle();
+        paIcon.setWidth(20);
+        paIcon.setHeight(20);
+        paIcon.setFill(new ImagePattern(new Image("images/PAicon-min.png")));
+        hBoxPA.getChildren().add(paIcon);
+        Text nombreDePA = new Text(String.valueOf(plateau.turnPlayer.getPtAttaque()));
+        nombreDePA.setFont(font);
+        hBoxPA.getChildren().add(nombreDePA);
+
+        //Pour les PM
+        Rectangle pmIcon = new Rectangle();
+        pmIcon.setWidth(20);
+        pmIcon.setHeight(20);
+        pmIcon.setFill(new ImagePattern(new Image("images/PMicon-min.png")));
+        hBoxPM.getChildren().add(pmIcon);
+        Text nombreDePM = new Text(String.valueOf(plateau.turnPlayer.getPtMouvement()));
+        nombreDePM.setFont(font);
+        hBoxPM.getChildren().add(nombreDePM);
+
+        //Pour les briques
+        Rectangle briqueIcon = new Rectangle();
+        briqueIcon.setWidth(20);
+        briqueIcon.setHeight(20);
+        briqueIcon.setFill(new ImagePattern(new Image("images/BRIQUEicon-min.png")));
+        hBoxBrique.getChildren().add(briqueIcon);
+        Text nombreDeBrique = new Text(String.valueOf(plateau.turnPlayer.getPtConstruction()));
+        nombreDeBrique.setFont(font);
+        hBoxBrique.getChildren().add(nombreDeBrique);
+
+    }
+
+    private void initialiserRessources() {
+        Rectangle paIcon = new Rectangle();
+        paIcon.setWidth(20);
+        paIcon.setHeight(20);
+        paIcon.setFill(new ImagePattern(new Image("images/PAicon-min.png")));
+        hBoxPA.getChildren().add(paIcon);
+
+        Rectangle pmIcon = new Rectangle();
+        pmIcon.setWidth(20);
+        pmIcon.setHeight(20);
+        pmIcon.setFill(new ImagePattern(new Image("images/PMicon-min.png")));
+        hBoxPM.getChildren().add(pmIcon);
+
+        Rectangle briqueIcon = new Rectangle();
+        briqueIcon.setWidth(20);
+        briqueIcon.setHeight(20);
+        briqueIcon.setFill(new ImagePattern(new Image("images/BRIQUEicon-min.png")));
+        hBoxBrique.getChildren().add(briqueIcon);
+    }
+
+    class ColoredProgressBar extends ProgressBar {
+        ColoredProgressBar(String styleClass, double progress) {
+            super(progress);
+            getStyleClass().add(styleClass);
+        }
     }
 
     private void deplacerPionJoueur(Position destination) {
@@ -582,24 +691,40 @@ public class ControllerJeu implements ControlledScreen {
         pathfinding();
     }
 
-    private void mettreAjourSanteArmure() {
-        vBoxSanteArmure.getChildren().clear();
-        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", (double)plateau.turnPlayer.getPtArmure() /100));
-        vBoxSanteArmure.getChildren().add(new ColoredProgressBar("SanteProgressBar", (double)plateau.turnPlayer.getPtSante() /100));
-    }
-
-    class ColoredProgressBar extends ProgressBar {
-        ColoredProgressBar(String styleClass, double progress) {
-            super(progress);
-            getStyleClass().add(styleClass);
-        }
-    }
-
     private void update() {
         affichageDuJoueur(plateau.turnPlayer);
         mettreAjourSanteArmure();
+        mettreAjourInfoRessources();
+        boutonLancerPM.setVisible(true);
+    }
+
+    public void ouvrir() {
+
+    }
+
+    public void lancerPM() {
         obtenirPointsDeMouvement();
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(2000),
+                ae -> supprimerLesDes()));
+        timeline.play();
+        boutonLancerPM.setVisible(false);
+        boutonLancerPA.setVisible(true);
+    }
+
+    public void lancerPA() {
         obtenirPointsAttaque();
+        mettreAjourInfoRessources();
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(2000),
+                ae -> supprimerLesDes()));
+        timeline.play();
+        boutonLancerPA.setVisible(false);
+    }
+
+    private void supprimerLesDes() {
+        hBoxLancers1.getChildren().clear();
+        hBoxLancers2.getChildren().clear();
     }
 
     //FIN DU TOUR ET CHANGEMENT DE JOUEUR ACTIF
@@ -610,6 +735,39 @@ public class ControllerJeu implements ControlledScreen {
         clean_pathfinding(ListPortee);
         clean_pathfinding(shoot);
         update();
+    }
+
+    private boolean isCaseEstDansLeRayon(Position position, ArrayList<Case> listeDesCasesQuiExplosent) {
+        for(Case caseQuiExplose : listeDesCasesQuiExplosent) {
+            if(caseQuiExplose.getPosition().getX() == position.getX() && caseQuiExplose.getPosition().getY() == position.getY())
+                return true;
+        }
+        return false;
+    }
+
+    private void afficherExplosion(ArrayList<Case> listeDeCases){
+        for (Case temp:listeDeCases) {
+            Button bouton = temp.getBouton();
+            setImagePourLesBoutons(bouton, imageExplosion);
+            temp.setBouton(bouton);
+        }
+    }
+
+    private void decolorationApresExplosion(ArrayList<Case> listeDeCases, Arme armeUtilisee) {
+        for (Case temp : listeDeCases) {
+            Button bouton = temp.getBouton();
+            setImagePourLesBoutons(temp.getBouton(), temp.getImg());
+            temp.setBouton(bouton);
+        }
+        shoot_pathfinding(armeUtilisee);
+    }
+
+    private void animationExplosion(ArrayList<Case> listeDesCasesQuiExplosent, Arme armeUtilisee) {
+        afficherExplosion(listeDesCasesQuiExplosent);
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(1000),
+                ae -> decolorationApresExplosion(listeDesCasesQuiExplosent, armeUtilisee)));
+        timeline.play();
     }
 
     //Boutton permettant de retourner au menu

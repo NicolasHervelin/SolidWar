@@ -53,33 +53,57 @@
                         </Text>
                         <ImageView fx:id="imageJoueur" fitHeight="150.0" fitWidth="150.0" layoutX="50.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
                         <VBox fx:id="vBoxSanteArmure" layoutX="29.0" layoutY="245.0" spacing="10.0"></VBox>
-                        <ListView fx:id="listArmes" layoutX="29.0" layoutY="318.0" prefHeight="354.0" prefWidth="200.0">
+                            <HBox fx:id="hBoxPA" layoutX="30.0" layoutY="305.0" spacing="5.0">
+
+                            </HBox>
+                            <HBox fx:id="hBoxPM" layoutX="95.0" layoutY="305.0" spacing="5.0">
+
+                            </HBox>
+                            <HBox fx:id="hBoxBrique" layoutX="164.0" layoutY="305.0" spacing="5.0">
+
+                            </HBox>
+                        <ListView fx:id="listArmes" layoutX="29.0" layoutY="338.0" prefHeight="354.0" prefWidth="200.0">
                             <items>
                             </items>
                         </ListView>
-                        <Button fx:id="move" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#move" prefHeight="64.0" prefWidth="64.0">
+                        <Button fx:id="move" layoutX="45.0" layoutY="715.0" mnemonicParsing="false" onAction="#move" prefHeight="64.0" prefWidth="64.0">
                         </Button>
-                        <Button fx:id="fight" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#fight" prefHeight="64.0" prefWidth="64.0">
+                        <Button fx:id="fight" layoutX="131.0" layoutY="715.0" mnemonicParsing="false" onAction="#fight" prefHeight="64.0" prefWidth="64.0">
                         </Button>
                     </children>
                 </Pane>
                 <Pane fx:id="zoneLancer" GridPane.columnIndex="2" GridPane.rowIndex="0">
                     <children>
-                        <ImageView fx:id="imageJoueur2" fitHeight="150.0" fitWidth="150.0" layoutX="58.0" layoutY="14.0" opacity="0.65" pickOnBounds="true" />
+                        <ImageView fx:id="imageJoueur2" fitHeight="150.0" fitWidth="150.0" layoutX="58.0" layoutY="30.0" opacity="0.65" pickOnBounds="true" />
                         <Text fx:id="nomJoueur2" layoutX="8.0" layoutY="-1.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="250.0" y="220.0">
                             <font>
                                 <Font name="Autumn Regular" size="28.0" />
                             </font>
                         </Text>
-                            <HBox fx:id="hBoxLancers" layoutY="318.0" layoutX="65.0" spacing="5.0">
-                                <effect>
-                           <Reflection topOffset="1.8" />
-                                </effect>
+                        <Button fx:id="boutonLancerPM" layoutY="318.0" layoutX="52.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPM" text="Prends tes PM" wrapText="true">
+                            <font>
+                                <Font name="Autumn Regular" size="18.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="boutonLancerPA" visible="false" layoutY="318.0" layoutX="52.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPA" text="Prends tes PA">
+                            <font>
+                                <Font name="Autumn Regular" size="18.0" />
+                            </font>
+                        </Button>
+                        <VBox fx:id="vBoxLancers" layoutY="395.0" layoutX="25.0">
+                            <HBox fx:id="hBoxLancers1" spacing="5.0">
                                 <padding>
-                                   <Insets left="25.0" right="15.0" />
+                                    <Insets left="25.0" right="15.0" />
                                 </padding>
                             </HBox>
-                        <Button fx:id="boutonFinDuTour" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0"/>
+                            <HBox fx:id="hBoxLancers2" spacing="5.0">
+                                <padding>
+                                    <Insets left="25.0" right="15.0" />
+                                </padding>
+                            </HBox>
+                        </VBox>
+                        <Button fx:id="boutonOuvrir" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrir" prefHeight="64.0" prefWidth="64.0"/>
+                        <Button fx:id="boutonFinDuTour" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0"/>
                     </children>
                 </Pane>
                 <Pane GridPane.columnIndex="0" GridPane.rowIndex="1" />
@@ -104,3 +128,4 @@
         <RowConstraints minHeight="10.0" percentHeight="95.0" prefHeight="800.0" vgrow="SOMETIMES" />
     </rowConstraints>
 </GridPane>
+

@@ -382,33 +382,35 @@ public class Plateau {
             return false;
     }
 
-    public void attaquerJoueur(Joueur other, int degats, boolean isLancerParfait) {
-        if(isLancerParfait)
-            other.setPtSante(other.getPtSante() - degats);
-        else {
-            if(other.getPtArmure() < degats) {
-                other.setPtSante(other.getPtSante() - (degats - other.getPtArmure()));
-                other.setPtArmure(0);
-            }
+    public void attaquerJoueur(Joueur other, Arme arme, int degats, boolean isLancerParfait) {
+        if(isPointsAttaqueSuffisants(arme.getPa())) {
+            if (isLancerParfait)
+                other.setPtSante(other.getPtSante() - degats);
             else {
-                other.setPtArmure(other.getPtArmure() - degats);
+                if (other.getPtArmure() < degats) {
+                    other.setPtSante(other.getPtSante() - (degats - other.getPtArmure()));
+                    other.setPtArmure(0);
+                } else {
+                    other.setPtArmure(other.getPtArmure() - degats);
+                }
             }
         }
     }
 
-    public void attaquerMur(Mur mur, int degats, boolean isLancerParfait) {
-        if(isLancerParfait) {
-            mur.setPtStructure(0);
-        }
-        else {
-            if(mur.getPtStructure() < degats)
+    public void attaquerMur(Mur mur, Arme arme, int degats, boolean isLancerParfait) {
+        if(isPointsAttaqueSuffisants(arme.getPa())) {
+            if (isLancerParfait) {
                 mur.setPtStructure(0);
-            else
-                mur.setPtStructure(mur.getPtStructure() - degats);
+            } else {
+                if (mur.getPtStructure() < degats)
+                    mur.setPtStructure(0);
+                else
+                    mur.setPtStructure(mur.getPtStructure() - degats);
+            }
         }
     }
 
-    private ArrayList<Case> casesDansLeRayon(Position positionExplosion, int rayon, ArrayList<Case> casesDansExplosion) {
+    public ArrayList<Case> casesDansLeRayon(Position positionExplosion, int rayon, ArrayList<Case> casesDansExplosion) {
 
         Case droite = getCaseRight(positionExplosion);
         Case gauche = getCaseLeft(positionExplosion);
@@ -423,15 +425,19 @@ public class Plateau {
         if(bas != null && !casesDansExplosion.contains(bas))
             casesDansExplosion.add(bas);
         if(rayon == 2) { //while i < rayon
-            casesDansLeRayon(droite.getPosition(), 1, casesDansExplosion);
-            casesDansLeRayon(gauche.getPosition(), 1, casesDansExplosion);
-            casesDansLeRayon(haut.getPosition(), 1, casesDansExplosion);
-            casesDansLeRayon(bas.getPosition(), 1, casesDansExplosion);
+            if(droite != null)
+                casesDansLeRayon(droite.getPosition(), 1, casesDansExplosion);
+            if(gauche != null)
+                casesDansLeRayon(gauche.getPosition(), 1, casesDansExplosion);
+            if(haut != null)
+                casesDansLeRayon(haut.getPosition(), 1, casesDansExplosion);
+            if(bas != null)
+                casesDansLeRayon(bas.getPosition(), 1, casesDansExplosion);
         }
         return casesDansExplosion;
     }
 
-    private boolean isPointsAttaqueSuffisants(int ptAttaqueNecessaires){
+    public boolean isPointsAttaqueSuffisants(int ptAttaqueNecessaires){
         if(turnPlayer.getPtAttaque() >= ptAttaqueNecessaires) {
             return true;
         }
@@ -445,13 +451,13 @@ public class Plateau {
                     //Check pour infliger dégats aux joueurs présents dans l'explosion
                     CaseJoueur caseJoueur = (CaseJoueur) caseActuelle;
                     Joueur joueur = caseJoueur.getJoueur();
-                    attaquerJoueur(joueur, degats, isLancerParfait(listeDeLancers));
+                    attaquerJoueur(joueur, arme, degats, isLancerParfait(listeDeLancers));
                 }
                 if(caseActuelle.getType().equals("CaseMur")){
                     //Check pour infliger dégats aux murs présents dans l'explosion
                     CaseMur caseMur = (CaseMur) caseActuelle;
                     Mur mur = caseMur.getMur();
-                    attaquerMur(mur, degats, isLancerParfait(listeDeLancers));
+                    attaquerMur(mur, arme, degats, isLancerParfait(listeDeLancers));
                 }
             }
             turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
@@ -459,17 +465,17 @@ public class Plateau {
     }
 
     public void appliquerDegatsClassiques(Case caseSelectionnee, Arme arme, int degats, ArrayList<Integer> listeDeLancers) {
-        if (isPointsAttaqueSuffisants(arme.getPa())) {
+        //if (isPointsAttaqueSuffisants(arme.getPa())) {
             if (caseSelectionnee.getType().equals("CaseJoueur")) {
                 CaseJoueur caseJoueur = (CaseJoueur) caseSelectionnee;
-                attaquerJoueur(caseJoueur.getJoueur(), degats, isLancerParfait(listeDeLancers));
+                attaquerJoueur(caseJoueur.getJoueur(), arme, degats, isLancerParfait(listeDeLancers));
             }
             if (caseSelectionnee.getType().equals("CaseMur")) {
                 CaseMur caseMur = (CaseMur) caseSelectionnee;
-                attaquerMur(caseMur.getMur(), degats, isLancerParfait(listeDeLancers));
+                attaquerMur(caseMur.getMur(), arme, degats, isLancerParfait(listeDeLancers));
             }
             turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
-        }
+        //}
     }
 
     public void setCasesDuPlateau(ArrayList<Case> casesDuPlateau) {

@@ -34,6 +34,10 @@
     -fx-pref-height:900;
 }
 
+.nodeForAnimations{
+    -fx-background-image: url("images/TextureExplosion40-min.png");
+}
+
 #gridPlateau .children {
     -fx-padding: 0 0 0 0;
 }
