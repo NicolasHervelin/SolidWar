@@ -647,9 +647,9 @@ public class ControllerJeu implements ControlledScreen {
     //Détruit un mur et l'actualise
     private void detruireMur(CaseMur caseMur){
         CaseNormale caseNormale = new CaseNormale(caseMur.getPosition());
+        System.out.println();
         plateau.detruireMur(caseMur, caseNormale);
         definitionCaseDuPlateau(caseNormale.getPosition());
-        afficherCaseNormale(plateau.getCaseByPosition(caseNormale.position));
         clean_pathfinding(shoot);
         shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
         System.out.println(plateau.turnPlayer.getBrique());
@@ -799,8 +799,13 @@ public class ControllerJeu implements ControlledScreen {
         imageJoueur2.setImage(caseMur.getImg());
         nomJoueur2.setText("Mur");
         ptStructure.setProgress((double)caseMur.getMur().getPtStructure() /10);
-        ptStructure.setVisible(true);
-
+        if(caseMur.getMur().getPtStructure() == 0) {
+            CaseNormale caseNormale = new CaseNormale(caseMur.getPosition());
+            afficherCaseNormale(caseNormale);
+            ptStructure.setVisible(false);
+        }
+        else
+            ptStructure.setVisible(true);
     }
 
     //Affichage pour une case normale
