@@ -380,6 +380,16 @@ public class Plateau {
         return lance;
     }
 
+    public int lancerUnDeAquatreChiffres() {
+        int lance = 1 + (int)(Math.random() * ((4 - 1) + 1));
+        return lance;
+    }
+
+    public int lancerUnDeAneufChiffres() {
+        int lance = 1 + (int)(Math.random() * ((9 - 1) + 1));
+        return lance;
+    } 
+
 
     public int calculDeDistance(Position positionJoueur, Position caseCible) {
             int x_diff=caseCible.getX()-positionJoueur.getX();
