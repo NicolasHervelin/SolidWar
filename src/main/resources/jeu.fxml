@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.effect.Reflection?>
 <?import javafx.scene.image.ImageView?>
@@ -68,7 +69,7 @@
                         </ListView>
                         <Button fx:id="move" layoutX="45.0" layoutY="715.0" mnemonicParsing="false" onAction="#move" prefHeight="64.0" prefWidth="64.0">
                         </Button>
-                        <Button fx:id="fight" layoutX="131.0" layoutY="715.0" mnemonicParsing="false" onAction="#fight" prefHeight="64.0" prefWidth="64.0">
+                        <Button fx:id="buil" layoutX="131.0" layoutY="715.0" mnemonicParsing="false" onAction="#build" prefHeight="64.0" prefWidth="64.0">
                         </Button>
                     </children>
                 </Pane>
@@ -104,6 +105,7 @@
                         </VBox>
                         <Button fx:id="boutonOuvrir" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrir" prefHeight="64.0" prefWidth="64.0"/>
                         <Button fx:id="boutonFinDuTour" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0"/>
+                  <ProgressBar fx:id="ptStructure" layoutX="33.0" layoutY="264.0" prefWidth="200.0" progress="0.0" visible="false" />
                     </children>
                 </Pane>
                 <Pane GridPane.columnIndex="0" GridPane.rowIndex="1" />
@@ -128,4 +130,3 @@
         <RowConstraints minHeight="10.0" percentHeight="95.0" prefHeight="800.0" vgrow="SOMETIMES" />
     </rowConstraints>
 </GridPane>
-
