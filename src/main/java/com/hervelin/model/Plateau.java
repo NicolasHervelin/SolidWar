@@ -278,6 +278,12 @@ public class Plateau {
         return null;
     }
 
+    public void ajouterMur(CaseMur c){
+        listeDeMurs.add(c);
+    }
+    public void retirerMur(CaseMur c){
+        listeDeMurs.remove(c);
+    }
     private void creerArmes() {
         for(int i = 0; i <= xTaille/2; i++) {
             int xRandom = 1 + (int)(Math.random() * ((xTaille - 1) + 1));

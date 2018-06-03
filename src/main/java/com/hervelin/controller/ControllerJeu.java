@@ -599,11 +599,12 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     public void construireMur(Case c){
-        Case caseDestinationNouvelle = new CaseMur(new Mur(),c.getPosition());
-        plateau.remplacerCase(c, caseDestinationNouvelle);
+        CaseMur ce = new CaseMur(new Mur(),c.getPosition());
+        plateau.remplacerCase(c, ce);
+        plateau.ajouterMur(ce);
         definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
         plateau.turnPlayer.setBrique(plateau.turnPlayer.getBrique()-10);
-        afficherMur(caseDestinationNouvelle);
+        afficherMur(ce);
         clean_pathfinding(build);
         build_pathfinding();
         System.out.println(plateau.turnPlayer.getBrique());
@@ -612,9 +613,10 @@ public class ControllerJeu implements ControlledScreen {
     public void detruireMur(CaseMur c){
         ArrayList<Integer> listeDesLancers = new ArrayList<>();
         int lancer;
-        Case caseDestination = plateau.getCaseByPosition(c.getPosition());
+        CaseMur caseDestination = c;
         Case caseDestinationNouvelle = new CaseNormale(c.getPosition());
         plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
+        plateau.retirerMur(c);
         definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
         lancer=plateau.lancerUnDe();
         plateau.turnPlayer.setBrique(plateau.turnPlayer.getBrique()+lancer);
