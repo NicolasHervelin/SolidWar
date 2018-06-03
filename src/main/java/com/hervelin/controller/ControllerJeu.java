@@ -39,12 +39,6 @@ public class ControllerJeu implements ControlledScreen {
     private Case caseDejaSelectionnee;
     private int mode=0;
 
-     //zoom factor
-
-    private final DoubleProperty zoomProperty = new SimpleDoubleProperty(2000);
-    private final DoubleProperty mouseXProperty = new SimpleDoubleProperty();
-    private final DoubleProperty mouseYProperty = new SimpleDoubleProperty();
-
 
     public Plateau plateau;
     public int nombreCaseX = 40;
@@ -56,6 +50,7 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> build = new ArrayList<Case>();
     private ArrayList<Case> casesDansExplosion = new ArrayList<Case>();
     private Image imageExplosion = new Image("images/TextureExplosion40-min.png");
+    private Case caseSauvegarde = null;
 
     @FXML
     public GridPane gridPlateau;
@@ -64,7 +59,7 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public GridPane anchorMain;
     @FXML
-    public Button buil, move, boutonFinDuTour, boutonOuvrir, boutonLancerPM, boutonLancerPA;
+    public Button buil, move, boutonFinDuTour, boutonOuvrirArme, boutonOuvrirArmure, boutonOuvrirPopo, boutonLancerPM, boutonLancerPA;
     @FXML
     public ListView<Arme> listArmes;
     @FXML
@@ -155,6 +150,8 @@ public class ControllerJeu implements ControlledScreen {
         Glow glow = new Glow(0.5);
         Reflection reflection=new Reflection();
         reflection.setInput(glow);
+
+        //Boutons de sélection du mode
         Image img=new Image("images/build.png");
         ImageView imageView = new ImageView(img);
         imageView.setPreserveRatio(true);
@@ -166,96 +163,39 @@ public class ControllerJeu implements ControlledScreen {
         move.setGraphic(imageView2);
         move.setEffect(reflection);
 
+        //Bouton Fin du tour
         Image img3=new Image("images/FinDuTour.png");
         ImageView imageView3 = new ImageView(img3);
         imageView2.setPreserveRatio(true);
         boutonFinDuTour.setGraphic(imageView3);
         boutonFinDuTour.setEffect(reflection);
-        Image img4=new Image("images/Ouvrir.png");
+
+        //Boutons ouvrir
+        Image img4=new Image("images/OuvrirCoffreicon-min.png");
         ImageView imageView4 = new ImageView(img4);
         imageView2.setPreserveRatio(true);
-        boutonOuvrir.setGraphic(imageView4);
-        boutonOuvrir.setEffect(reflection);
+        boutonOuvrirArme.setGraphic(imageView4);
+        boutonOuvrirArme.setEffect(reflection);
+        Image img5=new Image("images/Ouvriricon-min.png");
+        ImageView imageView5 = new ImageView(img5);
+        imageView5.setPreserveRatio(true);
+        boutonOuvrirPopo.setGraphic(imageView5);
+        boutonOuvrirPopo.setEffect(reflection);
+        Image img6=new Image("images/Ouvriricon-min.png");
+        ImageView imageView6 = new ImageView(img6);
+        imageView6.setPreserveRatio(true);
+        boutonOuvrirArmure.setGraphic(imageView6);
+        boutonOuvrirArmure.setEffect(reflection);
 
     }
 
-    public void afficherArme(Arme arme){
-        imageJoueur2.setImage(arme.getImage());
-        nomJoueur2.setText(arme.getName());
-        ptStructure.setVisible(false);
 
-    }
-
-    public void afficherMur(Case mur){
-        imageJoueur2.setImage(mur.getImg());
-        nomJoueur2.setText("Mur");
-        ptStructure.setVisible(true);
-
-    }
-
-    public void afficherCaseNormale(Case cn){
-        imageJoueur2.setImage(cn.getImg());
-        nomJoueur2.setText("Case");
-        ptStructure.setVisible(false);
-
-    }
-
-    public void afficherPopo(Case Popo){
-        imageJoueur2.setImage(Popo.getImage128());
-        nomJoueur2.setText("Potion");
-        ptStructure.setVisible(false);
-
-    }
-
-    public void afficherCoffre(Case coffre){
-        imageJoueur2.setImage(coffre.getImage128());
-        nomJoueur2.setText("Coffre");
-        ptStructure.setVisible(false);
-
-    }
-
-    public void afficherArmure(Case armure){
-        imageJoueur2.setImage(armure.getImage128());
-        nomJoueur2.setText("Armure");
-        ptStructure.setVisible(false);
-    }
-
-    public void move(){
-        switch (mode){
-            case 1:
-                clean_pathfinding(ListPortee);
-                break;
-            case 2:
-                clean_pathfinding(shoot);
-                break;
-            case 3:
-                clean_pathfinding(build);
-                break;
-            default:break;
-        }
-        mode=1;
-        pathfinding();
-    }
-
-    public void build(){
-        switch (mode){
-            case 1:
-                clean_pathfinding(ListPortee);
-                break;
-            case 2:
-                clean_pathfinding(shoot);
-                break;
-            case 3:
-                clean_pathfinding(build);
-                break;
-            default:break;
-        }
-        mode=3;
-        build_pathfinding();
-    }
+    /*****
+     *  GridPlateau  *
+     *****/
 
     //Définition des cases du plateau
-    public void definitionCaseDuPlateau(Position positionAConserver) {
+    private void definitionCaseDuPlateau(Position positionAConserver) {
         gridPlateau.getChildren().clear();
         for (int row = 1; row <= plateau.getxTaille(); row++) {
             for (int col = 1; col <= plateau.getyTaille(); col++) {
@@ -279,7 +219,7 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     //Assigne à chaque bouton l'image correspondante
-    public void setImagePourLesBoutons(Button bouton, Image img) {
+    private void setImagePourLesBoutons(Button bouton, Image img) {
         ImageView imageView = new ImageView(img);
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(plateau.getxTaille() / 1.5);
@@ -287,9 +227,194 @@ public class ControllerJeu implements ControlledScreen {
         bouton.setGraphic(imageView);
     }
 
+    //Ajoute une bodure colorée sur une liste de cases
+    private void coloration(Color color, ArrayList<Case> closedList){
+        for (Case temp:closedList) {
+            InnerShadow borderGlow = new InnerShadow();
+            Button bouton =temp.getBouton();
+            borderGlow.setOffsetX(0f);
+            borderGlow.setOffsetY(0f);
+            borderGlow.setColor(color);
+            bouton.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
+            temp.setBouton(bouton);
+        }
+    }
+
+    //Fait apparaître une image d'explosion sur une liste de cases
+    private void afficherExplosion(ArrayList<Case> listeDeCases){
+        for (Case temp:listeDeCases) {
+            Button bouton = temp.getBouton();
+            setImagePourLesBoutons(bouton, imageExplosion);
+            temp.setBouton(bouton);
+        }
+    }
+
+    //Fait disparaître l'image d'explosion et applique les dégats d'explosion
+    private void decolorationApresExplosion(Position positionExplosion, int degats, ArrayList<Case> listeDeCases, Arme armeUtilisee, ArrayList<Integer> listeDesLancers) {
+        for (Case temp : listeDeCases) {
+            Button bouton = temp.getBouton();
+            setImagePourLesBoutons(temp.getBouton(), temp.getImg());
+            temp.setBouton(bouton);
+        }
+        plateau.appliquerDegatsExplosion(positionExplosion , armeUtilisee, degats, listeDesLancers);
+        remplacerLesMursDetruits(listeDeCases);
+        shoot_pathfinding(armeUtilisee);
+    }
+
+
+    /*****
+     *  Fin GridPlateau  *
+     *****/
+
+
+
+    /*****
+     *  Analyse des cases *
+     *****/
+
+    //Code pour le pathfinding
+    private void AnalyseCase(Case nextCase, int i){
+        if (nextCase!=null && !openList.contains(nextCase) && !ListPortee.contains(nextCase) &&  nextCase.getType() != "CaseMur") {
+            if(nextCase.getCout()>0){
+                nextCase.setCout(0);
+            }
+            nextCase.setCout(i+1);
+            if(nextCase.getCout()<=plateau.turnPlayer.getPtMouvement()) {
+                openList.add(nextCase);
+            }else nextCase.setCout(0);
+        }else if (openList.contains(nextCase) && (i+1)<nextCase.getCout()){
+            nextCase.setCout(i+1);
+        }else if (ListPortee.contains(nextCase) && (i+1)<nextCase.getCout()){
+            ListPortee.remove(nextCase);
+            nextCase.setCout(i+1);
+            openList.add(nextCase);
+        }
+    }
+
+    //Clic sur une case
+    private void AnalysePosition(Position position) {
+        Case analyse=plateau.getCaseByPosition(position);
+        Arme armeSelectionnee = listArmes.getSelectionModel().getSelectedItem();
+        //A checker
+        switch (mode) {
+            case 1:
+                switch (analyse.getType()) {
+                    case "CaseJoueur":
+                        Joueur j = plateau.getJoueurByPosition(position);
+                        if (j != plateau.turnPlayer) {
+                            affichageDuJoueur2(j);
+                        }
+                        break;
+                    case "CaseNormale":
+                        if (ListPortee.contains(analyse)) {
+                            deplacerPionJoueur(position);
+                        }
+                        break;
+                    case "CaseArme":
+                        if (ListPortee.contains(analyse)) {
+                            deplacerPionJoueur(position);
+                            //ouvrirCoffre();
+                        }
+                        break;
+                    case "CasePopo":
+                        if (ListPortee.contains(analyse)) {
+                            deplacerPionJoueur(position);
+                            // prendrePotion();
+                        }
+                        break;
+                    case "CaseArmure":
+                        if (ListPortee.contains(analyse)) {
+                            deplacerPionJoueur(position);
+                            // prendreArmure();
+                        }
+                        break;
+                }
+                break;
+            case 2:
+                switch (analyse.getType()) {
+                    case "CaseJoueur":
+                        Joueur j = plateau.getJoueurByPosition(position);
+                        if(shoot.contains(analyse)){
+                            if (j != plateau.turnPlayer) {
+                                //      Tirer(j);
+                                attaque(analyse, armeSelectionnee);
+                            }
+                        }break;
+                    case "CaseMur":
+                        if(shoot.contains(analyse)){
+                            attaque(analyse, armeSelectionnee);
+
+                            //attaque(analyse, armeselectionnee)
+                        }
+                        break;
+                    case "CaseNormale":
+                        if(shoot.contains(analyse)) {
+                            attaque(analyse, armeSelectionnee);
+                        }
+                        break;
+                    case "CaseArme":
+                        if(shoot.contains(analyse)) {
+                            attaque(analyse, armeSelectionnee);
+                        }
+                        break;
+                    case "CasePopo":
+                        if(shoot.contains(analyse)) {
+                            attaque(analyse, armeSelectionnee);
+                        }
+                        break;
+                    case "CaseArmure":
+                        if(shoot.contains(analyse)) {
+                            attaque(analyse, armeSelectionnee);
+                        }
+                        break;
+                }
+                break;
+            case 3:
+                switch (analyse.getType()) {
+                    case "CaseNormale":
+                        if(build.contains(analyse) && plateau.turnPlayer.getBrique()>=10){
+                            construireMur(analyse);
+                        }
+                }break;
+
+        }
+        switch (analyse.getType()) {
+            case "CaseJoueur":
+                Joueur j = plateau.getJoueurByPosition(position);
+                if (j != plateau.turnPlayer) {
+                    affichageDuJoueur2(j);
+                }
+                break;
+            case "CaseMur":
+                afficherMur(analyse);
+                break;
+            case "CaseNormale":
+                afficherCaseNormale(analyse);
+                break;
+            case "CaseArme":
+                afficherCoffre(analyse);
+                break;
+            case "CasePopo":
+                afficherPopo(analyse);
+                break;
+            case "CaseArmure":
+                afficherArmure(analyse);
+                break;
+        }
+    }
+
+    /*****
+     *  Fin Analyse des cases *
+     *****/
+
+
+
+    /*****
+     *  PathFinding *
+     *****/
 
     // Affiche en rouge les cases où le joueur peut tirer
-    public void clean_pathfinding(ArrayList<Case> l){
+    private void clean_pathfinding(ArrayList<Case> l){
         if(l!=null) {
             for (Case temp : l) {
                 InnerShadow borderGlow = new InnerShadow();
@@ -304,7 +429,7 @@ public class ControllerJeu implements ControlledScreen {
         l.clear();
     }
 
-    public void build_pathfinding(){
+    private void build_pathfinding(){
         build=new ArrayList<Case>();
         Case positionactuelle;
         Case Right;
@@ -332,7 +457,7 @@ public class ControllerJeu implements ControlledScreen {
         coloration(Color.GREEN,build);
     }
 
-    public void shoot_pathfinding(Arme arme){
+    private void shoot_pathfinding(Arme arme){
         switch(arme.getTypeTir()){
             case "droit":
                 int row;
@@ -403,8 +528,7 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     // Affiche en bleu les cases où le joueur peut se déplacer
-
-    public void pathfinding(){
+    private void pathfinding(){
         openList=new ArrayList<Case>();
         ListPortee=new ArrayList<Case>();
         Case positionactuelle;
@@ -431,242 +555,167 @@ public class ControllerJeu implements ControlledScreen {
         coloration(Color.BLUE,ListPortee);
     }
 
-    public void coloration(Color color, ArrayList<Case> closedList){
-        for (Case temp:closedList) {
-            InnerShadow borderGlow = new InnerShadow();
-            Button bouton =temp.getBouton();
-            borderGlow.setOffsetX(0f);
-            borderGlow.setOffsetY(0f);
-            borderGlow.setColor(color);
-            bouton.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
-            temp.setBouton(bouton);
-        }
-    }
+    /*****
+     *  Fin PathFinding *
+     *****/
 
-    //Code pour le pathfinding
-    public void AnalyseCase(Case nextCase, int i){
-        if (nextCase!=null && !openList.contains(nextCase) && !ListPortee.contains(nextCase) &&  nextCase.getType() != "CaseMur") {
-            if(nextCase.getCout()>0){
-                nextCase.setCout(0);
-            }
-            nextCase.setCout(i+1);
-            if(nextCase.getCout()<=plateau.turnPlayer.getPtMouvement()) {
-                openList.add(nextCase);
-            }else nextCase.setCout(0);
-        }else if (openList.contains(nextCase) && (i+1)<nextCase.getCout()){
-            nextCase.setCout(i+1);
-        }else if (ListPortee.contains(nextCase) && (i+1)<nextCase.getCout()){
-            ListPortee.remove(nextCase);
-            nextCase.setCout(i+1);
-            openList.add(nextCase);
-        }
-    }
 
-    //Clic sur une case
-    public void AnalysePosition(Position position) {
-        Case analyse=plateau.getCaseByPosition(position);
-        Arme armeSelectionnee = listArmes.getSelectionModel().getSelectedItem();
-        //A checker
-        switch (mode) {
-            case 1:
-                switch (analyse.getType()) {
-                    case "CaseJoueur":
-                        Joueur j = plateau.getJoueurByPosition(position);
-                        if (j != plateau.turnPlayer) {
-                            affichageDuJoueur2(j);
-                        }
-                        break;
-                    case "CaseNormale":
-                        if (ListPortee.contains(analyse)) {
-                            deplacerPionJoueur(position);
-                        }
-                        break;
-                    case "CaseArme":
-                        if (ListPortee.contains(analyse)) {
-                            deplacerPionJoueur(position);
-                            //ouvrirCoffre();
-                        }
-                        break;
-                    case "CasePopo":
-                        if (ListPortee.contains(analyse)) {
-                            deplacerPionJoueur(position);
-                           // prendrePotion();
-                        }
-                        break;
-                    case "CaseArmure":
-                        if (ListPortee.contains(analyse)) {
-                            deplacerPionJoueur(position);
-                            // prendreArmure();
-                        }
-                        break;
-                }
-                break;
-            case 2:
-                switch (analyse.getType()) {
-                    case "CaseJoueur":
-                        Joueur j = plateau.getJoueurByPosition(position);
-                        if(shoot.contains(analyse)){
-                            if (j != plateau.turnPlayer) {
-                          //      Tirer(j);
-                                attaque(analyse, armeSelectionnee);
-                            }
-                        }break;
-                    case "CaseMur":
-                        CaseMur c=plateau.getCaseMurByPosition(position);
-                        if(shoot.contains(analyse)){
-                            ptStructure.setVisible(true);
-                            TirerMur(c);
-                            //attaque(analyse, armeselectionnee)
-                        }break;
-                    case "CaseNormale":
-                        if(shoot.contains(analyse)) {
-                            attaque(analyse, armeSelectionnee);
-                        }
-                        break;
-                    case "CaseArme":
-                        if(shoot.contains(analyse)) {
-                            attaque(analyse, armeSelectionnee);
-                        }
-                        break;
-                    case "CasePopo":
-                        if(shoot.contains(analyse)) {
-                            attaque(analyse, armeSelectionnee);
-                        }
-                        break;
-                    case "CaseArmure":
-                        if(shoot.contains(analyse)) {
-                            attaque(analyse, armeSelectionnee);
-                        }
-                        break;
-                }
-                break;
-            case 3:
-                switch (analyse.getType()) {
-                    case "CaseNormale":
-                        if(build.contains(analyse) && plateau.turnPlayer.getBrique()>=10){
-                            construireMur(analyse);
-                        }
-                }break;
 
-        }
-        switch (analyse.getType()) {
-            case "CaseJoueur":
-                Joueur j = plateau.getJoueurByPosition(position);
-                if (j != plateau.turnPlayer) {
-                    affichageDuJoueur2(j);
-                }
-                break;
-            case "CaseMur":
-                afficherMur(analyse);
-                break;
-            case "CaseNormale":
-                afficherCaseNormale(analyse);
-                break;
-            case "CaseArme":
-                afficherCoffre(analyse);
-                break;
-            case "CasePopo":
-                afficherPopo(analyse);
-                break;
-            case "CaseArmure":
-                afficherArmure(analyse);
-                break;
-        }
-    }
+    /*****
+     *  Attaques et constructions *
+     *****/
 
+    //Gestion des attaques en fonction de l'arme
     private void attaque(Case analyse, Arme armeSelectionnee) {
-        if(analyse.getType().equals("CaseJoueur") || analyse.getType().equals("CaseMur")) {
-            if(armeSelectionnee.getName().equals("bazooka") || armeSelectionnee.getName().equals("grenade")) {
-                ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
-                int dommageTotal = 0;
-                for(Integer lancer : listeDesLancers) {
-                    dommageTotal += lancer;
+        if(plateau.isPointsAttaqueSuffisants(armeSelectionnee.getPa())) {
+            if(analyse.getType().equals("CaseJoueur") || analyse.getType().equals("CaseMur")) {
+                if(armeSelectionnee.getName().equals("bazooka") || armeSelectionnee.getName().equals("grenade")) {
+                    ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
+                    int dommageTotal = 0;
+                    for(Integer lancer : listeDesLancers) {
+                        dommageTotal += lancer;
+                    }
+                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
+                    explosion(analyse.getPosition(), dommageTotal, listDesCasesDansLeRayon, armeSelectionnee, listeDesLancers);
                 }
-                plateau.appliquerDegatsExplosion(analyse.getPosition(), armeSelectionnee, dommageTotal, listeDesLancers);
-                ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
-                animationExplosion(listDesCasesDansLeRayon, armeSelectionnee);
+                else {
+                    ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
+                    int dommageTotal = 0;
+                    for(Integer lancer : listeDesLancers) {
+                        dommageTotal += lancer;
+                    }
+                    plateau.appliquerDegatsClassiques(analyse, armeSelectionnee, dommageTotal, listeDesLancers);
+                    if(analyse.getType().equals("CaseMur")) {
+                        CaseMur caseMur = (CaseMur) analyse;
+                        if(caseMur.getMur().getPtStructure() <= 0) {
+                            detruireMur(caseMur);
+                        }
+                    }
+                }
             }
             else {
-                ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
-                int dommageTotal = 0;
-                for(Integer lancer : listeDesLancers) {
-                    dommageTotal += lancer;
+                if(armeSelectionnee.getName().equals("bazooka") || armeSelectionnee.getName().equals("grenade")) {
+                    ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
+                    int dommageTotal = 0;
+                    for(Integer lancer : listeDesLancers) {
+                        dommageTotal += lancer;
+                    }
+                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
+                    explosion(analyse.getPosition(), dommageTotal, listDesCasesDansLeRayon, armeSelectionnee, listeDesLancers);
                 }
-                plateau.appliquerDegatsClassiques(analyse, armeSelectionnee, dommageTotal, listeDesLancers);
             }
+            mettreAjourInfoRessources();
         }
         else {
-            if(armeSelectionnee.getName().equals("bazooka") || armeSelectionnee.getName().equals("grenade")) {
-                ArrayList<Integer> listeDesLancers = obtenirPointsDommage(armeSelectionnee.getDmg_dés());
-                int dommageTotal = 0;
-                for(Integer lancer : listeDesLancers) {
-                    dommageTotal += lancer;
+            System.out.println("Points d'attaque insuffisants !!");
+            mettreAjourInfoRessources();
+        }
+    }
+
+    //Appelle les méthodes permettant l'explosion visuelle et la répartition des dégats
+    private void explosion(Position positionExplosion, int degats, ArrayList<Case> listeDesCasesQuiExplosent, Arme armeUtilisee, ArrayList<Integer> listeDesLancers) {
+        afficherExplosion(listeDesCasesQuiExplosent);
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(800),
+                ae -> decolorationApresExplosion(positionExplosion, degats, listeDesCasesQuiExplosent, armeUtilisee, listeDesLancers)));
+        timeline.play();
+    }
+
+    //Remplace les murs détruits par une case normale
+    private void remplacerLesMursDetruits(ArrayList<Case> listeDeCases) {
+        for(Case c : listeDeCases){
+            if(c.getType().equals("CaseMur")) {
+                CaseMur caseMur = (CaseMur) c;
+                if(caseMur.getMur().getPtStructure() <= 0) {
+                    detruireMur(caseMur);
                 }
-                plateau.appliquerDegatsExplosion(analyse.getPosition(), armeSelectionnee, dommageTotal, listeDesLancers);
-                ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
-                animationExplosion(listDesCasesDansLeRayon, armeSelectionnee);
             }
         }
     }
-    public void TirerMur(CaseMur c){
-        ArrayList<Integer> listeDesLancers = new ArrayList<>();
-        Mur mur=c.getMur();
-        int lancer;
-        int somme=0;
-        for (int i=0; i<listArmes.getSelectionModel().getSelectedItem().getDmg_dés();i++){
-            lancer=plateau.lancerUnDe();
-            somme=somme+lancer;
-            listeDesLancers.add(lancer);
-        }
-        mettreAjourLeLancer(listeDesLancers);
 
-        mur.setPtStructure(mur.getPtStructure()-somme);
-        ptStructure.setProgress((double)mur.getPtStructure()/10);
-        if(mur.getPtStructure()<=0){
-            detruireMur(c);
-        }
-
-    }
-
-    public void construireMur(Case c){
-        CaseMur ce = new CaseMur(new Mur(),c.getPosition());
-        plateau.remplacerCase(c, ce);
-        plateau.ajouterMur(ce);
-        definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
-        plateau.turnPlayer.setBrique(plateau.turnPlayer.getBrique()-10);
-        afficherMur(ce);
+    //Construit un mur et actualise
+    private void construireMur(Case c){
+        CaseMur cm = new CaseMur(new Mur(),c.getPosition());
+        plateau.construireMur(c, cm);
+        definitionCaseDuPlateau(cm.getPosition());
+        afficherMur(cm);
         clean_pathfinding(build);
         build_pathfinding();
         System.out.println(plateau.turnPlayer.getBrique());
     }
 
-    public void detruireMur(CaseMur c){
-        ArrayList<Integer> listeDesLancers = new ArrayList<>();
-        int lancer;
-        CaseMur caseDestination = c;
-        Case caseDestinationNouvelle = new CaseNormale(c.getPosition());
-        plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
-        plateau.retirerMur(c);
-        definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
-        lancer=plateau.lancerUnDe();
-        plateau.turnPlayer.setBrique(plateau.turnPlayer.getBrique()+lancer);
-        listeDesLancers.add(lancer);
-        mettreAjourLeLancer(listeDesLancers);
-        afficherCaseNormale(caseDestinationNouvelle);
+    //Détruit un mur et l'actualise
+    private void detruireMur(CaseMur caseMur){
+        CaseNormale caseNormale = new CaseNormale(caseMur.getPosition());
+        plateau.detruireMur(caseMur, caseNormale);
+        definitionCaseDuPlateau(caseNormale.getPosition());
+        afficherCaseNormale(plateau.getCaseByPosition(caseNormale.position));
         clean_pathfinding(shoot);
         shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
         System.out.println(plateau.turnPlayer.getBrique());
     }
 
-    private void affichageDuJoueur(Joueur joueur) {
-        nomJoueur.setText(joueur.getName());
-        imageJoueur.setImage(joueur.getImageJoueur());
-    }
-    private void affichageDuJoueur2(Joueur joueur) {
-        nomJoueur2.setText(joueur.getName());
-        imageJoueur2.setImage(joueur.getImageJoueur());
+    /*****
+     *  Fin Attaques et construction *
+     *****/
+
+
+
+    /*****
+     *  Déplacements *
+     *****/
+
+    //Déplace le joueur actuelle et actualise les case
+    private void deplacerPionJoueur(Position destination) {
+        Position positionInitiale = plateau.turnPlayer.getPosition();
+        cacherBoutonOuvrir();
+        //PathTransition pathTransition = new PathTransition();
+
+        //Transition déplacement pion du joueur
+
+        //remplace par case normale
+        if(caseSauvegarde != null) {
+            plateau.remplacerCase(plateau.getCaseByPosition(plateau.turnPlayer.getPosition()), caseSauvegarde);
+            caseSauvegarde = null;
+        }
+        else {
+            Case caseOrigine = plateau.getCaseByPosition(plateau.turnPlayer.getPosition());
+            Case caseOrigineNouvelle = new CaseNormale(plateau.turnPlayer.getPosition());
+            plateau.remplacerCase(caseOrigine, caseOrigineNouvelle);
+        }
+
+        //remplace par case joueur
+        caseSauvegarde = plateau.getCaseByPosition(destination);
+        Case caseDestination = plateau.getCaseByPosition(destination);
+        plateau.turnPlayer.setPosition(destination);
+        Case caseDestinationNouvelle = new CaseJoueur(plateau.turnPlayer, plateau.turnPlayer.getImageJoueur());
+        plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
+
+        //int distanceParcourue = destination.distance(positionInitiale, destination);
+        plateau.turnPlayer.setPtMouvement(plateau.turnPlayer.getPtMouvement() - caseDestination.getCout());
+        if(caseSauvegarde != null && caseSauvegarde.getType().equals("CaseArme"))
+            boutonOuvrirArme.setVisible(true);
+        if(caseSauvegarde != null && caseSauvegarde.getType().equals("CasePopo"))
+            boutonOuvrirPopo.setVisible(true);
+        if(caseSauvegarde != null && caseSauvegarde.getType().equals("CaseArmure"))
+            boutonOuvrirArmure.setVisible(true);
+        definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
+        clean_pathfinding(ListPortee);
+        pathfinding();
+        mettreAjourInfoRessources();
     }
 
+    /*****
+     *  Fin déplacements *
+     *****/
+
+
+
+    /*****
+     *  Lancers de dés *
+     *****/
+
+    //Lancer les dés pour obtenir les PM
     private void obtenirPointsDeMouvement() {
         int lancer1 = plateau.lancerUnDe();
         int lancer2 = plateau.lancerUnDe();
@@ -678,6 +727,7 @@ public class ControllerJeu implements ControlledScreen {
         plateau.turnPlayer.setPtMouvement(lancer1+lancer2);
     }
 
+    //Lancer les dés pour obtenir les PA
     private void obtenirPointsAttaque() {
         ArrayList<Integer> listeDesLancers = new ArrayList<>();
         int lancer = plateau.lancerUnDe();
@@ -686,6 +736,7 @@ public class ControllerJeu implements ControlledScreen {
         plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque() + lancer);
     }
 
+    //Lance les dés pour le nombre de dégats à infliger
     private ArrayList<Integer> obtenirPointsDommage(int nombreDeLancers) {
         ArrayList<Integer> listeDesLancers = new ArrayList<>();
         for(int i = 0; i < nombreDeLancers; i++) {
@@ -695,6 +746,107 @@ public class ControllerJeu implements ControlledScreen {
         return listeDesLancers;
     }
 
+    //Clic sur le bouton "Prends tes PM"
+    public void lancerPM() {
+        obtenirPointsDeMouvement();
+        mettreAjourInfoRessources();
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(2000),
+                ae -> supprimerLesDes()));
+        timeline.play();
+        boutonLancerPM.setVisible(false);
+        boutonLancerPA.setVisible(true);
+    }
+
+    //Clic sur le bouton "Prends tes PA"
+    public void lancerPA() {
+        obtenirPointsAttaque();
+        mettreAjourInfoRessources();
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(2000),
+                ae -> supprimerLesDes()));
+        timeline.play();
+        boutonLancerPA.setVisible(false);
+    }
+
+    //supprime l'affichage de dés en cours
+    private void supprimerLesDes() {
+        hBoxLancers1.getChildren().clear();
+        hBoxLancers2.getChildren().clear();
+    }
+
+    /*****
+     *  Fin Lancers de dés *
+     *****/
+
+
+
+    /*****
+     *  Mise à jour de l'ATH *
+     ****/
+
+    //Affichage d'une arme
+    private void afficherArme(Arme arme){
+        imageJoueur2.setImage(arme.getImage());
+        nomJoueur2.setText(arme.getName());
+        ptStructure.setVisible(false);
+
+    }
+
+    //Affichage pour une case mur
+    private void afficherMur(Case cm){
+        CaseMur caseMur = (CaseMur) cm;
+        imageJoueur2.setImage(caseMur.getImg());
+        nomJoueur2.setText("Mur");
+        ptStructure.setProgress((double)caseMur.getMur().getPtStructure() /10);
+        ptStructure.setVisible(true);
+
+    }
+
+    //Affichage pour une case normale
+    private void afficherCaseNormale(Case cn){
+        imageJoueur2.setImage(cn.getImg());
+        nomJoueur2.setText("Case");
+        ptStructure.setVisible(false);
+
+    }
+
+    //Affichage pour une case popo
+    private void afficherPopo(Case Popo){
+        imageJoueur2.setImage(Popo.getImage128());
+        nomJoueur2.setText("Potion");
+        ptStructure.setVisible(false);
+
+    }
+
+    //Affichage pour une case arme
+    private void afficherCoffre(Case coffre){
+        imageJoueur2.setImage(coffre.getImage128());
+        nomJoueur2.setText("Coffre");
+        ptStructure.setVisible(false);
+
+    }
+
+    //Affichage pour une case armure
+    private void afficherArmure(Case armure){
+        imageJoueur2.setImage(armure.getImage128());
+        nomJoueur2.setText("Armure");
+        ptStructure.setVisible(false);
+    }
+
+    //Affichage du joueur actuel
+    private void affichageDuJoueur(Joueur joueur) {
+        nomJoueur.setText(joueur.getName());
+        imageJoueur.setImage(joueur.getImageJoueur());
+    }
+
+    //Affichage d'un autre joueur
+    private void affichageDuJoueur2(Joueur joueur) {
+        nomJoueur2.setText(joueur.getName());
+        imageJoueur2.setImage(joueur.getImageJoueur());
+    }
+
+    //Affichage du dernier lancer obtenu
     private void mettreAjourLeLancer(ArrayList<Integer> listeDesLancers) {
         hBoxLancers1.getChildren().clear();
         hBoxLancers2.getChildren().clear();
@@ -714,12 +866,14 @@ public class ControllerJeu implements ControlledScreen {
 
     }
 
+    //Affichage des progressBar de santé et armure
     private void mettreAjourSanteArmure() {
         vBoxSanteArmure.getChildren().clear();
         vBoxSanteArmure.getChildren().add(new ColoredProgressBar("ArmureProgressBar", (double)plateau.turnPlayer.getPtArmure() /100));
         vBoxSanteArmure.getChildren().add(new ColoredProgressBar("SanteProgressBar", (double)plateau.turnPlayer.getPtSante() /100));
     }
 
+    //Affichage des ressources dispo (PM, PA, Brique)
     private void mettreAjourInfoRessources() {
         hBoxPA.getChildren().clear();
         hBoxPM.getChildren().clear();
@@ -752,12 +906,13 @@ public class ControllerJeu implements ControlledScreen {
         briqueIcon.setHeight(20);
         briqueIcon.setFill(new ImagePattern(new Image("images/BRIQUEicon-min.png")));
         hBoxBrique.getChildren().add(briqueIcon);
-        Text nombreDeBrique = new Text(String.valueOf(plateau.turnPlayer.getPtConstruction()));
+        Text nombreDeBrique = new Text(String.valueOf(plateau.turnPlayer.getBrique()));
         nombreDeBrique.setFont(font);
         hBoxBrique.getChildren().add(nombreDeBrique);
 
     }
 
+    //Affichage des icones ressources
     private void initialiserRessources() {
         Rectangle paIcon = new Rectangle();
         paIcon.setWidth(20);
@@ -778,6 +933,7 @@ public class ControllerJeu implements ControlledScreen {
         hBoxBrique.getChildren().add(briqueIcon);
     }
 
+    //Class pour les progressBar
     class ColoredProgressBar extends ProgressBar {
         ColoredProgressBar(String styleClass, double progress) {
             super(progress);
@@ -785,64 +941,22 @@ public class ControllerJeu implements ControlledScreen {
         }
     }
 
-    private void deplacerPionJoueur(Position destination) {
-        Position positionInitiale = plateau.turnPlayer.getPosition();
-        //PathTransition pathTransition = new PathTransition();
+    /*****
+     *  Fin Mise à jour de l'affichage *
+     *****/
 
-        //Transition déplacement pion du joueur
 
-        //remplace par case normale
-        Case caseOrigine = plateau.getCaseByPosition(plateau.turnPlayer.getPosition());
-        Case caseOrigineNouvelle = new CaseNormale(plateau.turnPlayer.getPosition());
-        plateau.remplacerCase(caseOrigine, caseOrigineNouvelle);
 
-        //remplace par case joueur
-        Case caseDestination = plateau.getCaseByPosition(destination);
-        plateau.turnPlayer.setPosition(destination);
-        Case caseDestinationNouvelle = new CaseJoueur(plateau.turnPlayer, plateau.turnPlayer.getImageJoueur());
-        plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
+    /*****
+     *  Control des boutons (mode, fin de tour, ouvrir, etc.) *
+     *****/
 
-        //int distanceParcourue = destination.distance(positionInitiale, destination);
-        plateau.turnPlayer.setPtMouvement(plateau.turnPlayer.getPtMouvement() - caseDestination.getCout());
-        definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
-        clean_pathfinding(ListPortee);
-        pathfinding();
-    }
-
+    //Mise a jour des infos suite au changement de joueur
     private void update() {
         affichageDuJoueur(plateau.turnPlayer);
         mettreAjourSanteArmure();
         mettreAjourInfoRessources();
         boutonLancerPM.setVisible(true);
-    }
-
-    public void ouvrir() {
-
-    }
-
-    public void lancerPM() {
-        obtenirPointsDeMouvement();
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(2000),
-                ae -> supprimerLesDes()));
-        timeline.play();
-        boutonLancerPM.setVisible(false);
-        boutonLancerPA.setVisible(true);
-    }
-
-    public void lancerPA() {
-        obtenirPointsAttaque();
-        mettreAjourInfoRessources();
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(2000),
-                ae -> supprimerLesDes()));
-        timeline.play();
-        boutonLancerPA.setVisible(false);
-    }
-
-    private void supprimerLesDes() {
-        hBoxLancers1.getChildren().clear();
-        hBoxLancers2.getChildren().clear();
     }
 
     //FIN DU TOUR ET CHANGEMENT DE JOUEUR ACTIF
@@ -855,6 +969,69 @@ public class ControllerJeu implements ControlledScreen {
         update();
     }
 
+    //Clic sur le bouton "MOVE", active le mode déplacement
+    public void move(){
+        switch (mode){
+            case 1:
+                clean_pathfinding(ListPortee);
+                break;
+            case 2:
+                clean_pathfinding(shoot);
+                break;
+            case 3:
+                clean_pathfinding(build);
+                break;
+            default:break;
+        }
+        mode=1;
+        pathfinding();
+    }
+
+    //Clic sur le bouton "BUILD", active le mode construction
+    public void build(){
+        switch (mode){
+            case 1:
+                clean_pathfinding(ListPortee);
+                break;
+            case 2:
+                clean_pathfinding(shoot);
+                break;
+            case 3:
+                clean_pathfinding(build);
+                break;
+            default:break;
+        }
+        mode=3;
+        build_pathfinding();
+    }
+
+    //Clic sur le bouton "OuvrirCoffre"
+    public void ouvrirCoffre() {
+
+    }
+
+    //Clic sur le bouton "OuvrirPopo"
+    public void ouvrirPopo() {
+
+    }
+
+    //Clic sur le bouton "OuvrirArmure"
+    public void ouvrirArmure() {
+
+    }
+
+    //Supprime l'affichage de tous les boutons ouvrir
+    private void cacherBoutonOuvrir() {
+        boutonOuvrirArme.setVisible(false);
+        boutonOuvrirArmure.setVisible(false);
+        boutonOuvrirPopo.setVisible(false);
+    }
+
+    /*****
+     *  Fin Control des boutons *
+     *****/
+
+
     private boolean isCaseEstDansLeRayon(Position position, ArrayList<Case> listeDesCasesQuiExplosent) {
         for(Case caseQuiExplose : listeDesCasesQuiExplosent) {
             if(caseQuiExplose.getPosition().getX() == position.getX() && caseQuiExplose.getPosition().getY() == position.getY())
@@ -863,30 +1040,10 @@ public class ControllerJeu implements ControlledScreen {
         return false;
     }
 
-    private void afficherExplosion(ArrayList<Case> listeDeCases){
-        for (Case temp:listeDeCases) {
-            Button bouton = temp.getBouton();
-            setImagePourLesBoutons(bouton, imageExplosion);
-            temp.setBouton(bouton);
-        }
-    }
 
-    private void decolorationApresExplosion(ArrayList<Case> listeDeCases, Arme armeUtilisee) {
-        for (Case temp : listeDeCases) {
-            Button bouton = temp.getBouton();
-            setImagePourLesBoutons(temp.getBouton(), temp.getImg());
-            temp.setBouton(bouton);
-        }
-        shoot_pathfinding(armeUtilisee);
-    }
-
-    private void animationExplosion(ArrayList<Case> listeDesCasesQuiExplosent, Arme armeUtilisee) {
-        afficherExplosion(listeDesCasesQuiExplosent);
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(1000),
-                ae -> decolorationApresExplosion(listeDesCasesQuiExplosent, armeUtilisee)));
-        timeline.play();
-    }
+    /*****
+     *  Gestion actions du menu *
+     *****/
 
     //Boutton permettant de retourner au menu
     public void backToMenu() {
@@ -899,4 +1056,8 @@ public class ControllerJeu implements ControlledScreen {
         myController.loadScreen(Main.Jeu_ID, Main.Jeu_FILE);
         myController.setScreen(Main.Jeu_ID);
     }
+
+    /*****
+     *  Fin Gestion actions du menu *
+     *****/
 }

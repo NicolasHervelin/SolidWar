@@ -419,6 +419,9 @@ public class Plateau {
                 }
             }
         }
+        else {
+            System.out.print("Points d'attaque insuffisantes !");
+        }
     }
 
     public void attaquerMur(Mur mur, Arme arme, int degats, boolean isLancerParfait) {
@@ -431,6 +434,9 @@ public class Plateau {
                 else
                     mur.setPtStructure(mur.getPtStructure() - degats);
             }
+        }
+        else {
+            System.out.print("Points d'attaque insuffisantes !");
         }
     }
 
@@ -468,6 +474,13 @@ public class Plateau {
         return false;
     }
 
+    public boolean isBriqueSuffisantes() {
+        if(turnPlayer.getBrique() >= 10) {
+            return true;
+        }
+        return false;
+    }
+
     public void appliquerDegatsExplosion(Position positionExplosion, Arme arme, int degats, ArrayList<Integer> listeDeLancers) {
         //if(isPointsAttaqueSuffisants(arme.getPa())) {
             for(Case caseActuelle : casesDansLeRayon(positionExplosion, arme.getRayon(), new ArrayList<>())){
@@ -497,9 +510,28 @@ public class Plateau {
             if (caseSelectionnee.getType().equals("CaseMur")) {
                 CaseMur caseMur = (CaseMur) caseSelectionnee;
                 attaquerMur(caseMur.getMur(), arme, degats, isLancerParfait(listeDeLancers));
+                Mur mur = caseMur.getMur();
             }
             turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
         //}
+    }
+
+    public void detruireMur(CaseMur caseMur, CaseNormale caseNormale) {
+        remplacerCase(caseMur, caseNormale);
+        retirerMur(caseMur);
+        int lancer = lancerUnDe();
+        turnPlayer.setBrique(turnPlayer.getBrique()+lancer);
+    }
+
+    public void construireMur(Case c, CaseMur cm){
+        if(isBriqueSuffisantes()) {
+            remplacerCase(c, cm);
+            ajouterMur(cm);
+            turnPlayer.setBrique(turnPlayer.getBrique()-10);
+        }
+        else {
+            System.out.print("Briques insuffisantes !");
+        }
     }
 
     public void setCasesDuPlateau(ArrayList<Case> casesDuPlateau) {

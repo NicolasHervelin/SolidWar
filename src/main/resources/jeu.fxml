@@ -103,9 +103,11 @@
                                 </padding>
                             </HBox>
                         </VBox>
-                        <Button fx:id="boutonOuvrir" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrir" prefHeight="64.0" prefWidth="64.0"/>
+                        <Button fx:id="boutonOuvrirArme" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirCoffre" prefHeight="64.0" prefWidth="64.0" visible="false" />
+                        <Button fx:id="boutonOuvrirArmure" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirArmure" prefHeight="64.0" prefWidth="64.0" visible="false" />
+                        <Button fx:id="boutonOuvrirPopo" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirPopo" prefHeight="64.0" prefWidth="64.0" visible="false" />
                         <Button fx:id="boutonFinDuTour" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0"/>
-                  <ProgressBar fx:id="ptStructure" layoutX="33.0" layoutY="264.0" prefWidth="200.0" progress="0.0" visible="false" />
+                  <ProgressBar fx:id="ptStructure" layoutX="33.0" layoutY="264.0" prefWidth="200.0" progress="1.0" visible="false" />
                     </children>
                 </Pane>
                 <Pane GridPane.columnIndex="0" GridPane.rowIndex="1" />
