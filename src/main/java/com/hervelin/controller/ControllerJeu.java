@@ -184,31 +184,42 @@ public class ControllerJeu implements ControlledScreen {
     public void afficherArme(Arme arme){
         imageJoueur2.setImage(arme.getImage());
         nomJoueur2.setText(arme.getName());
+        ptStructure.setVisible(false);
+
     }
 
     public void afficherMur(Case mur){
         imageJoueur2.setImage(mur.getImg());
         nomJoueur2.setText("Mur");
+        ptStructure.setVisible(true);
+
     }
 
     public void afficherCaseNormale(Case cn){
         imageJoueur2.setImage(cn.getImg());
         nomJoueur2.setText("Case");
+        ptStructure.setVisible(false);
+
     }
 
     public void afficherPopo(Case Popo){
         imageJoueur2.setImage(Popo.getImage128());
         nomJoueur2.setText("Potion");
+        ptStructure.setVisible(false);
+
     }
 
     public void afficherCoffre(Case coffre){
         imageJoueur2.setImage(coffre.getImage128());
         nomJoueur2.setText("Coffre");
+        ptStructure.setVisible(false);
+
     }
 
     public void afficherArmure(Case armure){
         imageJoueur2.setImage(armure.getImage128());
         nomJoueur2.setText("Armure");
+        ptStructure.setVisible(false);
     }
 
     public void move(){
@@ -523,8 +534,21 @@ public class ControllerJeu implements ControlledScreen {
         mettreAjourLeLancer(listeDesLancers);
 
         mur.setPtStructure(mur.getPtStructure()-somme);
-      //  ptStructure.setProgress(mur.getPtStructure()/10);
+        ptStructure.setProgress((double)mur.getPtStructure()/10);
+        if(mur.getPtStructure()<=0){
+            detruireMur(c);
+        }
 
+    }
+
+    public void detruireMur(CaseMur c){
+        Case caseDestination = plateau.getCaseByPosition(c.getPosition());
+        Case caseDestinationNouvelle = new CaseNormale(c.getPosition());
+        plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
+        definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
+        afficherCaseNormale(caseDestinationNouvelle);
+        clean_pathfinding(shoot);
+        shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
     }
 
     private void affichageDuJoueur(Joueur joueur) {
