@@ -70,17 +70,23 @@ class AlertBox {
 
 
 
-    static void afficherDetailArme(Arme arme) {
+    /*static void afficherArme(int lancer1, int lancer2) {
+        int rareté;
         Stage messageBox = new Stage();
         messageBox.initStyle(StageStyle.TRANSPARENT);
 
         messageBox.initModality(Modality.APPLICATION_MODAL);
-        messageBox.setMinWidth(350);
-        messageBox.setMinHeight(200);
+        messageBox.setMinWidth(400);
+        messageBox.setMinHeight(400);
+
+        switch(lancer1){
+            case 1:
+
+        }
 
         Label l = new Label(arme.getName());
-        l.setTextFill(Color.GRAY);
-        l.setStyle("-fx-font: 22 'Autumn Regular';" +
+        l.setTextFill(Color.RED);
+        l.setStyle("-fx-font: 30 'Autumn Regular';" +
                 "-fx-text-alignment: center;");
 
         VBox container = new VBox(10);
@@ -109,5 +115,5 @@ class AlertBox {
         scene.setOnMouseClicked(event -> messageBox.close());
         // show popup
         messageBox.show();
-    }
+    }*/
 }

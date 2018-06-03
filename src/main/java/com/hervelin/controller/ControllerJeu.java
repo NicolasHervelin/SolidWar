@@ -343,8 +343,6 @@ public class ControllerJeu implements ControlledScreen {
                     case "CaseMur":
                         if(shoot.contains(analyse)){
                             attaque(analyse, armeSelectionnee);
-
-                            //attaque(analyse, armeselectionnee)
                         }
                         break;
                     case "CaseNormale":
@@ -649,10 +647,9 @@ public class ControllerJeu implements ControlledScreen {
         CaseNormale caseNormale = new CaseNormale(caseMur.getPosition());
         plateau.detruireMur(caseMur, caseNormale);
         definitionCaseDuPlateau(caseNormale.getPosition());
-        afficherCaseNormale(plateau.getCaseByPosition(caseNormale.position));
+        afficherCaseNormale(caseNormale);
         clean_pathfinding(shoot);
         shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
-        System.out.println(plateau.turnPlayer.getBrique());
     }
 
     /*****
@@ -805,8 +802,8 @@ public class ControllerJeu implements ControlledScreen {
 
     //Affichage pour une case normale
     private void afficherCaseNormale(Case cn){
-        imageJoueur2.setImage(cn.getImg());
-        nomJoueur2.setText("Case");
+        imageJoueur2.setImage(null);
+        nomJoueur2.setText(null);
         ptStructure.setVisible(false);
 
     }
@@ -1007,7 +1004,11 @@ public class ControllerJeu implements ControlledScreen {
 
     //Clic sur le bouton "OuvrirCoffre"
     public void ouvrirCoffre() {
+        if(plateau.turnPlayer.getPtAttaque()>=1){
+            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
+            System.out.println(plateau.turnPlayer.getPtAttaque());
 
+        }
     }
 
     //Clic sur le bouton "OuvrirPopo"
