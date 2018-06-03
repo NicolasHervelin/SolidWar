@@ -60,7 +60,7 @@
                         </ListView>
                         <Button fx:id="move" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#move" prefHeight="64.0" prefWidth="64.0">
                         </Button>
-                        <Button fx:id="fight" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#fight" prefHeight="64.0" prefWidth="64.0">
+                        <Button fx:id="buil" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#build" prefHeight="64.0" prefWidth="64.0">
                         </Button>
                     </children>
                 </Pane>

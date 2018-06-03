@@ -14,7 +14,7 @@ public class Joueur {
     private int ptSante;
     private int ptArmure;
     private Image imageJoueur;
-    private int ptConstruction;
+    private int brique;
 
     public Joueur(String name, Position p, Image image) {
         this.name = name;
@@ -24,7 +24,7 @@ public class Joueur {
         this.ptSante = 100;
         this.ptArmure = 0;
         this.imageJoueur = image;
-        this.ptConstruction = 0;
+        this.brique=0;
 
         Couteau armeDeBase = new Couteau();
         armes.add(armeDeBase);
@@ -90,6 +90,14 @@ public class Joueur {
         this.ptSante = ptSante;
     }
 
+    public int getBrique() {
+        return brique;
+    }
+
+    public void setBrique(int brique) {
+        this.brique = brique;
+    }
+
     public Position getPosition() {
         return position;
     }
@@ -106,13 +114,6 @@ public class Joueur {
         this.imageJoueur = imageJoueur;
     }
 
-    public int getPtConstruction() {
-        return ptConstruction;
-    }
-
-    public void setPtConstruction(int ptConstruction) {
-        this.ptConstruction = ptConstruction;
-    }
 
     public int getPtArmure() {
         return ptArmure;

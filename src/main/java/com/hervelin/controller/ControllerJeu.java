@@ -47,6 +47,7 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> openList;
     private ArrayList<Case> ListPortee = new ArrayList<Case>();
     private ArrayList<Case> shoot = new ArrayList<Case>();
+    private ArrayList<Case> build = new ArrayList<Case>();
     private ArrayList<Case> casesDansExplosion = new ArrayList<Case>();
 
 
@@ -59,7 +60,7 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public GridPane anchorMain;
     @FXML
-    public Button fight,move, boutonFinDuTour;
+    public Button buil,move, boutonFinDuTour;
     @FXML
     public ListView<Arme> listArmes;
     @FXML
@@ -147,6 +148,9 @@ public class ControllerJeu implements ControlledScreen {
                     case 2:
                         clean_pathfinding(shoot);
                         break;
+                    case 3:
+                        clean_pathfinding(build);
+                        break;
                     default:break;
                 }
                 mode=2;
@@ -162,11 +166,11 @@ public class ControllerJeu implements ControlledScreen {
         Glow glow = new Glow(0.5);
         Reflection reflection=new Reflection();
         reflection.setInput(glow);
-        Image img=new Image("images/target.png");
+        Image img=new Image("images/build.png");
         ImageView imageView = new ImageView(img);
         imageView.setPreserveRatio(true);
-        fight.setGraphic(imageView);
-        fight.setEffect(reflection);
+        buil.setGraphic(imageView);
+        buil.setEffect(reflection);
         Image img2=new Image("images/move.png");
         ImageView imageView2 = new ImageView(img2);
         imageView2.setPreserveRatio(true);
@@ -223,20 +227,37 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     public void move(){
-        if(mode==2){
-            clean_pathfinding(shoot);
+        switch (mode){
+            case 1:
+                clean_pathfinding(ListPortee);
+                break;
+            case 2:
+                clean_pathfinding(shoot);
+                break;
+            case 3:
+                clean_pathfinding(build);
+                break;
+            default:break;
         }
         mode=1;
         pathfinding();
     }
 
-    public void fight(){
-        if(mode==1){
-            clean_pathfinding(ListPortee);
+    public void build(){
+        switch (mode){
+            case 1:
+                clean_pathfinding(ListPortee);
+                break;
+            case 2:
+                clean_pathfinding(shoot);
+                break;
+            case 3:
+                clean_pathfinding(build);
+                break;
+            default:break;
         }
-        mode=2;
-        listArmes.getSelectionModel().select(0);
-        shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
+        mode=3;
+        build_pathfinding();
     }
 
     //Définition des cases du plateau
@@ -287,6 +308,34 @@ public class ControllerJeu implements ControlledScreen {
             }
         }
         l.clear();
+    }
+
+    public void build_pathfinding(){
+        build=new ArrayList<Case>();
+        Case positionactuelle;
+        Case Right;
+        Case Left;
+        Case Up;
+        Case Down;
+        positionactuelle=plateau.getCaseByPosition(plateau.turnPlayer.getPosition());
+        build.add(positionactuelle);
+        Right=plateau.getCaseRight(positionactuelle.getPosition());
+        Left=plateau.getCaseLeft(positionactuelle.getPosition());
+        Up=plateau.getCaseUp(positionactuelle.getPosition());
+        Down=plateau.getCaseDown(positionactuelle.getPosition());
+        if(Right!=null && Right.getType()=="CaseNormale"){
+            build.add(Right);
+        }
+        if(Left!=null && Left.getType()=="CaseNormale"){
+            build.add(Left);
+        }
+        if(Up!=null && Up.getType()=="CaseNormale"){
+            build.add(Up);
+        }
+        if(Down!=null && Down.getType()=="CaseNormale"){
+            build.add(Down);
+        }
+        coloration(Color.GREEN,build);
     }
 
     public void shoot_pathfinding(Arme arme){
@@ -495,6 +544,14 @@ public class ControllerJeu implements ControlledScreen {
                         }
                 }
                 break;
+            case 3:
+                switch (analyse.getType()) {
+                    case "CaseNormale":
+                        if(build.contains(analyse) && plateau.turnPlayer.getBrique()>=10){
+                            construireMur(analyse);
+                        }
+                }break;
+
         }
         switch (analyse.getType()) {
             case "CaseJoueur":
@@ -541,14 +598,32 @@ public class ControllerJeu implements ControlledScreen {
 
     }
 
+    public void construireMur(Case c){
+        Case caseDestinationNouvelle = new CaseMur(new Mur(),c.getPosition());
+        plateau.remplacerCase(c, caseDestinationNouvelle);
+        definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
+        plateau.turnPlayer.setBrique(plateau.turnPlayer.getBrique()-10);
+        afficherMur(caseDestinationNouvelle);
+        clean_pathfinding(build);
+        build_pathfinding();
+        System.out.println(plateau.turnPlayer.getBrique());
+    }
+
     public void detruireMur(CaseMur c){
+        ArrayList<Integer> listeDesLancers = new ArrayList<>();
+        int lancer;
         Case caseDestination = plateau.getCaseByPosition(c.getPosition());
         Case caseDestinationNouvelle = new CaseNormale(c.getPosition());
         plateau.remplacerCase(caseDestination, caseDestinationNouvelle);
         definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
+        lancer=plateau.lancerUnDe();
+        plateau.turnPlayer.setBrique(plateau.turnPlayer.getBrique()+lancer);
+        listeDesLancers.add(lancer);
+        mettreAjourLeLancer(listeDesLancers);
         afficherCaseNormale(caseDestinationNouvelle);
         clean_pathfinding(shoot);
         shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
+        System.out.println(plateau.turnPlayer.getBrique());
     }
 
     private void affichageDuJoueur(Joueur joueur) {
