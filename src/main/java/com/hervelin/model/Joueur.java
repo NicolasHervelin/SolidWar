@@ -15,6 +15,7 @@ public class Joueur {
     private int ptArmure;
     private Image imageJoueur;
     private int brique;
+    public Case caseSauvegarde;
 
     public Joueur(String name, Position p, Image image) {
         this.name = name;
@@ -25,7 +26,7 @@ public class Joueur {
         this.ptArmure = 0;
         this.imageJoueur = image;
         this.brique=0;
-
+        this.caseSauvegarde = null;
         Couteau armeDeBase = new Couteau("images/Solid_war/COFFRE/ARMES/COUTEAU/CLASSE1.png");
         armes.add(armeDeBase);
     }
