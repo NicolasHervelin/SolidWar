@@ -50,7 +50,6 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> build = new ArrayList<Case>();
     private ArrayList<Case> casesDansExplosion = new ArrayList<Case>();
     private Image imageExplosion = new Image("images/TextureExplosion40-min.png");
-    private Case caseSauvegarde = null;
 
     @FXML
     public GridPane gridPlateau;
@@ -670,9 +669,9 @@ public class ControllerJeu implements ControlledScreen {
         //Transition déplacement pion du joueur
 
         //remplace par case normale
-        if(caseSauvegarde != null) {
-            plateau.remplacerCase(plateau.getCaseByPosition(plateau.turnPlayer.getPosition()), caseSauvegarde);
-            caseSauvegarde = null;
+        if(plateau.turnPlayer.caseSauvegarde != null) {
+            plateau.remplacerCase(plateau.getCaseByPosition(plateau.turnPlayer.getPosition()), plateau.turnPlayer.caseSauvegarde);
+            plateau.turnPlayer.caseSauvegarde = null;
         }
         else {
             Case caseOrigine = plateau.getCaseByPosition(plateau.turnPlayer.getPosition());
@@ -681,7 +680,8 @@ public class ControllerJeu implements ControlledScreen {
         }
 
         //remplace par case joueur
-        caseSauvegarde = plateau.getCaseByPosition(destination);
+        if(!plateau.getCaseByPosition(destination).getType().equals("CaseNormale"))
+            plateau.turnPlayer.caseSauvegarde = plateau.getCaseByPosition(destination);
         Case caseDestination = plateau.getCaseByPosition(destination);
         plateau.turnPlayer.setPosition(destination);
         Case caseDestinationNouvelle = new CaseJoueur(plateau.turnPlayer, plateau.turnPlayer.getImageJoueur());
@@ -689,11 +689,11 @@ public class ControllerJeu implements ControlledScreen {
 
         //int distanceParcourue = destination.distance(positionInitiale, destination);
         plateau.turnPlayer.setPtMouvement(plateau.turnPlayer.getPtMouvement() - caseDestination.getCout());
-        if(caseSauvegarde != null && caseSauvegarde.getType().equals("CaseArme"))
+        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CaseArme"))
             boutonOuvrirArme.setVisible(true);
-        if(caseSauvegarde != null && caseSauvegarde.getType().equals("CasePopo"))
+        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CasePopo"))
             boutonOuvrirPopo.setVisible(true);
-        if(caseSauvegarde != null && caseSauvegarde.getType().equals("CaseArmure"))
+        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CaseArmure"))
             boutonOuvrirArmure.setVisible(true);
         definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
         clean_pathfinding(ListPortee);
@@ -1022,11 +1022,7 @@ public class ControllerJeu implements ControlledScreen {
 
     //Clic sur le bouton "OuvrirCoffre"
     public void ouvrirCoffre() {
-        if(plateau.turnPlayer.getPtAttaque()>=1){
-            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
-            System.out.println(plateau.turnPlayer.getPtAttaque());
 
-        }
     }
 
     //Clic sur le bouton "OuvrirPopo"

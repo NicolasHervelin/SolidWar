@@ -388,7 +388,7 @@ public class Plateau {
     public int lancerUnDeAneufChiffres() {
         int lance = 1 + (int)(Math.random() * ((9 - 1) + 1));
         return lance;
-    } 
+    }
 
 
     public int calculDeDistance(Position positionJoueur, Position caseCible) {
@@ -430,7 +430,7 @@ public class Plateau {
             }
         }
         else {
-            System.out.print("Points d'attaque insuffisantes !");
+            System.out.print("Points d'attaque insuffisants !");
         }
     }
 
@@ -446,7 +446,7 @@ public class Plateau {
             }
         }
         else {
-            System.out.print("Points d'attaque insuffisantes !");
+            System.out.print("Points d'attaque insuffisants !");
         }
     }
 
