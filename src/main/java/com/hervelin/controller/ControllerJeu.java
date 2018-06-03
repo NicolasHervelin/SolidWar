@@ -73,7 +73,7 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public Pane pane = new Pane();
     @FXML
-    public VBox vBoxLancers, vBoxSanteArmure;
+    public VBox vBoxLancers, vBoxSanteArmure, vBoxSanteArmureJoueurAdverse;
     @FXML
     public HBox hBoxLancers1, hBoxLancers2, hBoxInfoRessources, hBoxPA, hBoxPM, hBoxBrique;
 
@@ -647,7 +647,6 @@ public class ControllerJeu implements ControlledScreen {
         CaseNormale caseNormale = new CaseNormale(caseMur.getPosition());
         plateau.detruireMur(caseMur, caseNormale);
         definitionCaseDuPlateau(caseNormale.getPosition());
-        afficherCaseNormale(caseNormale);
         clean_pathfinding(shoot);
         shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
     }
@@ -784,6 +783,7 @@ public class ControllerJeu implements ControlledScreen {
 
     //Affichage d'une arme
     private void afficherArme(Arme arme){
+        supprimerSanteArmureJoueurAdverse();
         imageJoueur2.setImage(arme.getImage());
         nomJoueur2.setText(arme.getName());
         ptStructure.setVisible(false);
@@ -792,43 +792,60 @@ public class ControllerJeu implements ControlledScreen {
 
     //Affichage pour une case mur
     private void afficherMur(Case cm){
+        supprimerSanteArmureJoueurAdverse();
         CaseMur caseMur = (CaseMur) cm;
         imageJoueur2.setImage(caseMur.getImg());
         nomJoueur2.setText("Mur");
         ptStructure.setProgress((double)caseMur.getMur().getPtStructure() /10);
-        ptStructure.setVisible(true);
-
+        if(caseMur.getMur().getPtStructure() == 0) {
+            CaseNormale caseNormale = new CaseNormale(caseMur.getPosition());
+            afficherCaseNormale(caseNormale);
+            ptStructure.setVisible(false);
+        }
+        else
+            ptStructure.setVisible(true);
     }
 
     //Affichage pour une case normale
     private void afficherCaseNormale(Case cn){
+        supprimerSanteArmureJoueurAdverse();
         imageJoueur2.setImage(null);
         nomJoueur2.setText(null);
         ptStructure.setVisible(false);
-
     }
 
     //Affichage pour une case popo
     private void afficherPopo(Case Popo){
+        supprimerSanteArmureJoueurAdverse();
         imageJoueur2.setImage(Popo.getImage128());
         nomJoueur2.setText("Potion");
         ptStructure.setVisible(false);
-
     }
 
     //Affichage pour une case arme
     private void afficherCoffre(Case coffre){
+        supprimerSanteArmureJoueurAdverse();
         imageJoueur2.setImage(coffre.getImage128());
         nomJoueur2.setText("Coffre");
         ptStructure.setVisible(false);
-
     }
 
     //Affichage pour une case armure
     private void afficherArmure(Case armure){
+        supprimerSanteArmureJoueurAdverse();
         imageJoueur2.setImage(armure.getImage128());
         nomJoueur2.setText("Armure");
         ptStructure.setVisible(false);
+    }
+
+    private void afficherSanteArmureJoueurAdverse(Joueur joueur) {
+        vBoxSanteArmureJoueurAdverse.getChildren().clear();
+        vBoxSanteArmureJoueurAdverse.getChildren().add(new ColoredProgressBar("ArmureProgressBar", (double)joueur.getPtArmure() /100));
+        vBoxSanteArmureJoueurAdverse.getChildren().add(new ColoredProgressBar("SanteProgressBar", (double)joueur.getPtSante() /100));
+    }
+
+    private void supprimerSanteArmureJoueurAdverse() {
+        vBoxSanteArmureJoueurAdverse.getChildren().clear();
     }
 
     //Affichage du joueur actuel
@@ -841,6 +858,7 @@ public class ControllerJeu implements ControlledScreen {
     private void affichageDuJoueur2(Joueur joueur) {
         nomJoueur2.setText(joueur.getName());
         imageJoueur2.setImage(joueur.getImageJoueur());
+        afficherSanteArmureJoueurAdverse(joueur);
     }
 
     //Affichage du dernier lancer obtenu
