@@ -17,7 +17,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-
+import javax.swing.*;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 
@@ -69,27 +70,28 @@ class AlertBox {
     }
 
 
-
-    /*static void afficherArme(int lancer1, int lancer2) {
+    static void afficherArme() {
         Stage messageBox = new Stage();
         messageBox.initStyle(StageStyle.TRANSPARENT);
-
+        JLabel imageLabel = new JLabel();
         messageBox.initModality(Modality.APPLICATION_MODAL);
         messageBox.setMinWidth(400);
         messageBox.setMinHeight(400);
 
 
-        Label l = new Label(arme.getName());
+      /*  Label l = new Label(arme.getName());
         l.setTextFill(Color.RED);
         l.setStyle("-fx-font: 30 'Autumn Regular';" +
-                "-fx-text-alignment: center;");
+                "-fx-text-alignment: center;");*/
 
         VBox container = new VBox(10);
-        container.getChildren().add(l);
-        container.getChildren().add(new ImageView(arme.getImage()));
+       /* container.getChildren().add(l);
+        container.getChildren().add(new ImageView(arme.getImage()));*/
+        container.getChildren().add(new ImageView(new Image("images/Solid_war/coffre.gif")));
+
         container.setAlignment(Pos.BOTTOM_RIGHT);
-        container.setMinWidth(850);
-        container.setMinHeight(300);
+        container.setMinWidth(500);
+        container.setMinHeight(500);
 
         // fill background with java
         BackgroundFill fill = new BackgroundFill(Color.TRANSPARENT, new CornerRadii(1), new Insets(0, 0, 0, 0));
@@ -110,5 +112,5 @@ class AlertBox {
         scene.setOnMouseClicked(event -> messageBox.close());
         // show popup
         messageBox.show();
-    }*/
+    }
 }

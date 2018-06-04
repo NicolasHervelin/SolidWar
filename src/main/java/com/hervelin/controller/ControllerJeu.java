@@ -118,29 +118,7 @@ public class ControllerJeu implements ControlledScreen {
         listeDesJoueurs = plateau.getListeDeJoueurs();
         //plateau.turnPlayer.ajouterArme(new Bazooka());
 
-        listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
-        listArmes.setCellFactory(new ArmeCellFactory());
-        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
-            @Override
-            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
-             //   AlertBox.afficherDetailArme(newValue);
-                afficherArme(newValue);
-                switch (mode){
-                    case 1:
-                        clean_pathfinding(ListPortee);
-                        break;
-                    case 2:
-                        clean_pathfinding(shoot);
-                        break;
-                    case 3:
-                        clean_pathfinding(build);
-                        break;
-                    default:break;
-                }
-                mode=2;
-                shoot_pathfinding(newValue);
-            }
-        });
+        afficherListeArmes();
         affichageDuJoueur(plateau.turnPlayer);
         mettreAjourSanteArmure();
         definitionCaseDuPlateau(null);
@@ -217,8 +195,6 @@ public class ControllerJeu implements ControlledScreen {
         }
     }
 
-
-
     //Assigne à chaque bouton l'image correspondante
     private void setImagePourLesBoutons(Button bouton, Image img) {
         ImageView imageView = new ImageView(img);
@@ -239,6 +215,32 @@ public class ControllerJeu implements ControlledScreen {
             bouton.setEffect(borderGlow); //Apply the borderGlow effect to the JavaFX node
             temp.setBouton(bouton);
         }
+    }
+
+    public void afficherListeArmes(){
+        listArmes.getItems().removeAll();
+        listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
+        listArmes.setCellFactory(new ArmeCellFactory());
+        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
+            @Override
+            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
+                afficherArme(newValue);
+                switch (mode){
+                    case 1:
+                        clean_pathfinding(ListPortee);
+                        break;
+                    case 2:
+                        clean_pathfinding(shoot);
+                        break;
+                    case 3:
+                        clean_pathfinding(build);
+                        break;
+                    default:break;
+                }
+                mode=2;
+                shoot_pathfinding(newValue);
+            }
+        });
     }
 
     //Fait apparaître une image d'explosion sur une liste de cases
@@ -557,7 +559,6 @@ public class ControllerJeu implements ControlledScreen {
     /*****
      *  Fin PathFinding *
      *****/
-
 
 
     /*****
@@ -973,6 +974,10 @@ public class ControllerJeu implements ControlledScreen {
         affichageDuJoueur(plateau.turnPlayer);
         mettreAjourSanteArmure();
         mettreAjourInfoRessources();
+        nomJoueur2.setText(null);
+        imageJoueur2.setImage(null);
+        cacherBoutonOuvrir();
+        afficherListeArmes();
         boutonLancerPM.setVisible(true);
     }
 
@@ -1024,17 +1029,38 @@ public class ControllerJeu implements ControlledScreen {
 
     //Clic sur le bouton "OuvrirCoffre"
     public void ouvrirCoffre() {
+        int lancer1;
+        int lancer2;
+        if(plateau.turnPlayer.getPtAttaque()>0){
+            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
+            lancer1=plateau.lancerUnDeAquatreChiffres();
+            lancer2=plateau.lancerUnDeAneufChiffres();
+            plateau.tirageArme(lancer1,lancer2);
+            afficherListeArmes();
+            AlertBox.afficherArme();
+            mettreAjourInfoRessources();
 
+        }
     }
 
     //Clic sur le bouton "OuvrirPopo"
     public void ouvrirPopo() {
-
+        if(plateau.turnPlayer.getPtAttaque()>0){
+            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
+            plateau.turnPlayer.setPtSante(plateau.turnPlayer.getPtSante()+plateau.lancerTroisDes());
+            mettreAjourSanteArmure();
+            mettreAjourInfoRessources();
+        }
     }
 
     //Clic sur le bouton "OuvrirArmure"
     public void ouvrirArmure() {
-
+        if(plateau.turnPlayer.getPtAttaque()>0){
+            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
+            plateau.turnPlayer.setPtArmure(plateau.turnPlayer.getPtArmure()+plateau.lancerTroisDes());
+            mettreAjourSanteArmure();
+            mettreAjourInfoRessources();
+        }
     }
 
     //Supprime l'affichage de tous les boutons ouvrir
