@@ -82,17 +82,17 @@
                             </font>
                         </Text>
                         <VBox fx:id="vBoxSanteArmureJoueurAdverse" layoutX="42.0" layoutY="245.0" spacing="10.0"></VBox>
-                        <Button fx:id="boutonLancerPM" layoutY="318.0" layoutX="69.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPM" text="Prends tes PM" wrapText="true">
+                        <Button fx:id="boutonLancerPM" layoutY="338.0" layoutX="69.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPM" text="Prends tes PM" wrapText="true">
                             <font>
                                 <Font name="Autumn Regular" size="18.0" />
                             </font>
                         </Button>
-                        <Button fx:id="boutonLancerPA" visible="false" layoutY="318.0" layoutX="69.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPA" text="Prends tes PA">
+                        <Button fx:id="boutonLancerPA" visible="false" layoutY="338.0" layoutX="69.0" prefHeight="64" prefWidth="148" mnemonicParsing="false" onAction="#lancerPA" text="Prends tes PA">
                             <font>
                                 <Font name="Autumn Regular" size="18.0" />
                             </font>
                         </Button>
-                        <VBox fx:id="vBoxLancers" layoutY="395.0" layoutX="42.0">
+                        <VBox fx:id="vBoxLancers" layoutY="415.0" layoutX="42.0">
                             <HBox fx:id="hBoxLancers1" spacing="5.0">
                                 <padding>
                                     <Insets left="25.0" right="15.0" />
@@ -104,7 +104,7 @@
                                 </padding>
                             </HBox>
                         </VBox>
-                        <Button fx:id="boutonOuvrirArme" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirCoffre" prefHeight="64.0" prefWidth="64.0" visible="false" />
+                        <Button fx:id="boutonOuvrirArme" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirCoffre" prefHeight="64.0" prefWidth="64.0" visible="true" />
                         <Button fx:id="boutonOuvrirArmure" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirArmure" prefHeight="64.0" prefWidth="64.0" visible="false" />
                         <Button fx:id="boutonOuvrirPopo" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirPopo" prefHeight="64.0" prefWidth="64.0" visible="false" />
                         <Button fx:id="boutonFinDuTour" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0"/>
