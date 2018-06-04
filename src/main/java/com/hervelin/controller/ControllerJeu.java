@@ -7,11 +7,14 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.effect.Reflection;
@@ -20,6 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -50,9 +54,13 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> build = new ArrayList<Case>();
     private ArrayList<Case> casesDansExplosion = new ArrayList<Case>();
     private Image imageExplosion = new Image("images/TextureExplosion40-min.png");
+    private Image fixeCoffre = new Image("images/Solid_war/GIF/Coffre14_2-min.png");
+    private Pane backOuvrirCoffre = new Pane();
+    private Pane paneOuvrirCoffre = new Pane();
+
 
     @FXML
-    public GridPane gridPlateau;
+    public GridPane gridPlateau, gridContainer;
     @FXML
     public ScrollPane scrollPlateau;
     @FXML
@@ -979,6 +987,8 @@ public class ControllerJeu implements ControlledScreen {
         cacherBoutonOuvrir();
         afficherListeArmes();
         boutonLancerPM.setVisible(true);
+        plateau.getCaseByPosition(plateau.turnPlayer.getPosition()).getBouton().requestFocus();
+        afficherCaseNormale(new CaseNormale(new Position(1,1)));
     }
 
     //FIN DU TOUR ET CHANGEMENT DE JOUEUR ACTIF
@@ -1029,7 +1039,66 @@ public class ControllerJeu implements ControlledScreen {
 
     //Clic sur le bouton "OuvrirCoffre"
     public void ouvrirCoffre() {
-        int lancer1;
+        fermerCoffre();
+
+        backOuvrirCoffre.setPrefWidth(1200);
+        backOuvrirCoffre.setPrefHeight(1200);
+        BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, new CornerRadii(1), new Insets(0,0,0,0));
+        Background background = new Background(backgroundFill);
+        backOuvrirCoffre.setBackground(background);
+        backOuvrirCoffre.setOpacity(0.9);
+
+        paneOuvrirCoffre.setMaxWidth(900);
+        paneOuvrirCoffre.setMaxHeight(720);
+        //Paint paint = Color.rgb(0, 47, 85, 1);
+        BackgroundFill backgroundFill2 = new BackgroundFill(new ImagePattern(fixeCoffre), new CornerRadii(1), new Insets(5,100,15,100));
+        Background background2 = new Background(backgroundFill2);
+        paneOuvrirCoffre.setBackground(background2);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setOffsetX(0f);
+        dropShadow.setOffsetY(0f);
+        dropShadow.setWidth(100);
+        dropShadow.setHeight(100);
+        dropShadow.setColor(Color.rgb(127, 26, 229));
+        //dropShadow.setColor(Color.rgb(0, 47, 85, 1));
+        paneOuvrirCoffre.setEffect(dropShadow);
+
+        Image gifCoffre = new Image("images/Solid_war/GIF/GIFCoffreOfficiel.gif");
+        ImageView gifImageView = new ImageView(gifCoffre);
+        gifImageView.setPreserveRatio(true);
+        gifImageView.setFitWidth(700);
+        gifImageView.setFitHeight(760);
+        gifImageView.setLayoutX(100);
+        gifImageView.setLayoutY(5);
+
+        Button button = new Button();
+        button.setText("OK j'ai fini");
+        button.setLayoutX(650);
+        button.setLayoutY(650);
+        button.setOnAction(e -> fermerCoffre());
+
+
+        paneOuvrirCoffre.getChildren().add(gifImageView);
+        gridContainer.getChildren().add(backOuvrirCoffre);
+        gridContainer.getChildren().add(paneOuvrirCoffre);
+
+        FadeTransition fade = new FadeTransition(Duration.seconds(1), gridContainer);
+        fade.setFromValue(0.0);
+        fade.setToValue(1.0);
+        //fade.play();
+
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(900),
+                ae -> {
+                    paneOuvrirCoffre.getChildren().remove(gifImageView);
+                    paneOuvrirCoffre.getChildren().add(button);
+                }));
+        timeline.play();
+        //A la fin supprimer tous !!!!
+
+
+        /*int lancer1;
         int lancer2;
         if(plateau.turnPlayer.getPtAttaque()>0){
             plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
@@ -1040,7 +1109,14 @@ public class ControllerJeu implements ControlledScreen {
             AlertBox.afficherArme();
             mettreAjourInfoRessources();
 
-        }
+        }*/
+    }
+
+    public void fermerCoffre() {
+        paneOuvrirCoffre.getChildren().clear();
+        backOuvrirCoffre.getChildren().clear();
+        gridContainer.getChildren().remove(backOuvrirCoffre);
+        gridContainer.getChildren().remove(paneOuvrirCoffre);
     }
 
     //Clic sur le bouton "OuvrirPopo"
