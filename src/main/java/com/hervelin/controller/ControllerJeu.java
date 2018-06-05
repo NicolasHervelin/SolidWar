@@ -171,7 +171,6 @@ public class ControllerJeu implements ControlledScreen {
         imageView6.setPreserveRatio(true);
         boutonOuvrirArmure.setGraphic(imageView6);
         boutonOuvrirArmure.setEffect(reflection);
-
     }
 
 
@@ -229,22 +228,25 @@ public class ControllerJeu implements ControlledScreen {
         listArmes.getItems().removeAll();
         listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
         listArmes.setCellFactory(new ArmeCellFactory());
-        listArmes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            afficherArme(newValue);
-            switch (mode){
-                case 1:
-                    clean_pathfinding(ListPortee);
-                    break;
-                case 2:
-                    clean_pathfinding(shoot);
-                    break;
-                case 3:
-                    clean_pathfinding(build);
-                    break;
-                default:break;
+        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
+            @Override
+            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
+                afficherArme(newValue);
+                switch (mode){
+                    case 1:
+                        clean_pathfinding(ListPortee);
+                        break;
+                    case 2:
+                        clean_pathfinding(shoot);
+                        break;
+                    case 3:
+                        clean_pathfinding(build);
+                        break;
+                    default:break;
+                }
+                mode=2;
+                shoot_pathfinding(newValue);
             }
-            mode=2;
-            shoot_pathfinding(newValue);
         });
     }
 
@@ -1047,36 +1049,47 @@ public class ControllerJeu implements ControlledScreen {
           //  afficherListeArmes();
             mettreAjourInfoRessources();
 
-            backOuvrirCoffre.setPrefWidth(1200);
-            backOuvrirCoffre.setPrefHeight(1200);
-            BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, new CornerRadii(1), new Insets(0, 0, 0, 0));
-            Background background = new Background(backgroundFill);
-            backOuvrirCoffre.setBackground(background);
-            backOuvrirCoffre.setOpacity(0.9);
+        FadeTransition fade = new FadeTransition(Duration.millis(800), gridContainer);
+        fade.setFromValue(0.0);
+        fade.setToValue(1.0);
+        fade.play();
 
-            paneOuvrirCoffre.setMaxWidth(900);
-            paneOuvrirCoffre.setMaxHeight(720);
-            //Paint paint = Color.rgb(0, 47, 85, 1);
-            BackgroundFill backgroundFill2 = new BackgroundFill(new ImagePattern(fixeCoffre), new CornerRadii(1), new Insets(5, 100, 15, 100));
-            Background background2 = new Background(backgroundFill2);
-            paneOuvrirCoffre.setBackground(background2);
+        Arme armeObtenue = plateau.tirageArme(plateau.lancerUnDeAquatreChiffres(), plateau.lancerUnDeAneufChiffres());
 
-            DropShadow dropShadow = new DropShadow();
-            dropShadow.setOffsetX(0f);
-            dropShadow.setOffsetY(0f);
-            dropShadow.setWidth(100);
-            dropShadow.setHeight(100);
-            dropShadow.setColor(Color.rgb(127, 26, 229));
-            //dropShadow.setColor(Color.rgb(0, 47, 85, 1));
-            paneOuvrirCoffre.setEffect(dropShadow);
 
-            Image gifCoffre = new Image("images/Solid_war/GIF/GIFCoffreOfficiel.gif");
-            ImageView gifImageView = new ImageView(gifCoffre);
-            gifImageView.setPreserveRatio(true);
-            gifImageView.setFitWidth(700);
-            gifImageView.setFitHeight(760);
-            gifImageView.setLayoutX(100);
-            gifImageView.setLayoutY(5);
+        //Ombre sur le gridPlateau
+        backOuvrirCoffre.setPrefWidth(1200);
+        backOuvrirCoffre.setPrefHeight(1200);
+        BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, new CornerRadii(1), new Insets(0,0,0,0));
+        Background background = new Background(backgroundFill);
+        backOuvrirCoffre.setBackground(background);
+        backOuvrirCoffre.setOpacity(0.9);
+
+        //Pane au centre (contient les animations du coffre
+        paneOuvrirCoffre.setMaxWidth(900);
+        paneOuvrirCoffre.setMaxHeight(720);
+        BackgroundFill backgroundFill2 = new BackgroundFill(new ImagePattern(fixeCoffre), new CornerRadii(1), new Insets(5,100,15,100));
+        Background background2 = new Background(backgroundFill2);
+        paneOuvrirCoffre.setBackground(background2);
+
+        //Effet Ultraviolet autour
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setOffsetX(0f);
+        dropShadow.setOffsetY(0f);
+        dropShadow.setWidth(100);
+        dropShadow.setHeight(100);
+        dropShadow.setColor(Color.rgb(127, 26, 229));
+        paneOuvrirCoffre.setEffect(dropShadow);
+
+        //Gif animé du coffre
+        Image gifCoffre = new Image("images/Solid_war/GIF/GIFCoffreOfficiel.gif");
+        ImageView gifImageView = new ImageView(gifCoffre);
+        gifImageView.setPreserveRatio(true);
+        gifImageView.setFitWidth(700);
+        gifImageView.setFitHeight(760);
+        gifImageView.setLayoutX(100);
+        gifImageView.setLayoutY(5);
+
             Font font =new Font("Autumn Regular",20);
 
             Button button2 = new Button();
@@ -1119,27 +1132,29 @@ public class ControllerJeu implements ControlledScreen {
                 button.setText("Remplacer Arme");
             }
 
-            paneOuvrirCoffre.getChildren().add(gifImageView);
-            gridContainer.getChildren().add(backOuvrirCoffre);
-            gridContainer.getChildren().add(paneOuvrirCoffre);
             paneOuvrirCoffre.getChildren().add(listeArmeCoffre);
+            paneOuvrirCoffre.getChildren().add(gifImageView);
+        //Avec transformation
+        //TransitionForArme(armeObtenue, 330, 370, 270, 330 - 150);
+
+        TransitionForArme(armeObtenue, 300, 365, 350, 430 - 150);
+
+        gridContainer.getChildren().add(backOuvrirCoffre);
+        gridContainer.getChildren().add(paneOuvrirCoffre);
 
 
 
-            FadeTransition fade = new FadeTransition(Duration.seconds(1), listeArmeCoffre);
-            fade.setFromValue(0.0);
-            fade.setToValue(1.0);
-            fade.play();
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(900),
+                ae -> {
+                    paneOuvrirCoffre.getChildren().remove(gifImageView);
+                    paneOuvrirCoffre.getChildren().add(button);
+                    paneOuvrirCoffre.getChildren().add(button2);
 
-            Timeline timeline = new Timeline(new KeyFrame(
-                    Duration.millis(900),
-                    ae -> {
-                        paneOuvrirCoffre.getChildren().remove(gifImageView);
-                        paneOuvrirCoffre.getChildren().add(button);
-                        paneOuvrirCoffre.getChildren().add(button2);
-                    }));
-            timeline.play();
-            //A la fin supprimer tous !!!!
+
+                }));
+        timeline.play();
+        //A la fin supprimer tous !!!!
 
         }
 
@@ -1191,6 +1206,83 @@ public class ControllerJeu implements ControlledScreen {
      *  Fin Control des boutons *
      *****/
 
+
+    private void TransitionForArme(Arme armeObtenue, double layoutXFrom, double layoutXTo, double layoutYFrom, double layoutYTo) {
+        Arme arme = new Bazooka("images/Solid_war/COFFRE/ARMES/BASOUKA/basouka.png");
+        ImagePattern imagePatternArme = new ImagePattern(armeObtenue.getImage());
+        Rectangle rectangle = new Rectangle(175, 175);
+        //imageViewArme.setPreserveRatio(true);
+        //imageViewArme.setFitHeight(100);
+        //imageViewArme.setFitWidth(100);
+        rectangle.setFill(imagePatternArme);
+
+
+        paneOuvrirCoffre.getChildren().add(rectangle);
+        TranslateTransition translateTransition = new TranslateTransition(Duration.millis(1200), rectangle);
+        translateTransition.setFromX(layoutXFrom);
+        translateTransition.setToX(layoutXTo);
+        translateTransition.setFromY(layoutYFrom);
+        translateTransition.setToY(layoutYTo);
+        translateTransition.setCycleCount(1);
+        translateTransition.setAutoReverse(true);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(3800), rectangle);
+        fadeTransition.setFromValue(0.0f);
+        fadeTransition.setToValue(1.0f);
+        fadeTransition.setCycleCount(1);
+        fadeTransition.setAutoReverse(true);
+        translateTransition.play();
+        fadeTransition.play();
+
+
+        //EFFETS
+        InnerShadow innerShadow = new InnerShadow();
+        innerShadow.setOffsetX(10.0f);
+        innerShadow.setOffsetY(-25.0f);
+        innerShadow.setRadius(35);
+        //innerShadow.setColor(Color.rgb(127, 26, 229));
+        innerShadow.setColor(Color.WHITE);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setOffsetX(-10.0f);
+        dropShadow.setOffsetY(-30.0f);
+        dropShadow.setColor(Color.LIGHTGRAY);
+
+        Light.Distant light = new Light.Distant();
+        light.setAzimuth(110.0f);
+        Lighting l = new Lighting();
+        l.setLight(light);
+        l.setSurfaceScale(45.0f);
+
+        PerspectiveTransform e = new PerspectiveTransform();
+        e.setUlx(-20);     // Upper-left point
+        e.setUly(105);
+        e.setUrx(165);    // Upper-right point
+        e.setUry(120);
+        e.setLlx(-35);      // Lower-left point
+        e.setLly(240);
+        e.setLrx(155);    // Lower-right point
+        e.setLry(280);
+
+        //innerShadow.setInput(l);
+        //e.setInput(innerShadow);
+        //innerShadow.setInput(e);
+        //innerShadow.setInput(l);
+        //l.setContentInput(innerShadow);
+        rectangle.setEffect(l);
+
+        Timeline clignotement = new Timeline(new KeyFrame(
+                Duration.millis(1200),
+                ae -> {
+                    FadeTransition clignote = new FadeTransition(Duration.millis(400), rectangle);
+                    clignote.setFromValue(1.0f);
+                    clignote.setToValue(0.0f);
+                    clignote.setCycleCount(6);
+                    clignote.setAutoReverse(true);
+                    clignote.play();
+
+                }));
+        clignotement.play();
+    }
 
     private boolean isCaseEstDansLeRayon(Position position, ArrayList<Case> listeDesCasesQuiExplosent) {
         for(Case caseQuiExplose : listeDesCasesQuiExplosent) {

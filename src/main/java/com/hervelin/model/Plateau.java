@@ -578,6 +578,8 @@ public class Plateau {
         return arme;
     }
 
+
+
     public void setCasesDuPlateau(ArrayList<Case> casesDuPlateau) {
         this.casesDuPlateau = casesDuPlateau;
     }
