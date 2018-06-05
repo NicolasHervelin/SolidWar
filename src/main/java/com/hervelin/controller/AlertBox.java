@@ -87,7 +87,7 @@ class AlertBox {
         VBox container = new VBox(10);
        /* container.getChildren().add(l);
         container.getChildren().add(new ImageView(arme.getImage()));*/
-        container.getChildren().add(new ImageView(new Image("images/Solid_war/coffre.gif")));
+        //container.getChildren().add(new ImageView(new Image("images/Solid_war/coffre.gif")));
 
         container.setAlignment(Pos.BOTTOM_RIGHT);
         container.setMinWidth(500);

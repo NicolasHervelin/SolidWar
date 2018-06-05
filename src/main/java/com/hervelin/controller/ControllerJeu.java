@@ -1,6 +1,9 @@
 package com.hervelin.controller;
 
 import com.hervelin.model.*;
+import com.sun.javafx.geom.BaseBounds;
+import com.sun.javafx.geom.transform.BaseTransform;
+import com.sun.javafx.scene.BoundsAccessor;
 import com.sun.javafx.tk.TKSceneListener;
 import javafx.animation.*;
 import javafx.beans.property.DoubleProperty;
@@ -11,13 +14,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
-import javafx.scene.effect.InnerShadow;
-import javafx.scene.effect.Reflection;
+import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -124,7 +125,6 @@ public class ControllerJeu implements ControlledScreen {
         }
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
-        //plateau.turnPlayer.ajouterArme(new Bazooka());
 
         afficherListeArmes();
         affichageDuJoueur(plateau.turnPlayer);
@@ -229,25 +229,22 @@ public class ControllerJeu implements ControlledScreen {
         listArmes.getItems().removeAll();
         listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
         listArmes.setCellFactory(new ArmeCellFactory());
-        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
-            @Override
-            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
-                afficherArme(newValue);
-                switch (mode){
-                    case 1:
-                        clean_pathfinding(ListPortee);
-                        break;
-                    case 2:
-                        clean_pathfinding(shoot);
-                        break;
-                    case 3:
-                        clean_pathfinding(build);
-                        break;
-                    default:break;
-                }
-                mode=2;
-                shoot_pathfinding(newValue);
+        listArmes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            afficherArme(newValue);
+            switch (mode){
+                case 1:
+                    clean_pathfinding(ListPortee);
+                    break;
+                case 2:
+                    clean_pathfinding(shoot);
+                    break;
+                case 3:
+                    clean_pathfinding(build);
+                    break;
+                default:break;
             }
+            mode=2;
+            shoot_pathfinding(newValue);
         });
     }
 
@@ -1040,76 +1037,120 @@ public class ControllerJeu implements ControlledScreen {
     //Clic sur le bouton "OuvrirCoffre"
     public void ouvrirCoffre() {
         fermerCoffre();
-
-        backOuvrirCoffre.setPrefWidth(1200);
-        backOuvrirCoffre.setPrefHeight(1200);
-        BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, new CornerRadii(1), new Insets(0,0,0,0));
-        Background background = new Background(backgroundFill);
-        backOuvrirCoffre.setBackground(background);
-        backOuvrirCoffre.setOpacity(0.9);
-
-        paneOuvrirCoffre.setMaxWidth(900);
-        paneOuvrirCoffre.setMaxHeight(720);
-        //Paint paint = Color.rgb(0, 47, 85, 1);
-        BackgroundFill backgroundFill2 = new BackgroundFill(new ImagePattern(fixeCoffre), new CornerRadii(1), new Insets(5,100,15,100));
-        Background background2 = new Background(backgroundFill2);
-        paneOuvrirCoffre.setBackground(background2);
-
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(0f);
-        dropShadow.setOffsetY(0f);
-        dropShadow.setWidth(100);
-        dropShadow.setHeight(100);
-        dropShadow.setColor(Color.rgb(127, 26, 229));
-        //dropShadow.setColor(Color.rgb(0, 47, 85, 1));
-        paneOuvrirCoffre.setEffect(dropShadow);
-
-        Image gifCoffre = new Image("images/Solid_war/GIF/GIFCoffreOfficiel.gif");
-        ImageView gifImageView = new ImageView(gifCoffre);
-        gifImageView.setPreserveRatio(true);
-        gifImageView.setFitWidth(700);
-        gifImageView.setFitHeight(760);
-        gifImageView.setLayoutX(100);
-        gifImageView.setLayoutY(5);
-
-        Button button = new Button();
-        button.setText("OK j'ai fini");
-        button.setLayoutX(650);
-        button.setLayoutY(650);
-        button.setOnAction(e -> fermerCoffre());
-
-
-        paneOuvrirCoffre.getChildren().add(gifImageView);
-        gridContainer.getChildren().add(backOuvrirCoffre);
-        gridContainer.getChildren().add(paneOuvrirCoffre);
-
-        FadeTransition fade = new FadeTransition(Duration.seconds(1), gridContainer);
-        fade.setFromValue(0.0);
-        fade.setToValue(1.0);
-        //fade.play();
-
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(900),
-                ae -> {
-                    paneOuvrirCoffre.getChildren().remove(gifImageView);
-                    paneOuvrirCoffre.getChildren().add(button);
-                }));
-        timeline.play();
-        //A la fin supprimer tous !!!!
-
-
-        /*int lancer1;
+        int lancer1;
         int lancer2;
-        if(plateau.turnPlayer.getPtAttaque()>0){
-            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
-            lancer1=plateau.lancerUnDeAquatreChiffres();
-            lancer2=plateau.lancerUnDeAneufChiffres();
-            plateau.tirageArme(lancer1,lancer2);
-            afficherListeArmes();
-            AlertBox.afficherArme();
+        if(plateau.isPointsAttaqueSuffisants(1)) {
+            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque() - 1);
+            lancer1 = plateau.lancerUnDeAquatreChiffres();
+            lancer2 = plateau.lancerUnDeAneufChiffres();
+            Arme arme=plateau.tirageArme(lancer1, lancer2);
+          //  afficherListeArmes();
             mettreAjourInfoRessources();
 
-        }*/
+            backOuvrirCoffre.setPrefWidth(1200);
+            backOuvrirCoffre.setPrefHeight(1200);
+            BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, new CornerRadii(1), new Insets(0, 0, 0, 0));
+            Background background = new Background(backgroundFill);
+            backOuvrirCoffre.setBackground(background);
+            backOuvrirCoffre.setOpacity(0.9);
+
+            paneOuvrirCoffre.setMaxWidth(900);
+            paneOuvrirCoffre.setMaxHeight(720);
+            //Paint paint = Color.rgb(0, 47, 85, 1);
+            BackgroundFill backgroundFill2 = new BackgroundFill(new ImagePattern(fixeCoffre), new CornerRadii(1), new Insets(5, 100, 15, 100));
+            Background background2 = new Background(backgroundFill2);
+            paneOuvrirCoffre.setBackground(background2);
+
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setOffsetX(0f);
+            dropShadow.setOffsetY(0f);
+            dropShadow.setWidth(100);
+            dropShadow.setHeight(100);
+            dropShadow.setColor(Color.rgb(127, 26, 229));
+            //dropShadow.setColor(Color.rgb(0, 47, 85, 1));
+            paneOuvrirCoffre.setEffect(dropShadow);
+
+            Image gifCoffre = new Image("images/Solid_war/GIF/GIFCoffreOfficiel.gif");
+            ImageView gifImageView = new ImageView(gifCoffre);
+            gifImageView.setPreserveRatio(true);
+            gifImageView.setFitWidth(700);
+            gifImageView.setFitHeight(760);
+            gifImageView.setLayoutX(100);
+            gifImageView.setLayoutY(5);
+            Font font =new Font("Autumn Regular",20);
+
+            Button button2 = new Button();
+            button2.setText("Laisser");
+            button2.setPrefSize(150,50);
+            button2.setStyle("-fx-border-width:3px; -fx-border-color:#7F1AE5; -fx-background-color:#000000; -fx-text-fill:#FFD700;");
+            button2.setFont(font);
+            button2.setLayoutX(250);
+            button2.setLayoutY(250);
+            button2.setOnAction(e -> fermerCoffre());
+
+
+            Button button = new Button();
+            button.setText("Prendre");
+            button.setPrefSize(150,50);
+            button.setStyle("-fx-border-width:3px; -fx-border-color:#7F1AE5; -fx-background-color:#000000; -fx-text-fill:#FFD700;");
+            button.setFont(font);
+            button.setWrapText(true);
+            button.setLayoutX(500);
+            button.setLayoutY(250);
+            button.setOnAction(e -> PrendreArme(arme));
+
+
+
+            HBox listeArmeCoffre=new HBox();
+            listeArmeCoffre.setLayoutX(180);
+            listeArmeCoffre.setLayoutY(-10);
+            listeArmeCoffre.setEffect(dropShadow);
+            listeArmeCoffre.setVisible(false);
+            for (Arme a:plateau.turnPlayer.getArmes()) {
+                ImageView img=new ImageView(a.getImage());
+                img.setPreserveRatio(true);
+                img.setFitWidth(100);
+                img.setFitHeight(100);
+                listeArmeCoffre.getChildren().add(img);
+            }
+
+            if(listeArmeCoffre.getChildren().size()==5){
+                listeArmeCoffre.setVisible(true);
+                button.setText("Remplacer Arme");
+            }
+
+            paneOuvrirCoffre.getChildren().add(gifImageView);
+            gridContainer.getChildren().add(backOuvrirCoffre);
+            gridContainer.getChildren().add(paneOuvrirCoffre);
+            paneOuvrirCoffre.getChildren().add(listeArmeCoffre);
+
+
+
+            FadeTransition fade = new FadeTransition(Duration.seconds(1), listeArmeCoffre);
+            fade.setFromValue(0.0);
+            fade.setToValue(1.0);
+            fade.play();
+
+            Timeline timeline = new Timeline(new KeyFrame(
+                    Duration.millis(900),
+                    ae -> {
+                        paneOuvrirCoffre.getChildren().remove(gifImageView);
+                        paneOuvrirCoffre.getChildren().add(button);
+                        paneOuvrirCoffre.getChildren().add(button2);
+                    }));
+            timeline.play();
+            //A la fin supprimer tous !!!!
+
+        }
+
+    }
+
+    public void PrendreArme(Arme arme){
+        if(plateau.turnPlayer.getArmes().size()<5) {
+            plateau.turnPlayer.ajouterArme(arme);
+        }else System.out.println("trop d'arme");
+        afficherListeArmes();
+        fermerCoffre();
     }
 
     public void fermerCoffre() {
