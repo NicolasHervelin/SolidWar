@@ -1087,7 +1087,11 @@ public class ControllerJeu implements ControlledScreen {
 
 
         paneOuvrirCoffre.getChildren().add(gifImageView);
-        TransitionForArme(armeObtenue, 330, 370, 270, 330 - 150);
+        //Avec transformation
+        //TransitionForArme(armeObtenue, 330, 370, 270, 330 - 150);
+
+        TransitionForArme(armeObtenue, 300, 365, 350, 430 - 150);
+
         gridContainer.getChildren().add(backOuvrirCoffre);
         gridContainer.getChildren().add(paneOuvrirCoffre);
 
@@ -1155,9 +1159,9 @@ public class ControllerJeu implements ControlledScreen {
 
 
     private void TransitionForArme(Arme armeObtenue, double layoutXFrom, double layoutXTo, double layoutYFrom, double layoutYTo) {
-        Arme arme = new Bazooka("images/Solid_war/COFFRE/ARMES/BASOUKA/CLASSE3.png");
+        Arme arme = new Bazooka("images/Solid_war/COFFRE/ARMES/BASOUKA/basouka.png");
         ImagePattern imagePatternArme = new ImagePattern(armeObtenue.getImage());
-        Rectangle rectangle = new Rectangle(450, 450);
+        Rectangle rectangle = new Rectangle(175, 175);
         //imageViewArme.setPreserveRatio(true);
         //imageViewArme.setFitHeight(100);
         //imageViewArme.setFitWidth(100);
@@ -1172,7 +1176,7 @@ public class ControllerJeu implements ControlledScreen {
         translateTransition.setToY(layoutYTo);
         translateTransition.setCycleCount(1);
         translateTransition.setAutoReverse(true);
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(3000), rectangle);
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(3800), rectangle);
         fadeTransition.setFromValue(0.0f);
         fadeTransition.setToValue(1.0f);
         fadeTransition.setCycleCount(1);
@@ -1183,11 +1187,11 @@ public class ControllerJeu implements ControlledScreen {
 
         //EFFETS
         InnerShadow innerShadow = new InnerShadow();
-        innerShadow.setOffsetX(-2.0f);
+        innerShadow.setOffsetX(10.0f);
         innerShadow.setOffsetY(-25.0f);
-        innerShadow.setRadius(25);
+        innerShadow.setRadius(35);
         //innerShadow.setColor(Color.rgb(127, 26, 229));
-        innerShadow.setColor(Color.LIGHTYELLOW);
+        innerShadow.setColor(Color.WHITE);
 
         DropShadow dropShadow = new DropShadow();
         dropShadow.setOffsetX(-10.0f);
@@ -1195,10 +1199,10 @@ public class ControllerJeu implements ControlledScreen {
         dropShadow.setColor(Color.LIGHTGRAY);
 
         Light.Distant light = new Light.Distant();
-        light.setAzimuth(90.0f);
+        light.setAzimuth(110.0f);
         Lighting l = new Lighting();
         l.setLight(light);
-        l.setSurfaceScale(1.0f);
+        l.setSurfaceScale(45.0f);
 
         PerspectiveTransform e = new PerspectiveTransform();
         e.setUlx(-20);     // Upper-left point
@@ -1211,10 +1215,11 @@ public class ControllerJeu implements ControlledScreen {
         e.setLry(280);
 
         //innerShadow.setInput(l);
-        e.setInput(innerShadow);
+        //e.setInput(innerShadow);
         //innerShadow.setInput(e);
         //innerShadow.setInput(l);
-        rectangle.setEffect(e);
+        //l.setContentInput(innerShadow);
+        rectangle.setEffect(l);
 
         Timeline clignotement = new Timeline(new KeyFrame(
                 Duration.millis(1200),
