@@ -1041,60 +1041,57 @@ public class ControllerJeu implements ControlledScreen {
         fermerCoffre();
         int lancer1;
         int lancer2;
-        if(plateau.isPointsAttaqueSuffisants(1)) {
+        if (plateau.isPointsAttaqueSuffisants(1)) {
             plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque() - 1);
             lancer1 = plateau.lancerUnDeAquatreChiffres();
             lancer2 = plateau.lancerUnDeAneufChiffres();
-            Arme arme=plateau.tirageArme(lancer1, lancer2);
-          //  afficherListeArmes();
+            Arme arme = plateau.tirageArme(lancer1, lancer2);
+            //  afficherListeArmes();
             mettreAjourInfoRessources();
 
-        FadeTransition fade = new FadeTransition(Duration.millis(800), gridContainer);
-        fade.setFromValue(0.0);
-        fade.setToValue(1.0);
-        fade.play();
+            FadeTransition fade = new FadeTransition(Duration.millis(800), gridContainer);
+            fade.setFromValue(0.0);
+            fade.setToValue(1.0);
+            fade.play();
 
-        Arme armeObtenue = plateau.tirageArme(plateau.lancerUnDeAquatreChiffres(), plateau.lancerUnDeAneufChiffres());
+            //Ombre sur le gridPlateau
+            backOuvrirCoffre.setPrefWidth(1200);
+            backOuvrirCoffre.setPrefHeight(1200);
+            BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, new CornerRadii(1), new Insets(0, 0, 0, 0));
+            Background background = new Background(backgroundFill);
+            backOuvrirCoffre.setBackground(background);
+            backOuvrirCoffre.setOpacity(0.9);
 
+            //Pane au centre (contient les animations du coffre
+            paneOuvrirCoffre.setMaxWidth(900);
+            paneOuvrirCoffre.setMaxHeight(720);
+            BackgroundFill backgroundFill2 = new BackgroundFill(new ImagePattern(fixeCoffre), new CornerRadii(1), new Insets(5, 100, 15, 100));
+            Background background2 = new Background(backgroundFill2);
+            paneOuvrirCoffre.setBackground(background2);
 
-        //Ombre sur le gridPlateau
-        backOuvrirCoffre.setPrefWidth(1200);
-        backOuvrirCoffre.setPrefHeight(1200);
-        BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, new CornerRadii(1), new Insets(0,0,0,0));
-        Background background = new Background(backgroundFill);
-        backOuvrirCoffre.setBackground(background);
-        backOuvrirCoffre.setOpacity(0.9);
+            //Effet Ultraviolet autour
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setOffsetX(0f);
+            dropShadow.setOffsetY(0f);
+            dropShadow.setWidth(100);
+            dropShadow.setHeight(100);
+            dropShadow.setColor(Color.rgb(127, 26, 229));
+            paneOuvrirCoffre.setEffect(dropShadow);
 
-        //Pane au centre (contient les animations du coffre
-        paneOuvrirCoffre.setMaxWidth(900);
-        paneOuvrirCoffre.setMaxHeight(720);
-        BackgroundFill backgroundFill2 = new BackgroundFill(new ImagePattern(fixeCoffre), new CornerRadii(1), new Insets(5,100,15,100));
-        Background background2 = new Background(backgroundFill2);
-        paneOuvrirCoffre.setBackground(background2);
+            //Gif animé du coffre
+            Image gifCoffre = new Image("images/Solid_war/GIF/GIFCoffreOfficiel.gif");
+            ImageView gifImageView = new ImageView(gifCoffre);
+            gifImageView.setPreserveRatio(true);
+            gifImageView.setFitWidth(700);
+            gifImageView.setFitHeight(760);
+            gifImageView.setLayoutX(100);
+            gifImageView.setLayoutY(5);
 
-        //Effet Ultraviolet autour
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(0f);
-        dropShadow.setOffsetY(0f);
-        dropShadow.setWidth(100);
-        dropShadow.setHeight(100);
-        dropShadow.setColor(Color.rgb(127, 26, 229));
-        paneOuvrirCoffre.setEffect(dropShadow);
-
-        //Gif animé du coffre
-        Image gifCoffre = new Image("images/Solid_war/GIF/GIFCoffreOfficiel.gif");
-        ImageView gifImageView = new ImageView(gifCoffre);
-        gifImageView.setPreserveRatio(true);
-        gifImageView.setFitWidth(700);
-        gifImageView.setFitHeight(760);
-        gifImageView.setLayoutX(100);
-        gifImageView.setLayoutY(5);
-
-            Font font =new Font("Autumn Regular",20);
+            Font font = new Font("Autumn Regular", 20);
 
             Button button2 = new Button();
             button2.setText("Laisser");
-            button2.setPrefSize(150,50);
+            button2.setPrefSize(150, 50);
             button2.setStyle("-fx-border-width:3px; -fx-border-color:#7F1AE5; -fx-background-color:#000000; -fx-text-fill:#FFD700;");
             button2.setFont(font);
             button2.setLayoutX(250);
@@ -1104,7 +1101,7 @@ public class ControllerJeu implements ControlledScreen {
 
             Button button = new Button();
             button.setText("Prendre");
-            button.setPrefSize(150,50);
+            button.setPrefSize(150, 50);
             button.setStyle("-fx-border-width:3px; -fx-border-color:#7F1AE5; -fx-background-color:#000000; -fx-text-fill:#FFD700;");
             button.setFont(font);
             button.setWrapText(true);
@@ -1113,48 +1110,46 @@ public class ControllerJeu implements ControlledScreen {
             button.setOnAction(e -> PrendreArme(arme));
 
 
-
-            HBox listeArmeCoffre=new HBox();
+            HBox listeArmeCoffre = new HBox();
             listeArmeCoffre.setLayoutX(180);
             listeArmeCoffre.setLayoutY(-10);
             listeArmeCoffre.setEffect(dropShadow);
             listeArmeCoffre.setVisible(false);
-            for (Arme a:plateau.turnPlayer.getArmes()) {
-                ImageView img=new ImageView(a.getImage());
+            for (Arme a : plateau.turnPlayer.getArmes()) {
+                ImageView img = new ImageView(a.getImage());
                 img.setPreserveRatio(true);
                 img.setFitWidth(100);
                 img.setFitHeight(100);
                 listeArmeCoffre.getChildren().add(img);
             }
 
-            if(listeArmeCoffre.getChildren().size()==5){
+            if (listeArmeCoffre.getChildren().size() == 5) {
                 listeArmeCoffre.setVisible(true);
                 button.setText("Remplacer Arme");
             }
 
             paneOuvrirCoffre.getChildren().add(listeArmeCoffre);
             paneOuvrirCoffre.getChildren().add(gifImageView);
-        //Avec transformation
-        //TransitionForArme(armeObtenue, 330, 370, 270, 330 - 150);
+            //Avec transformation
+            //TransitionForArme(armeObtenue, 330, 370, 270, 330 - 150);
 
-        TransitionForArme(armeObtenue, 300, 365, 350, 430 - 150);
+            TransitionForArme(arme, 300, 365, 350, 430 - 150);
 
-        gridContainer.getChildren().add(backOuvrirCoffre);
-        gridContainer.getChildren().add(paneOuvrirCoffre);
-
-
-
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(900),
-                ae -> {
-                    paneOuvrirCoffre.getChildren().remove(gifImageView);
-                    paneOuvrirCoffre.getChildren().add(button);
-                    paneOuvrirCoffre.getChildren().add(button2);
+            gridContainer.getChildren().add(backOuvrirCoffre);
+            gridContainer.getChildren().add(paneOuvrirCoffre);
 
 
-                }));
-        timeline.play();
-        //A la fin supprimer tous !!!!
+            Timeline timeline = new Timeline(new KeyFrame(
+                    Duration.millis(900),
+                    ae -> {
+                        paneOuvrirCoffre.getChildren().remove(gifImageView);
+                        paneOuvrirCoffre.getChildren().add(button);
+                        paneOuvrirCoffre.getChildren().add(button2);
+
+
+                    }));
+            timeline.play();
+            //A la fin supprimer tous !!!!
 
         }
 
