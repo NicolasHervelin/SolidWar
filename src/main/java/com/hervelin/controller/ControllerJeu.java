@@ -1,6 +1,10 @@
 package com.hervelin.controller;
 import com.hervelin.model.*;
 import javafx.animation.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -8,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -109,6 +114,11 @@ public class ControllerJeu implements ControlledScreen {
         }
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
+        plateau.turnPlayer.ajouterArme(new Bazooka("images/nop.png"));
+        plateau.turnPlayer.ajouterArme(new Bazooka("images/nop.png"));
+        plateau.turnPlayer.ajouterArme(new Bazooka("images/nop.png"));
+        plateau.turnPlayer.ajouterArme(new Bazooka("images/nop.png"));
+
 
         afficherListeArmes();
         affichageDuJoueur(plateau.turnPlayer);
@@ -1123,6 +1133,15 @@ public class ControllerJeu implements ControlledScreen {
 
     }
 
+    public void remplacer_arme(int i,Arme arme){
+        listeArmeCoffre.getChildren().get(i).setOnMouseClicked(mouseEvent -> {
+            plateau.turnPlayer.remplacerArme(plateau.turnPlayer.getArmes().get(i),arme);
+           // afficherListeArmesCoffre();
+            afficherListeArmes();
+            fermerCoffre();
+        });
+    }
+
     public void PrendreArme(Arme arme){
         if(plateau.turnPlayer.getArmes().size()<5) {
             plateau.turnPlayer.ajouterArme(arme);
@@ -1130,15 +1149,16 @@ public class ControllerJeu implements ControlledScreen {
             afficherListeArmes();
         }else {
             listeArmeCoffre.setOpacity(1);
-            int i=0;
-            for (Arme a:plateau.turnPlayer.getArmes()) {
-                listeArmeCoffre.getChildren().get(i).setOnMouseClicked(e-> plateau.turnPlayer.remplacerArme(a,arme));
-                afficherListeArmesCoffre();
+            for(int i=0;i<5;i++){
+                remplacer_arme(i,arme);
             }
         }
     }
 
     public void afficherListeArmesCoffre(){
+        if(listeArmeCoffre!=null){
+            listeArmeCoffre.getChildren().removeAll();
+        }
         DropShadow dropShadow = new DropShadow();
         dropShadow.setOffsetX(0f);
         dropShadow.setOffsetY(0f);
