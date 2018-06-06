@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Joueur {
     private String name;
     private Position position;
-    private ArrayList<Arme> armes = new ArrayList<>();
+    private ArrayList<Arme> armes = new ArrayList<>(5);
     private int ptMouvement;
     private ArrayList<Case> listPortee;
     private int ptAttaque;
@@ -63,8 +63,12 @@ public class Joueur {
         this.armes = armes;
     }
 
-    public void ajouterArme(Arme arme) {
-        armes.add(arme);
+    public void ajouterArme(Arme arme) {armes.add(arme); }
+
+    public void remplacerArme(Arme arme, Arme a){
+        int index=armes.lastIndexOf(arme);
+        armes.remove(arme);
+        armes.add(index,a);
     }
 
     public int getPtMouvement() {

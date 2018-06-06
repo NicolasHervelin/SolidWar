@@ -62,7 +62,7 @@
                             <HBox fx:id="hBoxBrique" layoutX="164.0" layoutY="305.0" spacing="5.0">
 
                             </HBox>
-                        <ListView fx:id="listArmes" layoutX="29.0" layoutY="338.0" prefHeight="354.0" prefWidth="200.0">
+                        <ListView fx:id="listArmes" layoutX="29.0" layoutY="338.0" opacity="0.9" prefHeight="354.0" prefWidth="200.0">
                             <items>
                             </items>
                         </ListView>

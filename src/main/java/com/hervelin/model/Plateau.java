@@ -545,34 +545,34 @@ public class Plateau {
     }
 
     public Arme tirageArme(int lancer1,int lancer2){
-        Arme arme = null;
+        Arme arme=null;
         switch (lancer2){
             case 1:
-                arme = new Couteau("images/Solid_war/COFFRE/ARMES/COUTEAU/CLASSE"+lancer1+".png");
+                arme=new Couteau("images/Solid_war/COFFRE/ARMES/COUTEAU/CLASSE"+lancer1+".png");
                 break;
             case 2:
-                arme = new Fusil_assaut("images/Solid_war/COFFRE/ARMES/FUSIL/CLASSE"+lancer1+".png");
+                arme=new Fusil_assaut("images/Solid_war/COFFRE/ARMES/FUSIL/CLASSE"+lancer1+".png");
                 break;
             case 3:
-                arme = new Fusil_pompe("images/Solid_war/COFFRE/ARMES/POMPE/CLASSE"+lancer1+".png");
+                arme=new Fusil_pompe("images/Solid_war/COFFRE/ARMES/POMPE/CLASSE"+lancer1+".png");
                 break;
             case 4:
-                arme = new Bazooka("images/Solid_war/COFFRE/ARMES/BASOUKA/CLASSE"+lancer1+".png");
+                arme=new Bazooka("images/Solid_war/COFFRE/ARMES/BASOUKA/CLASSE"+lancer1+".png");
                 break;
             case 5:
-                arme = new Pistolet("images/Solid_war/COFFRE/ARMES/PISTOLET/CLASSE"+lancer1+".png");
+                arme=new Pistolet("images/Solid_war/COFFRE/ARMES/PISTOLET/CLASSE"+lancer1+".png");
                 break;
             case 6:
-                arme = new Mine("images/Solid_war/COFFRE/ARMES/MINE/CLASSE"+lancer1+".png");
+                arme=new Mine("images/Solid_war/COFFRE/ARMES/MINE/CLASSE"+lancer1+".png");
                 break;
             case 7:
-                arme = new Sulfateuse("images/Solid_war/COFFRE/ARMES/SULFATEUSE/CLASSE"+lancer1+".png");
+                arme=new Sulfateuse("images/Solid_war/COFFRE/ARMES/SULFATEUSE/CLASSE"+lancer1+".png");
                 break;
             case 8:
-                arme = new Sniper("images/Solid_war/COFFRE/ARMES/SNIPER/CLASSE"+lancer1+".png");
+                arme=new Sniper("images/Solid_war/COFFRE/ARMES/SNIPER/CLASSE"+lancer1+".png");
                 break;
             case 9:
-                arme = new Grenade("images/Solid_war/COFFRE/ARMES/GRENADE/CLASSE"+lancer1+".png");
+                arme=new Grenade("images/Solid_war/COFFRE/ARMES/GRENADE/CLASSE"+lancer1+".png");
                 break;
         }
         return arme;
