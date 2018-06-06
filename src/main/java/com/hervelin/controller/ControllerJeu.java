@@ -1,21 +1,8 @@
 package com.hervelin.controller;
-
 import com.hervelin.model.*;
-import com.sun.javafx.geom.BaseBounds;
-import com.sun.javafx.geom.transform.BaseTransform;
-import com.sun.javafx.scene.BoundsAccessor;
-import com.sun.javafx.tk.TKSceneListener;
 import javafx.animation.*;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.*;
@@ -24,15 +11,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class ControllerJeu implements ControlledScreen {
     ScreensController myController;
@@ -54,6 +37,7 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> shoot = new ArrayList<Case>();
     private ArrayList<Case> build = new ArrayList<Case>();
     private ArrayList<Case> casesDansExplosion = new ArrayList<Case>();
+    private HBox listeArmeCoffre;
     private Image imageExplosion = new Image("images/TextureExplosion40-min.png");
     private Image fixeCoffre = new Image("images/Solid_war/GIF/Coffre14_2-min.png");
     private Pane backOuvrirCoffre = new Pane();
@@ -228,25 +212,22 @@ public class ControllerJeu implements ControlledScreen {
         listArmes.getItems().removeAll();
         listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
         listArmes.setCellFactory(new ArmeCellFactory());
-        listArmes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Arme>() {
-            @Override
-            public void changed(ObservableValue<? extends Arme> observable, Arme oldValue, Arme newValue) {
-                afficherArme(newValue);
-                switch (mode){
-                    case 1:
-                        clean_pathfinding(ListPortee);
-                        break;
-                    case 2:
-                        clean_pathfinding(shoot);
-                        break;
-                    case 3:
-                        clean_pathfinding(build);
-                        break;
-                    default:break;
-                }
-                mode=2;
-                shoot_pathfinding(newValue);
+        listArmes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            afficherArme(newValue);
+            switch (mode){
+                case 1:
+                    clean_pathfinding(ListPortee);
+                    break;
+                case 2:
+                    clean_pathfinding(shoot);
+                    break;
+                case 3:
+                    clean_pathfinding(build);
+                    break;
+                default:break;
             }
+            mode=2;
+            shoot_pathfinding(newValue);
         });
     }
 
@@ -1095,7 +1076,7 @@ public class ControllerJeu implements ControlledScreen {
             button2.setStyle("-fx-border-width:3px; -fx-border-color:#7F1AE5; -fx-background-color:#000000; -fx-text-fill:#FFD700;");
             button2.setFont(font);
             button2.setLayoutX(250);
-            button2.setLayoutY(250);
+            button2.setLayoutY(200);
             button2.setOnAction(e -> fermerCoffre());
 
 
@@ -1106,29 +1087,17 @@ public class ControllerJeu implements ControlledScreen {
             button.setFont(font);
             button.setWrapText(true);
             button.setLayoutX(500);
-            button.setLayoutY(250);
+            button.setLayoutY(200);
             button.setOnAction(e -> PrendreArme(arme));
 
 
-            HBox listeArmeCoffre = new HBox();
-            listeArmeCoffre.setLayoutX(180);
-            listeArmeCoffre.setLayoutY(-10);
-            listeArmeCoffre.setEffect(dropShadow);
-            listeArmeCoffre.setVisible(false);
-            for (Arme a : plateau.turnPlayer.getArmes()) {
-                ImageView img = new ImageView(a.getImage());
-                img.setPreserveRatio(true);
-                img.setFitWidth(100);
-                img.setFitHeight(100);
-                listeArmeCoffre.getChildren().add(img);
-            }
+            afficherListeArmesCoffre();
 
             if (listeArmeCoffre.getChildren().size() == 5) {
                 listeArmeCoffre.setVisible(true);
                 button.setText("Remplacer Arme");
             }
 
-            paneOuvrirCoffre.getChildren().add(listeArmeCoffre);
             paneOuvrirCoffre.getChildren().add(gifImageView);
             //Avec transformation
             //TransitionForArme(armeObtenue, 330, 370, 270, 330 - 150);
@@ -1145,8 +1114,7 @@ public class ControllerJeu implements ControlledScreen {
                         paneOuvrirCoffre.getChildren().remove(gifImageView);
                         paneOuvrirCoffre.getChildren().add(button);
                         paneOuvrirCoffre.getChildren().add(button2);
-
-
+                        paneOuvrirCoffre.getChildren().add(listeArmeCoffre);
                     }));
             timeline.play();
             //A la fin supprimer tous !!!!
@@ -1158,9 +1126,42 @@ public class ControllerJeu implements ControlledScreen {
     public void PrendreArme(Arme arme){
         if(plateau.turnPlayer.getArmes().size()<5) {
             plateau.turnPlayer.ajouterArme(arme);
-        }else System.out.println("trop d'arme");
-        afficherListeArmes();
-        fermerCoffre();
+            fermerCoffre();
+            afficherListeArmes();
+        }else {
+            listeArmeCoffre.setOpacity(1);
+            int i=0;
+            for (Arme a:plateau.turnPlayer.getArmes()) {
+                listeArmeCoffre.getChildren().get(i).setOnMouseClicked(e-> plateau.turnPlayer.remplacerArme(a,arme));
+                afficherListeArmesCoffre();
+            }
+        }
+    }
+
+    public void afficherListeArmesCoffre(){
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setOffsetX(0f);
+        dropShadow.setOffsetY(0f);
+        dropShadow.setWidth(100);
+        dropShadow.setHeight(100);
+        dropShadow.setColor(Color.rgb(127, 26, 229));
+        listeArmeCoffre = new HBox();
+        listeArmeCoffre.setOpacity(0.2);
+        listeArmeCoffre.setLayoutX(180);
+        listeArmeCoffre.setLayoutY(-10);
+        listeArmeCoffre.setEffect(dropShadow);
+        listeArmeCoffre.setVisible(false);
+        for (Arme a : plateau.turnPlayer.getArmes()) {
+            ImageView img = new ImageView(a.getImage());
+            img.setPreserveRatio(true);
+            img.setFitWidth(100);
+            img.setFitHeight(100);
+            listeArmeCoffre.getChildren().add(img);
+        }
+    }
+
+    public void remplacerArme(Arme a, Arme newarme){
+
     }
 
     public void fermerCoffre() {
@@ -1242,6 +1243,7 @@ public class ControllerJeu implements ControlledScreen {
         dropShadow.setOffsetY(-30.0f);
         dropShadow.setColor(Color.LIGHTGRAY);
 
+
         Light.Distant light = new Light.Distant();
         light.setAzimuth(110.0f);
         Lighting l = new Lighting();
@@ -1264,7 +1266,6 @@ public class ControllerJeu implements ControlledScreen {
         //innerShadow.setInput(l);
         //l.setContentInput(innerShadow);
         rectangle.setEffect(l);
-
         Timeline clignotement = new Timeline(new KeyFrame(
                 Duration.millis(1200),
                 ae -> {
@@ -1277,6 +1278,7 @@ public class ControllerJeu implements ControlledScreen {
 
                 }));
         clignotement.play();
+
     }
 
     private boolean isCaseEstDansLeRayon(Position position, ArrayList<Case> listeDesCasesQuiExplosent) {

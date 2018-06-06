@@ -63,7 +63,12 @@ public class Joueur {
         this.armes = armes;
     }
 
-    public void ajouterArme(Arme arme) {         armes.add(arme);
+    public void ajouterArme(Arme arme) {armes.add(arme); }
+
+    public void remplacerArme(Arme arme, Arme a){
+        int index=armes.lastIndexOf(arme);
+        armes.remove(arme);
+        armes.add(index,a);
     }
 
     public int getPtMouvement() {
