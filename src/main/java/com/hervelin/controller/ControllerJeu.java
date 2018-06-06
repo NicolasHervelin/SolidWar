@@ -1078,6 +1078,8 @@ public class ControllerJeu implements ControlledScreen {
         gifImageView.setLayoutX(100);
         gifImageView.setLayoutY(5);
 
+
+
         //Bouton Exit
         Button button = new Button();
         button.setText("OK j'ai fini");
@@ -1102,7 +1104,6 @@ public class ControllerJeu implements ControlledScreen {
                 ae -> {
                     paneOuvrirCoffre.getChildren().remove(gifImageView);
                     paneOuvrirCoffre.getChildren().add(button);
-
                 }));
         timeline.play();
         //A la fin supprimer tous !!!!
@@ -1159,14 +1160,9 @@ public class ControllerJeu implements ControlledScreen {
 
 
     private void TransitionForArme(Arme armeObtenue, double layoutXFrom, double layoutXTo, double layoutYFrom, double layoutYTo) {
-        Arme arme = new Bazooka("images/Solid_war/COFFRE/ARMES/BASOUKA/basouka.png");
         ImagePattern imagePatternArme = new ImagePattern(armeObtenue.getImage());
         Rectangle rectangle = new Rectangle(175, 175);
-        //imageViewArme.setPreserveRatio(true);
-        //imageViewArme.setFitHeight(100);
-        //imageViewArme.setFitWidth(100);
         rectangle.setFill(imagePatternArme);
-
 
         paneOuvrirCoffre.getChildren().add(rectangle);
         TranslateTransition translateTransition = new TranslateTransition(Duration.millis(1200), rectangle);
@@ -1190,12 +1186,11 @@ public class ControllerJeu implements ControlledScreen {
         innerShadow.setOffsetX(10.0f);
         innerShadow.setOffsetY(-25.0f);
         innerShadow.setRadius(35);
-        //innerShadow.setColor(Color.rgb(127, 26, 229));
         innerShadow.setColor(Color.WHITE);
 
         DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(-10.0f);
-        dropShadow.setOffsetY(-30.0f);
+        dropShadow.setOffsetX(2.0f);
+        dropShadow.setOffsetY(-2.0f);
         dropShadow.setColor(Color.LIGHTGRAY);
 
         Light.Distant light = new Light.Distant();
@@ -1214,11 +1209,8 @@ public class ControllerJeu implements ControlledScreen {
         e.setLrx(155);    // Lower-right point
         e.setLry(280);
 
-        //innerShadow.setInput(l);
-        //e.setInput(innerShadow);
-        //innerShadow.setInput(e);
-        //innerShadow.setInput(l);
-        //l.setContentInput(innerShadow);
+        l.setContentInput(innerShadow);
+        l.setContentInput(dropShadow);
         rectangle.setEffect(l);
 
         Timeline clignotement = new Timeline(new KeyFrame(
