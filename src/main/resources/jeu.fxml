@@ -103,7 +103,7 @@
                                 </padding>
                             </HBox>
                         </VBox>
-                        <Button fx:id="boutonOuvrirArme" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirCoffre" prefHeight="64.0" prefWidth="64.0" visible="true" />
+                        <Button fx:id="boutonOuvrirArme" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirCoffre" prefHeight="64.0" prefWidth="64.0" visible="false" />
                         <Button fx:id="boutonOuvrirArmure" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirArmure" prefHeight="64.0" prefWidth="64.0" visible="false" />
                         <Button fx:id="boutonOuvrirPopo" layoutX="45.0" layoutY="695.0" mnemonicParsing="false" onAction="#ouvrirPopo" prefHeight="64.0" prefWidth="64.0" visible="false" />
                         <Button fx:id="boutonFinDuTour" layoutX="131.0" layoutY="695.0" mnemonicParsing="false" onAction="#finDuTour" prefHeight="64.0" prefWidth="64.0" />

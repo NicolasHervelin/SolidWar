@@ -42,7 +42,7 @@ public class ControllerJeu implements ControlledScreen {
     private ArrayList<Case> shoot = new ArrayList<Case>();
     private ArrayList<Case> build = new ArrayList<Case>();
     private ArrayList<Case> casesDansExplosion = new ArrayList<Case>();
-    private HBox listeArmeCoffre;
+    private HBox listeArmeCoffre = new HBox();
     private Image imageExplosion = new Image("images/TextureExplosion40-min.png");
     private Image fixeCoffre = new Image("images/Solid_war/GIF/Coffre14_2-min.png");
     private Pane backOuvrirCoffre = new Pane();
@@ -223,7 +223,6 @@ public class ControllerJeu implements ControlledScreen {
         listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
         listArmes.setCellFactory(new ArmeCellFactory());
         listArmes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            afficherArme(newValue);
             switch (mode){
                 case 1:
                     clean_pathfinding(ListPortee);
@@ -237,7 +236,10 @@ public class ControllerJeu implements ControlledScreen {
                 default:break;
             }
             mode=2;
-            shoot_pathfinding(newValue);
+            if(newValue != null) {
+                afficherArme(newValue);
+                shoot_pathfinding(newValue);
+            }
         });
     }
 
@@ -690,11 +692,11 @@ public class ControllerJeu implements ControlledScreen {
 
         //int distanceParcourue = destination.distance(positionInitiale, destination);
         plateau.turnPlayer.setPtMouvement(plateau.turnPlayer.getPtMouvement() - caseDestination.getCout());
-        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CaseArme"))
+        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CaseArme") && plateau.isPointsAttaqueSuffisants(1))
             boutonOuvrirArme.setVisible(true);
-        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CasePopo"))
+        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CasePopo") && plateau.isPointsAttaqueSuffisants(1))
             boutonOuvrirPopo.setVisible(true);
-        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CaseArmure"))
+        if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CaseArmure") && plateau.isPointsAttaqueSuffisants(1))
             boutonOuvrirArmure.setVisible(true);
         definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
         clean_pathfinding(ListPortee);
@@ -1051,7 +1053,7 @@ public class ControllerJeu implements ControlledScreen {
             BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, new CornerRadii(1), new Insets(0, 0, 0, 0));
             Background background = new Background(backgroundFill);
             backOuvrirCoffre.setBackground(background);
-            backOuvrirCoffre.setOpacity(0.9);
+            backOuvrirCoffre.setOpacity(0.7);
 
             //Pane au centre (contient les animations du coffre
             paneOuvrirCoffre.setMaxWidth(900);
@@ -1079,34 +1081,36 @@ public class ControllerJeu implements ControlledScreen {
             gifImageView.setLayoutY(5);
 
             Font font = new Font("Autumn Regular", 20);
+            String styleDefault = "-fx-border-width:2px; -fx-border-radius:3; -fx-radius:3; -fx-border-color:#7F1AE5; -fx-background-color:#000000; -fx-text-fill:#FFD700;";
+            String styleHover = "-fx-border-width:2px; -fx-border-color:#7F1AE5; -fx-border-radius:3; -fx-radius:3; -fx-background-color:#FFD700; -fx-text-fill:#000000;";
 
             Button button2 = new Button();
             button2.setText("Laisser");
             button2.setPrefSize(150, 50);
-            button2.setStyle("-fx-border-width:3px; -fx-border-color:#7F1AE5; -fx-background-color:#000000; -fx-text-fill:#FFD700;");
+            button2.setStyle(styleDefault);
             button2.setFont(font);
             button2.setLayoutX(250);
             button2.setLayoutY(200);
             button2.setOnAction(e -> fermerCoffre());
+            button2.setOnMouseEntered(e -> button2.setStyle(styleHover));
+            button2.setOnMouseExited(e -> button2.setStyle(styleDefault));
 
 
             Button button = new Button();
             button.setText("Prendre");
             button.setPrefSize(150, 50);
-            button.setStyle("-fx-border-width:3px; -fx-border-color:#7F1AE5; -fx-background-color:#000000; -fx-text-fill:#FFD700;");
+            button.setStyle(styleDefault);
             button.setFont(font);
             button.setWrapText(true);
             button.setLayoutX(500);
             button.setLayoutY(200);
-            button.setOnAction(e -> PrendreArme(arme));
-
-
-            afficherListeArmesCoffre();
-
-            if (listeArmeCoffre.getChildren().size() == 5) {
-                listeArmeCoffre.setVisible(true);
-                button.setText("Remplacer Arme");
-            }
+            button.setOnAction(e -> {
+                PrendreArme(arme);
+                listeArmeCoffre.setDisable(false);
+                listeArmeCoffre.setOpacity(1.0);
+            });
+            button.setOnMouseEntered(e -> button.setStyle(styleHover));
+            button.setOnMouseExited(e -> button.setStyle(styleDefault));
 
             paneOuvrirCoffre.getChildren().add(gifImageView);
             //Avec transformation
@@ -1124,10 +1128,12 @@ public class ControllerJeu implements ControlledScreen {
                         paneOuvrirCoffre.getChildren().remove(gifImageView);
                         paneOuvrirCoffre.getChildren().add(button);
                         paneOuvrirCoffre.getChildren().add(button2);
-                        paneOuvrirCoffre.getChildren().add(listeArmeCoffre);
+                        afficherListeArmesCoffre();
+                        if (listeArmeCoffre.getChildren().size() == 5) {
+                            button.setText("Remplacer");
+                        }
                     }));
             timeline.play();
-            //A la fin supprimer tous !!!!
 
         }
 
@@ -1136,10 +1142,11 @@ public class ControllerJeu implements ControlledScreen {
     public void remplacer_arme(int i,Arme arme){
         listeArmeCoffre.getChildren().get(i).setOnMouseClicked(mouseEvent -> {
             plateau.turnPlayer.remplacerArme(plateau.turnPlayer.getArmes().get(i),arme);
-           // afficherListeArmesCoffre();
+            // afficherListeArmesCoffre();
             afficherListeArmes();
             fermerCoffre();
         });
+
     }
 
     public void PrendreArme(Arme arme){
@@ -1156,59 +1163,80 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     public void afficherListeArmesCoffre(){
-        if(listeArmeCoffre!=null){
-            listeArmeCoffre.getChildren().removeAll();
-        }
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(0f);
-        dropShadow.setOffsetY(0f);
-        dropShadow.setWidth(100);
-        dropShadow.setHeight(100);
-        dropShadow.setColor(Color.rgb(127, 26, 229));
+        paneOuvrirCoffre.getChildren().remove(listeArmeCoffre);
+
         listeArmeCoffre = new HBox();
-        listeArmeCoffre.setOpacity(0.2);
-        listeArmeCoffre.setLayoutX(180);
-        listeArmeCoffre.setLayoutY(-10);
-        listeArmeCoffre.setEffect(dropShadow);
-        listeArmeCoffre.setVisible(false);
+        listeArmeCoffre.setLayoutX(185);
+        listeArmeCoffre.setLayoutY(20);
+
+        int i = 0;
+
         for (Arme a : plateau.turnPlayer.getArmes()) {
             ImageView img = new ImageView(a.getImage());
             img.setPreserveRatio(true);
             img.setFitWidth(100);
             img.setFitHeight(100);
             listeArmeCoffre.getChildren().add(img);
+            i++;
         }
+
+        setDropShadowsListeArmes(plateau.turnPlayer.getArmes().size());
+        listeArmeCoffre.setDisable(true);
+        listeArmeCoffre.setOpacity(0.2);
+        paneOuvrirCoffre.getChildren().add(listeArmeCoffre);
     }
 
     public void remplacerArme(Arme a, Arme newarme){
 
     }
 
+    private void setDropShadowsListeArmes(int nombreDarme) {
+        DropShadow dropShadowOnHover = new DropShadow();
+        dropShadowOnHover.setOffsetX(0f);
+        dropShadowOnHover.setOffsetY(0f);
+        dropShadowOnHover.setColor(Color.rgb(255,215,0));
+        for(int i = 0; i < nombreDarme; i++) {
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setColor(Color.GRAY);
+            dropShadow.setOffsetX(-2 + i);
+            dropShadow.setOffsetY(-2);
+            ImageView imageView = (ImageView) listeArmeCoffre.getChildren().get(i);
+            imageView.setEffect(dropShadow);
+            imageView.setOnMouseEntered(e -> imageView.setEffect(dropShadowOnHover));
+            imageView.setOnMouseExited(e -> imageView.setEffect(dropShadow));
+        }
+    }
+
     public void fermerCoffre() {
+        listeArmeCoffre.getChildren().clear();
+        paneOuvrirCoffre.getChildren().remove(listeArmeCoffre);
         paneOuvrirCoffre.getChildren().clear();
         backOuvrirCoffre.getChildren().clear();
         gridContainer.getChildren().remove(backOuvrirCoffre);
         gridContainer.getChildren().remove(paneOuvrirCoffre);
+        cacherBoutonOuvrir();
+        plateau.turnPlayer.caseSauvegarde = null;
+        definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
     }
 
     //Clic sur le bouton "OuvrirPopo"
     public void ouvrirPopo() {
-        if(plateau.turnPlayer.getPtAttaque()>0){
-            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
-            plateau.turnPlayer.setPtSante(plateau.turnPlayer.getPtSante()+plateau.lancerTroisDes());
-            mettreAjourSanteArmure();
-            mettreAjourInfoRessources();
-        }
+        plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
+        plateau.turnPlayer.setPtSante(plateau.turnPlayer.getPtSante()+plateau.lancerTroisDes());
+        mettreAjourSanteArmure();
+        mettreAjourInfoRessources();
+        cacherBoutonOuvrir();
+        plateau.turnPlayer.caseSauvegarde = null;
     }
 
     //Clic sur le bouton "OuvrirArmure"
     public void ouvrirArmure() {
-        if(plateau.turnPlayer.getPtAttaque()>0){
-            plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
-            plateau.turnPlayer.setPtArmure(plateau.turnPlayer.getPtArmure()+plateau.lancerTroisDes());
-            mettreAjourSanteArmure();
-            mettreAjourInfoRessources();
-        }
+        plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
+        plateau.turnPlayer.setPtArmure(plateau.turnPlayer.getPtArmure()+plateau.lancerTroisDes());
+        mettreAjourSanteArmure();
+        mettreAjourInfoRessources();
+        cacherBoutonOuvrir();
+        plateau.turnPlayer.caseSauvegarde = null;
     }
 
     //Supprime l'affichage de tous les boutons ouvrir
