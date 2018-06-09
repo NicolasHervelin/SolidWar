@@ -501,7 +501,10 @@ public class ControllerJeu implements ControlledScreen {
         afficherExplosion(listeDesCasesQuiExplosent);
         Timeline timeline = new Timeline(new KeyFrame(
                 Duration.millis(800),
-                ae -> decolorationApresExplosion(positionExplosion, degats, listeDesCasesQuiExplosent, armeUtilisee, listeDesLancers)));
+                ae -> {
+                    decolorationApresExplosion(positionExplosion, degats, listeDesCasesQuiExplosent, armeUtilisee, listeDesLancers);
+                    mettreAjourInfoRessources();
+                }));
         timeline.play();
     }
 
