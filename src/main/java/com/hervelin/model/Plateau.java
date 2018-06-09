@@ -14,6 +14,7 @@ public class Plateau {
     private ArrayList<Case> openList = new ArrayList<>();
     private ArrayList<Case> shoot = new ArrayList<>();
     private ArrayList<Case> build = new ArrayList<>();
+    private ArrayList<Case> explosion = new ArrayList<>();
 
     private int xTaille;
     private int yTaille;
@@ -772,6 +773,74 @@ public class Plateau {
         return null;
     }
 
+    public ArrayList<Case> explosionPathFindingPlateau(Arme arme) {
+        if(arme.getTypeTir().equals("droit")) {
+            Position depart=turnPlayer.getPosition();
+            Case next;
+            int i=0;
+            openList=new ArrayList<>();
+            explosion=new ArrayList<>();
+            Case positionactuelle;
+            openList.add(getCaseByPosition(depart));
+            while (openList.size()>0) {
+                positionactuelle = openList.get(openList.size() - 1);
+                openList.remove(positionactuelle);
+                explosion.add(positionactuelle);
+                next=getCaseLeft(positionactuelle.getPosition());
+                if (next != null && next.getPosition().getY()>=depart.getY()-arme.getPortée() && i==0) {
+                    if (next.getType().equals("CaseMur")){
+                        i=1;
+                    }
+                    openList.add(next);
+                }
+            }
+            i=0;
+            openList.add(getCaseByPosition(depart));
+            while (openList.size()>0) {
+                positionactuelle = openList.get(openList.size() - 1);
+                openList.remove(positionactuelle);
+                explosion.add(positionactuelle);
+                next=getCaseRight(positionactuelle.getPosition());
+                if (next != null && next.getPosition().getY()<=depart.getY()+arme.getPortée() && i==0) {
+                    if (next.getType().equals("CaseMur")){
+                        i=1;
+                    }
+                    openList.add(next);
+                }
+            }
+            i=0;
+            openList.add(getCaseByPosition(depart));
+            while (openList.size()>0) {
+                positionactuelle = openList.get(openList.size() - 1);
+                openList.remove(positionactuelle);
+                explosion.add(positionactuelle);
+                next=getCaseUp(positionactuelle.getPosition());
+                if (next != null && next.getPosition().getX()>=depart.getX()-arme.getPortée() && i==0) {
+                    if (next.getType().equals("CaseMur")){
+                        i=1;
+                    }
+                    openList.add(next);
+                }
+            }
+            i=0;
+            openList.add(getCaseByPosition(depart));
+            while (openList.size()>0) {
+                positionactuelle = openList.get(openList.size() - 1);
+                openList.remove(positionactuelle);
+                explosion.add(positionactuelle);
+                next=getCaseDown(positionactuelle.getPosition());
+                if (next != null && next.getPosition().getX()<=depart.getX()+arme.getPortée() && i==0) {
+                    if (next.getType().equals("CaseMur")){
+                        i=1;
+                    }
+                    openList.add(next);
+                }
+            }
+            return explosion;
+        }
+        return null;
+    }
+
     private int getDeplacementMax() {
         int coutMax = 0;
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau();
@@ -842,6 +911,18 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAPorteeDeTir;
         for (Arme arme : turnPlayer.getArmes()) {
             listeDesCasesAPorteeDeTir = shootPathFindingPlateau(arme);
+            for (Case c : listeDesCasesAPorteeDeTir) {
+                if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition())
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isJoueurAPorteeDexplosion() {
+        ArrayList<Case> listeDesCasesAPorteeDeTir;
+        for (Arme arme : turnPlayer.getArmes()) {
+            listeDesCasesAPorteeDeTir = explosionPathFindingPlateau(arme);
             for (Case c : listeDesCasesAPorteeDeTir) {
                 if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition())
                     return true;
