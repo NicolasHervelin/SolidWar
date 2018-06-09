@@ -172,7 +172,6 @@ public class ControllerJeu implements ControlledScreen {
 
         afficherListeArmes();
         listArmes.getSelectionModel().select(plateau.turnPlayer.indexArmeSelectionnee);
-        System.out.println("SetUP(), selected index : " + listArmes.getSelectionModel().getSelectedIndex());
     }
 
 
@@ -275,6 +274,9 @@ public class ControllerJeu implements ControlledScreen {
         plateau.appliquerDegatsExplosion(positionExplosion , armeUtilisee, degats, listeDesLancers);
         remplacerLesMursDetruits(listeDeCases);
         shoot_pathfinding(armeUtilisee);
+      /*  ArrayList<Case> l=plateau.casesDansExplosion(listArmes.getSelectionModel().getSelectedItem());
+        clean_pathfinding(shoot);
+        coloration(Color.BLACK,l);*/
     }
 
 
@@ -340,6 +342,7 @@ public class ControllerJeu implements ControlledScreen {
                     case "CaseMur":
                         if(shoot.contains(analyse)){
                             attaque(analyse, armeSelectionnee);
+
                         }
                         break;
                     case "CaseNormale":
@@ -494,6 +497,7 @@ public class ControllerJeu implements ControlledScreen {
             System.out.println("Points d'attaque insuffisants !!");
             mettreAjourInfoRessources();
         }
+
     }
 
     //Appelle les méthodes permettant l'explosion visuelle et la répartition des dégats
@@ -501,7 +505,10 @@ public class ControllerJeu implements ControlledScreen {
         afficherExplosion(listeDesCasesQuiExplosent);
         Timeline timeline = new Timeline(new KeyFrame(
                 Duration.millis(800),
-                ae -> decolorationApresExplosion(positionExplosion, degats, listeDesCasesQuiExplosent, armeUtilisee, listeDesLancers)));
+                ae ->{
+                    decolorationApresExplosion(positionExplosion, degats, listeDesCasesQuiExplosent, armeUtilisee, listeDesLancers);
+                }));
+
         timeline.play();
     }
 

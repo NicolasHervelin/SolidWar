@@ -458,6 +458,7 @@ public class Plateau {
                 if(!listcasesdansExplosion.contains(c2)){
                     listcasesdansExplosion.add(c2);
                     System.out.println("x :" +c2.getPosition().getX());
+                    System.out.println("y :" +c2.getPosition().getY());
 
                 }
             }
