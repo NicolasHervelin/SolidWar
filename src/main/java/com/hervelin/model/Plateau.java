@@ -706,7 +706,7 @@ public class Plateau {
         return build;
     }
 
-    public ArrayList<Case> shootPathFindingPlateau(Arme arme) {
+    public ArrayList<Case> shootPathFindingPlateau(Arme arme, Joueur joueur) {
         if(arme.getTypeTir().equals("droit")) {
             Position depart=turnPlayer.getPosition();
             Case next;
@@ -774,10 +774,10 @@ public class Plateau {
         return null;
     }
 
-    public ArrayList<Case> explosionPathFindingPlateau(Arme arme) {
+    public ArrayList<Case> explosionPathFindingPlateau(Arme arme, Joueur joueur) {
         if(arme.getRayon() > 0) {
             ArrayList<Case> listcasesdansExplosion=new ArrayList<>();
-            for (Case c:shoot) {
+            for (Case c : shootPathFindingPlateau(arme, joueur)) {
                 for (Case c2:casesDansLeRayon(c.getPosition(), arme.getRayon(), new ArrayList<>())) {
                     if(!listcasesdansExplosion.contains(c2)){
                         listcasesdansExplosion.add(c2);
@@ -873,7 +873,7 @@ public class Plateau {
     private boolean isJoueurAPorteeDeTir() {
         ArrayList<Case> listeDesCasesAPorteeDeTir;
         for (Arme arme : turnPlayer.getArmes()) {
-            listeDesCasesAPorteeDeTir = shootPathFindingPlateau(arme);
+            listeDesCasesAPorteeDeTir = shootPathFindingPlateau(arme, turnPlayer);
             for (Case c : listeDesCasesAPorteeDeTir) {
                 if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition())
                     return true;
@@ -891,10 +891,12 @@ public class Plateau {
     private boolean isJoueurAPorteeDexplosion() {
         ArrayList<Case> listeDesCasesAPorteeDexplosion;
         for (Arme arme : turnPlayer.getArmes()) {
-            listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme);
-            for (Case c : listeDesCasesAPorteeDexplosion) {
-                if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition())
-                    return true;
+            if(arme.getRayon() > 0) {
+                listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme, turnPlayer);
+                for (Case c : listeDesCasesAPorteeDexplosion) {
+                    if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition())
+                        return true;
+                }
             }
         }
         return false;
@@ -903,15 +905,23 @@ public class Plateau {
     //Savoir si le joueur actuel est à portée d'explosion d'un autre joueur
     private boolean isTurnPlayerAPorteeDexplosion() {
         ArrayList<Case> listeDesCasesAPorteeDexplosion;
-        for (Arme arme : turnPlayer.getArmes()) {
-            listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme);
-            for (Case c : listeDesCasesAPorteeDexplosion) {
-                if(c.getType().equals("CaseJoueur") && c.getPosition() == turnPlayer.getPosition())
-                    return true;
+        for (Joueur joueur : listeDeJoueurs) {
+            for (Arme arme : joueur.getArmes()) {
+                if(arme.getRayon() > 0) {
+                    listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme, joueur);
+                    for (Case c : listeDesCasesAPorteeDexplosion) {
+                        if(c.getType().equals("CaseJoueur") && c.getPosition() == turnPlayer.getPosition())
+                            return true;
+                    }
+                }
             }
         }
         return false;
 
+    }
+
+    private boolean isConstructionPossible() {
+        return turnPlayer.getBrique() >= 10;
     }
 
     public void ecrireActionCSV() {
@@ -956,6 +966,7 @@ public class Plateau {
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(isTurnPlayerAPorteeDexplosion()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(isConstructionPossible()));
                 //...
                 fileWriter.append(LIGNE_SEPARATEUR);
 
