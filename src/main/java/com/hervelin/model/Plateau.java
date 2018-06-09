@@ -451,6 +451,21 @@ public class Plateau {
             System.out.print("Points d'attaque insuffisants !");
         }
     }
+    public ArrayList<Case> casesDansExplosion(Arme arme){
+        ArrayList<Case> listcasesdansExplosion=new ArrayList<>();
+        for (Case c:shoot) {
+            for (Case c2:casesDansLeRayon(c.getPosition(), arme.getRayon(), new ArrayList<>())) {
+                if(!listcasesdansExplosion.contains(c2)){
+                    listcasesdansExplosion.add(c2);
+                    System.out.println("x :" +c2.getPosition().getX());
+                    System.out.println("y :" +c2.getPosition().getY());
+
+                }
+            }
+        }
+        return listcasesdansExplosion;
+    }
+
 
     public ArrayList<Case> casesDansLeRayon(Position positionExplosion, int rayon, ArrayList<Case> casesDansExplosion) {
 

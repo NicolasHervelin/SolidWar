@@ -172,7 +172,6 @@ public class ControllerJeu implements ControlledScreen {
 
         afficherListeArmes();
         listArmes.getSelectionModel().select(plateau.turnPlayer.indexArmeSelectionnee);
-        System.out.println("SetUP(), selected index : " + listArmes.getSelectionModel().getSelectedIndex());
     }
 
 
@@ -275,6 +274,9 @@ public class ControllerJeu implements ControlledScreen {
         plateau.appliquerDegatsExplosion(positionExplosion , armeUtilisee, degats, listeDesLancers);
         remplacerLesMursDetruits(listeDeCases);
         shoot_pathfinding(armeUtilisee);
+      /*  ArrayList<Case> l=plateau.casesDansExplosion(listArmes.getSelectionModel().getSelectedItem());
+        clean_pathfinding(shoot);
+        coloration(Color.BLACK,l);*/
     }
 
 
