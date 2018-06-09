@@ -229,10 +229,9 @@ public class ControllerJeu implements ControlledScreen {
     public void afficherListeArmes(){
         listArmes.getItems().removeAll();
         listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
+        listArmes.getSelectionModel().select(plateau.turnPlayer.indexArmeSelectionnee);
         listArmes.setCellFactory(new ArmeCellFactory());
         listArmes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            plateau.turnPlayer.armeSelectionnee = newValue;
-            plateau.turnPlayer.indexArmeSelectionnee = listArmes.getSelectionModel().getSelectedIndex();
             switch (mode){
                 case 1:
                     clean_pathfinding(ListPortee);
@@ -249,11 +248,12 @@ public class ControllerJeu implements ControlledScreen {
             if(newValue != null) {
                 afficherArme(newValue);
                 shoot_pathfinding(newValue);
+                plateau.turnPlayer.indexArmeSelectionnee=listArmes.getSelectionModel().getSelectedIndex();
+                System.out.println(newValue);
+                System.out.println(plateau.turnPlayer.indexArmeSelectionnee);
+
             }
         });
-        System.out.println("Afficher liste arme, joueur actuel : " + plateau.turnPlayer.getName());
-        System.out.println("Afficher liste arme, selected index : " + listArmes.getSelectionModel().getSelectedIndex());
-        System.out.println("Afficher liste arme, joueur.indexArmeSelectionnee : " + plateau.turnPlayer.indexArmeSelectionnee);
     }
 
     //Fait apparaître une image d'explosion sur une liste de cases
