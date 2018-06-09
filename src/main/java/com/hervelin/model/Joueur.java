@@ -16,6 +16,8 @@ public class Joueur {
     private Image imageJoueur;
     private int brique;
     public Case caseSauvegarde;
+    public Arme armeSelectionnee;
+    public int indexArmeSelectionnee;
 
     public Joueur(String name, Position p, Image image) {
         this.name = name;
@@ -29,6 +31,8 @@ public class Joueur {
         this.caseSauvegarde = null;
         Couteau armeDeBase = new Couteau("images/Solid_war/COFFRE/ARMES/COUTEAU/CLASSE1.png");
         armes.add(armeDeBase);
+        this.armeSelectionnee = armes.get(0);
+        this.indexArmeSelectionnee = 0;
     }
 
     public void deplacerX(int deplacementX) {
