@@ -438,7 +438,7 @@ public class ControllerJeu implements ControlledScreen {
 
     // Affiche en bleu les cases où le joueur peut se déplacer
     private void pathfinding(){
-        ListPortee = plateau.pathFindingPlateau();
+        ListPortee = plateau.pathFindingPlateau(plateau.turnPlayer);
         coloration(Color.BLUE,ListPortee);
     }
 
