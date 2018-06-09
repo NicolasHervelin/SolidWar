@@ -2,6 +2,7 @@ package com.hervelin.model;
 
 import javafx.scene.image.Image;
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class Plateau {
@@ -9,6 +10,10 @@ public class Plateau {
     private ArrayList<Joueur> listeDeJoueurs = new ArrayList<>(4);
     private ArrayList<CaseMur> listeDeMurs = new ArrayList<>();
 
+    private ArrayList<Case> ListPortee = new ArrayList<>();
+    private ArrayList<Case> openList = new ArrayList<>();
+    private ArrayList<Case> shoot = new ArrayList<>();
+    private ArrayList<Case> build = new ArrayList<>();
 
     private int xTaille;
     private int yTaille;
@@ -20,6 +25,12 @@ public class Plateau {
     private Position randomPosition2;
     private Position randomPosition3;
     private Position randomPosition4;
+
+    private static final String CHEMIN_FICHIER_CSV = "donneesDeJeu.csv";
+    private static final String FILE_HEADER = "Points de vie du turnPlayer, Points d'armure du turnPlayer, Points d'attaque du turnPlayer, Points de mouvement du turnPlayer, Points de Brique du turnPlayer, Mouvement max possible, Nombre d'armes possédées, Meilleure arme dispo, Coffre à portée, Popo à portée, Armure à portée, Joueur à portée, Joueur à portée de tir, Construction possible, Action réalisée ";
+    private static final String VIRGULE_DELIMITEUR = ",";
+    private static final String LIGNE_SEPARATEUR = "\n";
+
 
     public  Joueur turnPlayer;
 
@@ -195,18 +206,8 @@ public class Plateau {
     }
 
     public void remplacerCase(Case origine, Case nouvelle) {
-        //int xOrigine = origine.position.getX();
-        //int yOrigine = origine.position.getY();
-        //int xNouvelle = nouvelle.position.getX();
-        //int yNouvelle = nouvelle.position.getY();
-
         int indexCaseOrigine = getIndexOfCase(origine);
-        //System.out.println("Index Origine : " + getIndexOfCase(origine));
-
-        //System.out.println("index remplace :"+ indexCaseOrigine);
         casesDuPlateau.set(indexCaseOrigine, nouvelle);
-        //System.out.println("Index Destination : " + getIndexOfCase(nouvelle));
-
     }
 
     public int getIndexOfCase(Case laCase) {
@@ -606,5 +607,335 @@ public class Plateau {
 
     public void setyTaille(int yTaille) {
         this.yTaille = yTaille;
+    }
+
+    public void deplacementDuJoueur(Position destination) {
+        //remplace par case normale
+        if(turnPlayer.caseSauvegarde != null) {
+            remplacerCase(getCaseByPosition(turnPlayer.getPosition()), turnPlayer.caseSauvegarde);
+            turnPlayer.caseSauvegarde = null;
+        }
+        else {
+            Case caseOrigine = getCaseByPosition(turnPlayer.getPosition());
+            Case caseOrigineNouvelle = new CaseNormale(turnPlayer.getPosition());
+            remplacerCase(caseOrigine, caseOrigineNouvelle);
+        }
+
+        //remplace par case joueur
+        if(!getCaseByPosition(destination).getType().equals("CaseNormale"))
+            turnPlayer.caseSauvegarde = getCaseByPosition(destination);
+        Case caseDestination = getCaseByPosition(destination);
+        turnPlayer.setPosition(destination);
+        Case caseDestinationNouvelle = new CaseJoueur(turnPlayer, turnPlayer.getImageJoueur());
+        remplacerCase(caseDestination, caseDestinationNouvelle);
+    }
+
+    //Code pour le pathfinding
+    private void AnalyseCase(Case nextCase, int i){
+        if (nextCase!=null && !openList.contains(nextCase) && !ListPortee.contains(nextCase) &&  nextCase.getType() != "CaseMur") {
+            if(nextCase.getCout()>0){
+                nextCase.setCout(0);
+            }
+            nextCase.setCout(i+1);
+            if(nextCase.getCout()<=turnPlayer.getPtMouvement()) {
+                openList.add(nextCase);
+            }else nextCase.setCout(0);
+        }else if (openList.contains(nextCase) && (i+1)<nextCase.getCout()){
+            nextCase.setCout(i+1);
+        }else if (ListPortee.contains(nextCase) && (i+1)<nextCase.getCout()){
+            ListPortee.remove(nextCase);
+            nextCase.setCout(i+1);
+            openList.add(nextCase);
+        }
+    }
+
+    public ArrayList<Case> pathFindingPlateau() {
+        openList=new ArrayList<>();
+        ListPortee=new ArrayList<>();
+        Case positionactuelle;
+        int i;
+        Case Right;
+        Case Left;
+        Case Up;
+        Case Down;
+        openList.add(getCaseByPosition(turnPlayer.getPosition()));
+        while (openList.size()>0) {
+            positionactuelle=openList.get(openList.size()-1);
+            openList.remove(positionactuelle);
+            ListPortee.add(positionactuelle);
+            i=positionactuelle.getCout();
+            Right=getCaseRight(positionactuelle.getPosition());
+            Left=getCaseLeft(positionactuelle.getPosition());
+            Up=getCaseUp(positionactuelle.getPosition());
+            Down=getCaseDown(positionactuelle.getPosition());
+            AnalyseCase(Right,i);
+            AnalyseCase(Left,i);
+            AnalyseCase(Up,i);
+            AnalyseCase(Down,i);
+        }
+        return ListPortee;
+    }
+
+    public ArrayList<Case> buildPathFindingPlateau() {
+        build=new ArrayList<>();
+        Case positionactuelle;
+        Case Right;
+        Case Left;
+        Case Up;
+        Case Down;
+        positionactuelle=getCaseByPosition(turnPlayer.getPosition());
+        build.add(positionactuelle);
+        Right=getCaseRight(positionactuelle.getPosition());
+        Left=getCaseLeft(positionactuelle.getPosition());
+        Up=getCaseUp(positionactuelle.getPosition());
+        Down=getCaseDown(positionactuelle.getPosition());
+        if(Right!=null && Right.getType().equals("CaseNormale")){
+            build.add(Right);
+        }
+        if(Left!=null && Left.getType().equals("CaseNormale")){
+            build.add(Left);
+        }
+        if(Up!=null && Up.getType().equals("CaseNormale")){
+            build.add(Up);
+        }
+        if(Down!=null && Down.getType().equals("CaseNormale")){
+            build.add(Down);
+        }
+        return build;
+    }
+
+    public ArrayList<Case> shootPathFindingPlateau(Arme arme) {
+        if(arme.getTypeTir().equals("droit")) {
+            Position depart=turnPlayer.getPosition();
+            Case next;
+            int i=0;
+            openList=new ArrayList<>();
+            shoot=new ArrayList<>();
+            Case positionactuelle;
+            openList.add(getCaseByPosition(depart));
+            while (openList.size()>0) {
+                positionactuelle = openList.get(openList.size() - 1);
+                openList.remove(positionactuelle);
+                shoot.add(positionactuelle);
+                next=getCaseLeft(positionactuelle.getPosition());
+                if (next != null && next.getPosition().getY()>=depart.getY()-arme.getPortée() && i==0) {
+                    if (next.getType().equals("CaseMur")){
+                        i=1;
+                    }
+                    openList.add(next);
+                }
+            }
+            i=0;
+            openList.add(getCaseByPosition(depart));
+            while (openList.size()>0) {
+                positionactuelle = openList.get(openList.size() - 1);
+                openList.remove(positionactuelle);
+                shoot.add(positionactuelle);
+                next=getCaseRight(positionactuelle.getPosition());
+                if (next != null && next.getPosition().getY()<=depart.getY()+arme.getPortée() && i==0) {
+                    if (next.getType().equals("CaseMur")){
+                        i=1;
+                    }
+                    openList.add(next);
+                }
+            }
+            i=0;
+            openList.add(getCaseByPosition(depart));
+            while (openList.size()>0) {
+                positionactuelle = openList.get(openList.size() - 1);
+                openList.remove(positionactuelle);
+                shoot.add(positionactuelle);
+                next=getCaseUp(positionactuelle.getPosition());
+                if (next != null && next.getPosition().getX()>=depart.getX()-arme.getPortée() && i==0) {
+                    if (next.getType().equals("CaseMur")){
+                        i=1;
+                    }
+                    openList.add(next);
+                }
+            }
+            i=0;
+            openList.add(getCaseByPosition(depart));
+            while (openList.size()>0) {
+                positionactuelle = openList.get(openList.size() - 1);
+                openList.remove(positionactuelle);
+                shoot.add(positionactuelle);
+                next=getCaseDown(positionactuelle.getPosition());
+                if (next != null && next.getPosition().getX()<=depart.getX()+arme.getPortée() && i==0) {
+                    if (next.getType().equals("CaseMur")){
+                        i=1;
+                    }
+                    openList.add(next);
+                }
+            }
+            return shoot;
+        }
+        return null;
+    }
+
+    private int getDeplacementMax() {
+        int coutMax = 0;
+        ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau();
+        for(Case c : listeDesCasesAccessibles) {
+            int coutCase = c.getCout();
+            if(coutCase > coutMax) {
+                coutMax = coutCase;
+            }
+        }
+        return coutMax;
+    }
+
+    private int nombreArmesPossedees() {
+        return turnPlayer.getArmes().size();
+    }
+
+    private String meilleureArmePossedee() {
+        String meilleureArme = "couteau";
+        int puissanceMax = 0;
+        int puissanceArme = 0;
+        for (Arme arme : turnPlayer.getArmes()) {
+            puissanceArme = (arme.getPortée() + arme.getRayon()) * arme.getDmg_dés();
+            if(puissanceArme > puissanceMax) {
+                puissanceMax = puissanceArme;
+                meilleureArme = arme.getName();
+            }
+        }
+        return meilleureArme;
+    }
+
+    private boolean isCoffreAPortee() {
+        ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau();
+        for (Case c : listeDesCasesAccessibles) {
+            if(c.getType().equals("CaseArme"))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isPopoAPortee() {
+        ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau();
+        for (Case c : listeDesCasesAccessibles) {
+            if(c.getType().equals("CasePopo"))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isArmureAPortee() {
+        ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau();
+        for (Case c : listeDesCasesAccessibles) {
+            if(c.getType().equals("CaseArmure"))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isJoueurAPortee() {
+        ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau();
+        for (Case c : listeDesCasesAccessibles) {
+            if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition())
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isJoueurAPorteeDeTir() {
+        ArrayList<Case> listeDesCasesAPorteeDeTir;
+        for (Arme arme : turnPlayer.getArmes()) {
+            listeDesCasesAPorteeDeTir = shootPathFindingPlateau(arme);
+            for (Case c : listeDesCasesAPorteeDeTir) {
+                if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition())
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public void ecrireActionCSV() {
+        File fichierCSV = new File(CHEMIN_FICHIER_CSV);
+        FileWriter fileWriter = null;
+
+        if(fichierCSV.exists()) {
+            try {
+                fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
+
+                fileWriter.append(String.valueOf(turnPlayer.getPtSante()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(turnPlayer.getPtArmure()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(turnPlayer.getPtAttaque()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(turnPlayer.getPtMouvement()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(turnPlayer.getBrique()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(getDeplacementMax()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(nombreArmesPossedees()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(meilleureArmePossedee()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(isCoffreAPortee()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(isPopoAPortee()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(isArmureAPortee()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(isJoueurAPortee()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(isJoueurAPorteeDeTir()));
+                //...
+                fileWriter.append(LIGNE_SEPARATEUR);
+
+                System.out.println("Ecriture dans le fichier CSV réussie !!!");
+
+            } catch (Exception e) {
+                System.out.println("Erreur dans le CsvFileWriter !!!");
+                e.printStackTrace();
+            } finally {
+                try {
+                    fileWriter.flush();
+                    fileWriter.close();
+                } catch (IOException e) {
+                    System.out.println("Erreur lors du flushing/closing pour le fileWriter !!!");
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            try {
+                fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
+
+                //Ajoute le header au fichier CSV
+                fileWriter.append(FILE_HEADER.toString());
+
+                //Ajoute une nouvelle ligne après le header
+                fileWriter.append(LIGNE_SEPARATEUR);
+
+                fileWriter.append(String.valueOf(turnPlayer.getPtSante()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(turnPlayer.getPtArmure()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(turnPlayer.getPtAttaque()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(turnPlayer.getPtMouvement()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(turnPlayer.getBrique()));
+                //...
+                fileWriter.append(LIGNE_SEPARATEUR);
+
+            } catch (Exception e) {
+                System.out.println("Erreur dans le CsvFileWriter !!!");
+                e.printStackTrace();
+            } finally {
+                try {
+                    fileWriter.flush();
+                    fileWriter.close();
+                } catch (IOException e) {
+                    System.out.println("Erreur lors du flushing/closing pour le fileWriter !!!");
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 }
