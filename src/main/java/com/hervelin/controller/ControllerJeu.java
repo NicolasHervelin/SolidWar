@@ -114,11 +114,6 @@ public class ControllerJeu implements ControlledScreen {
         }
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
-        plateau.turnPlayer.ajouterArme(new Bazooka("images/nop.png"));
-        plateau.turnPlayer.ajouterArme(new Bazooka("images/nop.png"));
-        plateau.turnPlayer.ajouterArme(new Bazooka("images/nop.png"));
-        plateau.turnPlayer.ajouterArme(new Bazooka("images/nop.png"));
-
 
         afficherListeArmes();
         affichageDuJoueur(plateau.turnPlayer);
@@ -641,7 +636,7 @@ public class ControllerJeu implements ControlledScreen {
         afficherMur(cm);
         clean_pathfinding(build);
         build_pathfinding();
-        System.out.println(plateau.turnPlayer.getBrique());
+        mettreAjourInfoRessources();
     }
 
     //Détruit un mur et l'actualise
@@ -651,6 +646,7 @@ public class ControllerJeu implements ControlledScreen {
         definitionCaseDuPlateau(caseNormale.getPosition());
         clean_pathfinding(shoot);
         shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
+        mettreAjourInfoRessources();
     }
 
     /*****
