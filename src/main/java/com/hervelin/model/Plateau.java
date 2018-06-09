@@ -907,6 +907,7 @@ public class Plateau {
         return false;
     }
 
+    //Savoir si un autre joueur est à portée un de tir du joueur actuel
     private boolean isJoueurAPorteeDeTir() {
         ArrayList<Case> listeDesCasesAPorteeDeTir;
         for (Arme arme : turnPlayer.getArmes()) {
@@ -919,17 +920,35 @@ public class Plateau {
         return false;
     }
 
+    //Savoir si le joueur actuel est portée de tir d'un autre joueur
+    private boolean isTurnPlayerAPorteeDeTir() {
+        return false;
+    }
+
+    //Savoir si un autre joueur est à portée d'explosion du joueur actuel
     private boolean isJoueurAPorteeDexplosion() {
-        ArrayList<Case> listeDesCasesAPorteeDeTir;
+        ArrayList<Case> listeDesCasesAPorteeDexplosion;
         for (Arme arme : turnPlayer.getArmes()) {
-            listeDesCasesAPorteeDeTir = explosionPathFindingPlateau(arme);
-            for (Case c : listeDesCasesAPorteeDeTir) {
+            listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme);
+            for (Case c : listeDesCasesAPorteeDexplosion) {
                 if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition())
                     return true;
             }
         }
         return false;
     }
+
+    //Savoir si le joueur actuel est à portée d'explosion d'un autre joueur
+    private boolean isTurnPlayerAPorteeDexplosion() {
+        ArrayList<Case> listeDesCasesAPorteeDexplosion;
+        for (Arme arme : turnPlayer.getArmes()) {
+            listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme);
+            for (Case c : listeDesCasesAPorteeDexplosion) {
+                if(c.getType().equals("CaseJoueur") && c.getPosition() == turnPlayer.getPosition())
+                    return true;
+            }
+        }
+        return false;    }
 
     public void ecrireActionCSV() {
         File fichierCSV = new File(CHEMIN_FICHIER_CSV);
