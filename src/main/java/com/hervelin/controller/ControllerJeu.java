@@ -255,9 +255,11 @@ public class ControllerJeu implements ControlledScreen {
     //Fait apparaître une image d'explosion sur une liste de cases
     private void afficherExplosion(ArrayList<Case> listeDeCases){
         for (Case temp:listeDeCases) {
-            Button bouton = temp.getBouton();
-            setImagePourLesBoutons(bouton, imageExplosion);
-            temp.setBouton(bouton);
+            if(temp != null) {
+                Button bouton = temp.getBouton();
+                setImagePourLesBoutons(bouton, imageExplosion);
+                temp.setBouton(bouton);
+            }
         }
     }
 
@@ -429,7 +431,7 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void shoot_pathfinding(Arme arme){
-        shoot = plateau.shootPathFindingPlateau(arme);
+        shoot = plateau.shootPathFindingPlateau(arme, plateau.turnPlayer);
         coloration(Color.RED,shoot);
     }
 
@@ -475,6 +477,7 @@ public class ControllerJeu implements ControlledScreen {
                             detruireMur(caseMur);
                         }
                     }
+
                 }
             }
             else {
@@ -572,6 +575,7 @@ public class ControllerJeu implements ControlledScreen {
         clean_pathfinding(ListPortee);
         pathfinding();
         mettreAjourInfoRessources();
+        plateau.testAppelFonctionsPourCSV();
     }
 
     /*****
