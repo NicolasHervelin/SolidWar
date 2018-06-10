@@ -248,9 +248,6 @@ public class ControllerJeu implements ControlledScreen {
                 afficherArme(newValue);
                 shoot_pathfinding(newValue);
                 plateau.turnPlayer.indexArmeSelectionnee=listArmes.getSelectionModel().getSelectedIndex();
-                System.out.println(newValue);
-                System.out.println(plateau.turnPlayer.indexArmeSelectionnee);
-
             }
         });
     }
@@ -274,7 +271,7 @@ public class ControllerJeu implements ControlledScreen {
         plateau.appliquerDegatsExplosion(positionExplosion , armeUtilisee, degats, listeDesLancers);
         remplacerLesMursDetruits(listeDeCases);
         shoot_pathfinding(armeUtilisee);
-      /*  ArrayList<Case> l=plateau.casesDansExplosion(listArmes.getSelectionModel().getSelectedItem());
+        /*ArrayList<Case> l=plateau.explosionPathFindingPlateau(listArmes.getSelectionModel().getSelectedItem());
         clean_pathfinding(shoot);
         coloration(Color.BLACK,l);*/
     }
@@ -461,7 +458,8 @@ public class ControllerJeu implements ControlledScreen {
                     for(Integer lancer : listeDesLancers) {
                         dommageTotal += lancer;
                     }
-                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
+
+                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon());
                     explosion(analyse.getPosition(), dommageTotal, listDesCasesDansLeRayon, armeSelectionnee, listeDesLancers);
                 }
                 else {
@@ -486,7 +484,7 @@ public class ControllerJeu implements ControlledScreen {
                     for(Integer lancer : listeDesLancers) {
                         dommageTotal += lancer;
                     }
-                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
+                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon());
                     explosion(analyse.getPosition(), dommageTotal, listDesCasesDansLeRayon, armeSelectionnee, listeDesLancers);
                 }
             }
