@@ -986,7 +986,7 @@ public class Plateau {
     }
 
     //Écrit les actions dans un fichier CSV
-    public void ecrireActionCSV() {
+    public void ecrireActionCSV(String actionRealisee) {
         File fichierCSV = new File(CHEMIN_FICHIER_CSV);
         FileWriter fileWriter = null;
 
@@ -1027,6 +1027,8 @@ public class Plateau {
                 fileWriter.append(String.valueOf(isTurnPlayerAPorteeDexplosion()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(isConstructionPossible()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(actionRealisee));
                 //...
                 fileWriter.append(LIGNE_SEPARATEUR);
 
@@ -1088,6 +1090,8 @@ public class Plateau {
                 fileWriter.append(String.valueOf(isTurnPlayerAPorteeDexplosion()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(isConstructionPossible()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(actionRealisee));
                 //...
                 fileWriter.append(LIGNE_SEPARATEUR);
 
@@ -1105,5 +1109,33 @@ public class Plateau {
             }
         }
 
+    }
+
+    private boolean isJoueurMort(Joueur joueur) {
+        return joueur.getPtSante() < 1;
+    }
+
+    public int nbJoueursRestants() {
+        int nbJoueursMorts = 0;
+        for (Joueur joueur : listeDeJoueurs) {
+            if(isJoueurMort(joueur))
+                nbJoueursMorts += 1;
+        }
+        return nbJoueursMorts;
+    }
+
+    public boolean isIlResteUnSeulJoueur() {
+        return nbJoueursRestants() < 2;
+    }
+
+    public void finDePartie() {
+        if(isIlResteUnSeulJoueur()) {
+            for (Joueur joueur : listeDeJoueurs) {
+                if(!isJoueurMort(joueur)) {
+                    //Alors joueur est le gagnant
+                    //AlertBox
+                }
+            }
+        }
     }
 }
