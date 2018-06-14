@@ -876,7 +876,7 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseArme")) {
-                System.out.println("Coffre à portée");
+                //System.out.println("Coffre à portée");
                 return true;
             }
         }
@@ -900,7 +900,7 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseArmure")) {
-                System.out.println("Armure à portée");
+                //System.out.println("Armure à portée");
                 return true;
             }
         }
@@ -941,7 +941,7 @@ public class Plateau {
             listeDesCasesAPorteeDeTir = shootPathFindingPlateau(turnPlayer.armeSelectionnee, turnPlayer);
             for (Case c : listeDesCasesAPorteeDeTir) {
                 if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                    System.out.println("Joueur à portée de tir de turnPlayer");
+                    //System.out.println("Joueur à portée de tir de turnPlayer");
                     return true;
                 }
             }
@@ -990,7 +990,7 @@ public class Plateau {
             listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(turnPlayer.armeSelectionnee, turnPlayer);
             for (Case c : listeDesCasesAPorteeDexplosion) {
                 if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                    System.out.println("Joueur à portée d'explosion de turnPlayer");
+                    //System.out.println("Joueur à portée d'explosion de turnPlayer");
                     return true;
                 }
             }
