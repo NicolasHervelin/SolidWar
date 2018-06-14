@@ -26,6 +26,15 @@
     </build>
 
     <properties>
+        <nd4j.backend>nd4j-native-platform</nd4j.backend>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <java.version>1.8</java.version>
+        <nd4j.version>1.0.0-beta</nd4j.version>
+        <dl4j.version>1.0.0-beta</dl4j.version>
+        <datavec.version>1.0.0-beta</datavec.version>
+        <arbiter.version>1.0.0-beta</arbiter.version>
+        <rl4j.version>1.0.0-beta</rl4j.version>
     </properties>
 
     <dependencyManagement>
@@ -70,8 +79,28 @@
             <artifactId>json-simple</artifactId>
             <version>1.1</version>
         </dependency>
+            <dependency>
+                <groupId>org.deeplearning4j</groupId>
+                <artifactId>deeplearning4j-core</artifactId>
+                <version>${dl4j.version}</version>
+            </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-native</artifactId>
+            <version>${nd4j.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>rl4j-core</artifactId>
+            <version>${rl4j.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>ch.ethz.idsc</groupId>
+            <artifactId>tensor</artifactId>
+            <version>0.5.5</version>
+        </dependency>
 
     </dependencies>
 
@@ -81,6 +110,14 @@
         <url>https://github.com/NicolasHervelin/TheGameBiketteBillGusto</url>
     </scm>
     <repositories>
+        <repository>
+            <id>tensor-mvn-repo</id>
+            <url>https://raw.github.com/idsc-frazzoli/tensor/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
 </project>

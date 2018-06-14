@@ -1,6 +1,6 @@
-package com.hervelin.model;
+package com.hervelin.model.FX;
 
-import java.awt.*;
+import javafx.scene.image.Image;
 
 public abstract class Arme {
     private String name;

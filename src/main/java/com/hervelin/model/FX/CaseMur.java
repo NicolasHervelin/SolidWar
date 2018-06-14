@@ -1,4 +1,4 @@
-package com.hervelin.model;
+package com.hervelin.model.FX;
 
 
 import javafx.scene.image.Image;
@@ -6,8 +6,8 @@ import javafx.scene.image.Image;
 public class CaseMur extends Case {
     private Mur mur;
 
-    public CaseMur(Mur mur,Position p) {
-        super(p,"CaseMur",null);
+    public CaseMur(Mur mur, Position p) {
+        super(p,"CaseMur",new Image("images/TextureMurMini-min.png"));
         this.mur=mur;
     }
 

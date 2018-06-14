@@ -1,15 +1,11 @@
-package com.hervelin.model;
+package com.hervelin.model.FX;
 
 import javafx.scene.image.Image;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-
-import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
-import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
-import org.deeplearning4j.rl4j.network.dqn.DQNFactoryStdDense;
-import org.deeplearning4j.rl4j.policy.DQNPolicy;
-import org.deeplearning4j.rl4j.util.DataManager;
 
 public class Plateau {
     private ArrayList<Case> casesDuPlateau = new ArrayList<>();
@@ -24,6 +20,10 @@ public class Plateau {
 
     private int xTaille;
     private int yTaille;
+    private Image imageJoueur1;
+    private Image imageJoueur2;
+    private Image imageJoueur3;
+    private Image imageJoueur4;
     private Position randomPosition1;
     private Position randomPosition2;
     private Position randomPosition3;
@@ -52,6 +52,7 @@ public class Plateau {
         listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));*/
 
         //Pour les test de bico sur AWT
+        System.out.println(joueur1);
         listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, null));
         listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, null));
         initialize();
@@ -70,9 +71,12 @@ public class Plateau {
                 randomPosition3 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
             }
         }
-        listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, null));
-        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, null));
-        listeDeJoueurs.add(new Joueur(joueur3, randomPosition3, null));
+        imageJoueur1 = new Image("images/Perso1minimizedColor.png");
+        imageJoueur2 = new Image("images/Perso2minimizedColor.png");
+        imageJoueur3 = new Image("images/Perso3minimizedColor.png");
+        listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, imageJoueur1));
+        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));
+        listeDeJoueurs.add(new Joueur(joueur3, randomPosition3, imageJoueur3));
         initialize();
     }
 
@@ -91,10 +95,14 @@ public class Plateau {
                 randomPosition4 = new Position(1 + (int) (Math.random() * ((xTaille - 1) + 1)), 1 + (int) (Math.random() * ((yTaille - 1) + 1)));
             }
         }
-        listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, null));
-        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, null));
-        listeDeJoueurs.add(new Joueur(joueur3, randomPosition3, null));
-        listeDeJoueurs.add(new Joueur(joueur4, randomPosition4, null));
+        imageJoueur1 = new Image("images/Perso1minimizedColor.png");
+        imageJoueur2 = new Image("images/Perso2minimizedColor.png");
+        imageJoueur3 = new Image("images/Perso3minimizedColor.png");
+        imageJoueur4 = new Image("images/Perso4minimizedColor.png");
+        listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, imageJoueur1));
+        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));
+        listeDeJoueurs.add(new Joueur(joueur3, randomPosition3, imageJoueur3));
+        listeDeJoueurs.add(new Joueur(joueur4, randomPosition4, imageJoueur4));
         initialize();
     }
 
@@ -126,7 +134,6 @@ public class Plateau {
         creerPopos();
         creerArmures();
         creerJoueurs();
-        System.out.println("initialisation plateau Ok");
     }
 
     public void joueurSuivant(String nbJoueurs) {
@@ -134,7 +141,7 @@ public class Plateau {
         if(indexDuJoueurActuel != (Integer.valueOf(nbJoueurs)-1)) {
             turnPlayer = listeDeJoueurs.get(indexDuJoueurActuel +1);
             if(turnPlayer.isIA()) {
-                turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() + lancerUnDe());
+                turnPlayer.setPtAttaque(lancerUnDe());
                 turnPlayer.setPtMouvement(lancerDeuxDes());
             }
         }
@@ -319,11 +326,11 @@ public class Plateau {
 
             Case caseASupprimer = getCaseByPosition(new Position(xRandom1,yRandom1));
             casesDuPlateau.remove(caseASupprimer);
-            casesDuPlateau.add(new CasePopo(new Position(xRandom1,yRandom1),CasePopo.VOLUME_PETIT));
+            casesDuPlateau.add(new CasePopo(new Position(xRandom1,yRandom1), CasePopo.VOLUME_PETIT));
 
             caseASupprimer = getCaseByPosition(new Position(xRandom2,yRandom2));
             casesDuPlateau.remove(caseASupprimer);
-            casesDuPlateau.add(new CasePopo(new Position(xRandom2,yRandom2),CasePopo.VOLUME_MOYEN));
+            casesDuPlateau.add(new CasePopo(new Position(xRandom2,yRandom2), CasePopo.VOLUME_MOYEN));
 
             caseASupprimer = getCaseByPosition(new Position(xRandom3,yRandom3));
             casesDuPlateau.remove(caseASupprimer);
@@ -345,11 +352,11 @@ public class Plateau {
 
             Case caseASupprimer = getCaseByPosition(new Position(xRandom1,yRandom1));
             casesDuPlateau.remove(caseASupprimer);
-            casesDuPlateau.add(new CaseArmure(new Position(xRandom1,yRandom1),CasePopo.VOLUME_PETIT));
+            casesDuPlateau.add(new CaseArmure(new Position(xRandom1,yRandom1), CasePopo.VOLUME_PETIT));
 
             caseASupprimer = getCaseByPosition(new Position(xRandom2,yRandom2));
             casesDuPlateau.remove(caseASupprimer);
-            casesDuPlateau.add(new CaseArmure(new Position(xRandom2,yRandom2),CasePopo.VOLUME_MOYEN));
+            casesDuPlateau.add(new CaseArmure(new Position(xRandom2,yRandom2), CasePopo.VOLUME_MOYEN));
 
             caseASupprimer = getCaseByPosition(new Position(xRandom3,yRandom3));
             casesDuPlateau.remove(caseASupprimer);
@@ -362,7 +369,7 @@ public class Plateau {
             Case caseASupprimer = getCaseByPosition(joueur.getPosition());
             if(!caseASupprimer.getType().equals("CaseJoueur")) {
                 casesDuPlateau.remove(caseASupprimer);
-                casesDuPlateau.add(new CaseJoueur(joueur, null));
+                casesDuPlateau.add(new CaseJoueur(joueur, joueur.getImageJoueur()));
             }
         }
     }
@@ -555,35 +562,35 @@ public class Plateau {
         }
     }
 
-    public Arme tirageArme(int lancer1,int lancer2){
+    public Arme tirageArme(int lancer1, int lancer2){
         Arme arme=null;
         switch (lancer2){
             case 1:
-                arme=new Couteau(null);
+                arme=new Couteau("images/Solid_war/COFFRE/ARMES/COUTEAU/CLASSE"+lancer1+".png");
                 break;
             case 2:
-                arme=new Fusil_assaut(null);
+                arme=new Fusil_assaut("images/Solid_war/COFFRE/ARMES/FUSIL/CLASSE"+lancer1+".png");
                 break;
             case 3:
-                arme=new Fusil_pompe(null);
+                arme=new Fusil_pompe("images/Solid_war/COFFRE/ARMES/POMPE/CLASSE"+lancer1+".png");
                 break;
             case 4:
-                arme=new Bazooka(null);
+                arme=new Bazooka("images/Solid_war/COFFRE/ARMES/BASOUKA/CLASSE"+lancer1+".png");
                 break;
             case 5:
-                arme=new Pistolet(null);
+                arme=new Pistolet("images/Solid_war/COFFRE/ARMES/PISTOLET/CLASSE"+lancer1+".png");
                 break;
             case 6:
-                arme=new Mine(null);
+                arme=new Mine("images/Solid_war/COFFRE/ARMES/MINE/CLASSE"+lancer1+".png");
                 break;
             case 7:
-                arme=new Sulfateuse(null);
+                arme=new Sulfateuse("images/Solid_war/COFFRE/ARMES/SULFATEUSE/CLASSE"+lancer1+".png");
                 break;
             case 8:
-                arme=new Sniper(null);
+                arme=new Sniper("images/Solid_war/COFFRE/ARMES/SNIPER/CLASSE"+lancer1+".png");
                 break;
             case 9:
-                arme=new Grenade(null);
+                arme=new Grenade("images/Solid_war/COFFRE/ARMES/GRENADE/CLASSE"+lancer1+".png");
                 break;
         }
         return arme;
@@ -636,7 +643,7 @@ public class Plateau {
             turnPlayer.caseSauvegarde = getCaseByPosition(destination);
         Case caseDestination = getCaseByPosition(destination);
         turnPlayer.setPosition(destination);
-        Case caseDestinationNouvelle = new CaseJoueur(turnPlayer, null);
+        Case caseDestinationNouvelle = new CaseJoueur(turnPlayer, turnPlayer.getImageJoueur());
         remplacerCase(caseDestination, caseDestinationNouvelle);
         turnPlayer.setPtMouvement(turnPlayer.getPtMouvement() - caseDestination.getCout());
     }
@@ -888,7 +895,7 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CasePopo")) {
-                //System.out.println("Popo à portée");
+                System.out.println("Popo à portée");
                 return true;
             }
         }
@@ -912,7 +919,7 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                //System.out.println("Joueur à portée de turnPlayer");
+                System.out.println("Joueur à portée de turnPlayer");
                 return true;
             }
         }

@@ -1,8 +1,7 @@
-package com.hervelin.model;
+package com.hervelin.model.FX;
 
 import javafx.scene.control.Button;
-//import javafx.scene.image.Image;
-import java.awt.*;
+import javafx.scene.image.Image;
 
 public abstract class Case {
 
@@ -13,9 +12,9 @@ public abstract class Case {
     private int cout=0;
 
     //Pour affichage des case bonne résolution sans polluer la grille
-    private Image image128coffre;
-    private Image image128armure;
-    private Image image128popo;
+    private Image image128coffre = new Image("images/TextureCoffre128-min.png");
+    private Image image128armure = new Image("images/TextureBouclier128-min.png");
+    private Image image128popo = new Image("images/TexturePopo128-min.png");
 
     public Case(Position p, String type, Image img) {
         position=p;

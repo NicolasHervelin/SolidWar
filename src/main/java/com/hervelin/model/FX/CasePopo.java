@@ -1,17 +1,16 @@
-package com.hervelin.model;
-
+package com.hervelin.model.FX;
 
 import javafx.scene.image.Image;
 
-public class CaseArmure extends Case {
+public class CasePopo extends Case {
     private int volume;
 
     public static final int VOLUME_PETIT = 10;
     public static final int VOLUME_MOYEN = 25;
     public static final int VOLUME_GRAND = 50;
 
-    public CaseArmure(Position p, int volume) {
-        super(p, "CaseArmure",null);
+    public CasePopo(Position p, int volume) {
+        super(p,"CasePopo",new Image("images/TexturePopo40-min.png"));
         this.volume = volume;
     }
 

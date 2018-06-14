@@ -1,8 +1,7 @@
-package com.hervelin.model;
+package com.hervelin.model.FX;
 
-//import javafx.scene.image.Image;
+import javafx.scene.image.Image;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class Joueur {
@@ -31,7 +30,7 @@ public class Joueur {
         this.imageJoueur = image;
         this.brique = 0;
         this.caseSauvegarde = null;
-        Couteau armeDeBase = new Couteau(null);
+        Couteau armeDeBase = new Couteau("images/Solid_war/COFFRE/ARMES/COUTEAU/CLASSE1.png");
         armes.add(armeDeBase);
         this.armeSelectionnee = armes.get(0);
         this.indexArmeSelectionnee = 0;

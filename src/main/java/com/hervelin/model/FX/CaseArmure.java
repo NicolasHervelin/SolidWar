@@ -1,4 +1,4 @@
-package com.hervelin.model;
+package com.hervelin.model.FX;
 
 
 import javafx.scene.image.Image;
@@ -11,7 +11,7 @@ public class CaseArmure extends Case {
     public static final int VOLUME_GRAND = 50;
 
     public CaseArmure(Position p, int volume) {
-        super(p, "CaseArmure",null);
+        super(p, "CaseArmure",new Image("images/TextureBouclier40-min.png"));
         this.volume = volume;
     }
 

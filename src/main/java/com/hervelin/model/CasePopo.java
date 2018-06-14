@@ -10,7 +10,7 @@ public class CasePopo extends Case {
     public static final int VOLUME_GRAND = 50;
 
     public CasePopo(Position p, int volume) {
-        super(p,"CasePopo",new Image("images/TexturePopo40-min.png"));
+        super(p,"CasePopo",null);
         this.volume = volume;
     }
 
