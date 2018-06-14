@@ -174,8 +174,8 @@ public class SolidWarWorld implements RLWorld{
         //System.err.println("posY : " + plateau.turnPlayer.getPosition().getY());
         //System.err.println("isDeplacementPossible : " + isDeplacementPossible());
         if(isDeplacementPossible()
-                && (position.getX() + deltaX <= bx && position.getX() + deltaX >= 1)
-                && (position.getY() + deltaY <= by && position.getY() + deltaY >= 1)) {
+                && (position.getX() + deltaX <= plateau.getxTaille() && position.getX() + deltaX >= 1)
+                && (position.getY() + deltaY <= plateau.getyTaille() && position.getY() + deltaY >= 1)) {
             Case caseDestination =  plateau.getCaseByPosition(new Position(position.getX()+deltaX, position.getY()+deltaY));
             return (!caseDestination.getType().equals("CaseMur") && !caseDestination.getType().equals("CaseJoueur"));
         }
@@ -288,7 +288,7 @@ public class SolidWarWorld implements RLWorld{
                         deltaX = 0;
                         deltaY = -1;
                         if(isDeplacementAutorise(positionDuJoueur, deltaX, deltaY)) {
-                            //System.err.println("-------Action VALIDÉE -- déplacement haut------");
+                            System.err.println("-------Action VALIDÉE -- déplacement haut------");
                             plateau.deplacementDuJoueur(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
                         }
                         System.out.println("Action décidée -- déplacement haut");
@@ -298,7 +298,7 @@ public class SolidWarWorld implements RLWorld{
                         deltaX = 0;
                         deltaY = 1;
                         if(isDeplacementAutorise(positionDuJoueur, deltaX, deltaY)) {
-                            //System.err.println("-------Action VALIDÉE -- déplacement bas------");
+                            System.err.println("-------Action VALIDÉE -- déplacement bas------");
                             plateau.deplacementDuJoueur(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
                         }
                         System.out.println("Action décidée -- déplacement bas");
@@ -308,7 +308,7 @@ public class SolidWarWorld implements RLWorld{
                         deltaX = -1;
                         deltaY = 0;
                         if(isDeplacementAutorise(positionDuJoueur, deltaX, deltaY)) {
-                            //System.err.println("-------Action VALIDÉE -- déplacement gauche------");
+                            System.err.println("-------Action VALIDÉE -- déplacement gauche------");
                             plateau.deplacementDuJoueur(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
                         }
                         System.out.println("Action décidée -- déplacement gauche");
@@ -318,7 +318,7 @@ public class SolidWarWorld implements RLWorld{
                         deltaX = 1;
                         deltaY = 0;
                         if(isDeplacementAutorise(positionDuJoueur, deltaX, deltaY)) {
-                            //System.err.println("-------Action VALIDÉE -- déplacement droite------");
+                            System.err.println("-------Action VALIDÉE -- déplacement droite------");
                             plateau.deplacementDuJoueur(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
                         }
                         System.out.println("Action décidée -- déplacement droite");
