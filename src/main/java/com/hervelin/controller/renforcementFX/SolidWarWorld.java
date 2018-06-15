@@ -1,16 +1,16 @@
-package com.hervelin.model.renforcement2;
+package com.hervelin.controller.renforcementFX;
 
-import com.hervelin.model.*;
-import javafx.geometry.Pos;
+import com.hervelin.controller.ControllerJeu;
+import com.hervelin.model.FX.*;
+import com.hervelin.model.renforcement2.RLWorld;
 
-import java.awt.*;
+import javax.naming.ldap.Control;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class SolidWarWorld implements RLWorld{
-    public static final String ANSI_GREEN = "\u001B[32m";
-
     public Plateau plateau;
+    public ControllerJeu controllerJeu;
     private int lowPointDeSante; //0 si false et 1 si true
     private int lowPointDarmure; //0 si false et 1 si true
     private int lowPointDattaque; //0 si false et 1 si true
@@ -36,8 +36,8 @@ public class SolidWarWorld implements RLWorld{
     //private int nouvelleArmeReward = 10, gainDeVieReward = 15, gainDarmureReward = 10;
     //Modifier récompense pour pas que le bot ne fasse que finir son tour.
     //Mettre une récompense à chaque action (genre 1 et 0 pour fin de tour)
-    public int recompenseDeKill = 1000;
-    public int punitionDeMort = 100;
+    public int recompenseDeKill = 500;
+    public int punitionDeMort = 500;
     public int recompensePourUneAction = 1;
     public int recompensePourAvoirPlusDePV = 1;
     public int punitionPourAvoirMoinsDePV = 1;
@@ -66,8 +66,9 @@ public class SolidWarWorld implements RLWorld{
     int[] stateArray;
     double waitingReward;
 
-    public SolidWarWorld(Plateau plateau) {
+    public SolidWarWorld(ControllerJeu controllerJeu, Plateau plateau) {
         this.plateau = plateau;
+        this.controllerJeu = controllerJeu;
 
         bx = plateau.getxTaille();
         by = plateau.getyTaille();
@@ -95,22 +96,23 @@ public class SolidWarWorld implements RLWorld{
 
         lowPointDeSante = mapperLeBooleen(false);
         lowPointDarmure = mapperLeBooleen(false);
-        lowPointDattaque = mapperLeBooleen(false);
-        lowPointDeMouvement = mapperLeBooleen(false);
+        lowPointDattaque = mapperLeBooleen(plateau.isLowPointDattaque());
+        lowPointDeMouvement = mapperLeBooleen(plateau.isLowPointDeMouvement());
         coffreAportee = mapperLeBooleen(plateau.isCoffreAPortee());
         popoAportee = mapperLeBooleen(plateau.isPopoAPortee());
         armureAportee = mapperLeBooleen(plateau.isArmureAPortee());
         joueurAportee = mapperLeBooleen(plateau.isJoueurAPortee());
         joueurAporteeDeTir = mapperLeBooleen(plateau.isJoueurAPorteeDeTir());
-        joueurAporteeDexplosion = mapperLeBooleen(false);
+        joueurAporteeDexplosion = mapperLeBooleen(plateau.isJoueurAPorteeDexplosion());
         turnPlayerAporteeDeTir = mapperLeBooleen(plateau.isTurnPlayerAPorteeDeTir());
-        turnPlayerAporteeDexplosion = mapperLeBooleen(false);
-        constructionPossible = mapperLeBooleen(false);
+        turnPlayerAporteeDexplosion = mapperLeBooleen(plateau.isTurnPlayerAPorteeDexplosion());
+        constructionPossible = mapperLeBooleen(plateau.isConstructionPossible());
 
+        resetState();
     }
 
     public int mapperLeBooleen(boolean bool) {
-        int result;
+        int result = 0;
         if(!bool)
             result = 0;
         else
@@ -160,7 +162,7 @@ public class SolidWarWorld implements RLWorld{
     }
 
     public boolean isSelectionDeLarmeAutorisee(int indexArme) {
-        return (indexArme <= plateau.turnPlayer.getArmes().size()-1);
+        return (indexArme <= plateau.turnPlayer.getArmes().size());
     }
 
     public boolean isDeplacementPossible() {
@@ -177,16 +179,8 @@ public class SolidWarWorld implements RLWorld{
         if(isDeplacementPossible()
                 && (position.getX() + deltaX <= plateau.getxTaille() && position.getX() + deltaX >= 1)
                 && (position.getY() + deltaY <= plateau.getyTaille() && position.getY() + deltaY >= 1)) {
-            Position positionCaseDestination = new Position(position.getX()+deltaX, position.getY()+deltaY);
-            Case caseDestination =  plateau.getCaseByPosition(positionCaseDestination);
-            if((plateau.getListeDeJoueurs().get(0).getPosition().getX() == positionCaseDestination.getX()
-                    && plateau.getListeDeJoueurs().get(0).getPosition().getY() == positionCaseDestination.getY())
-                    || (plateau.getListeDeJoueurs().get(1).getPosition().getX() == positionCaseDestination.getX()
-                        && plateau.getListeDeJoueurs().get(1).getPosition().getY() == positionCaseDestination.getY())
-                    || caseDestination.getType().equals("CaseMur")) {
-                return false;
-            }
-            return true;
+            Case caseDestination =  plateau.getCaseByPosition(new Position(position.getX()+deltaX, position.getY()+deltaY));
+            return (!caseDestination.getType().equals("CaseMur") && !caseDestination.getType().equals("CaseJoueur"));
         }
         return false;
     }
@@ -203,18 +197,19 @@ public class SolidWarWorld implements RLWorld{
     // given action determine next state
     public int[] getNextState(int action) {
         // action est l'action de l'agent (voir description action possible en haut)
-        if(plateau.getListeDeJoueurs().get(0).getPosition().getX() == plateau.getListeDeJoueurs().get(1).getPosition().getX()
-                && plateau.getListeDeJoueurs().get(0).getPosition().getY() == plateau.getListeDeJoueurs().get(1).getPosition().getY()) {
-            System.out.println("\u001B[34m" + "Position des deux joueurs identique BBBBBUUUUUUUUUUUGGGGGGGGGGGG" + "\u001B[37m");
+        if((j1.getPtSante() < 100) || (j2.getPtSante() < 100)) {
+            System.err.println("Fin De Partie !!!");
+            System.err.println("Score J1 : " + scoreJ1);
+            System.err.println("Score J2 : " + scoreJ2);
+            try {
+                System.in.read();
+            }
+            catch (IOException e){
+            }
         }
             if(action == 0) {
                 //ATTAQUE
                 if(mapperLentier(joueurAporteeDeTir)) {
-                    System.out.println(ANSI_GREEN + "--------------------Portée de tir----------------------" + "\u001B[37m");
-                    System.out.println(ANSI_GREEN + "-----------------------" + "Position X J1 : " + plateau.getListeDeJoueurs().get(0).getPosition().getX()  + "\u001B[37m");
-                    System.out.println(ANSI_GREEN + "-----------------------" + "Position Y J1 : " + plateau.getListeDeJoueurs().get(0).getPosition().getY()  + "\u001B[37m");
-                    System.out.println(ANSI_GREEN + "-----------------------" + "Position X J2 : " + plateau.getListeDeJoueurs().get(1).getPosition().getX() + "\u001B[37m");
-                    System.out.println(ANSI_GREEN + "-----------------------" + "Position Y J2 : " + plateau.getListeDeJoueurs().get(1).getPosition().getY() + "\u001B[37m");
                     Arme arme = plateau.turnPlayer.armeSelectionnee;
                     ArrayList<Integer> listeDesLancers = new ArrayList<>();
                     int degats = 0;
@@ -228,20 +223,11 @@ public class SolidWarWorld implements RLWorld{
                         if(!dejaAttaque && c.getType().equals("CaseJoueur") &&
                                 (c.getPosition().getX() != plateau.turnPlayer.getPosition().getX() || c.getPosition().getY() != plateau.turnPlayer.getPosition().getY())){
                             plateau.appliquerDegatsClassiques(c, arme, degats, listeDesLancers);
-                            System.out.println(ANSI_GREEN + "-----------------------" + "PV perdu " + "-------------------------" + "\u001B[37m");
-                            System.out.println(ANSI_GREEN + "-----------------------" + "PV J1 " + plateau.getListeDeJoueurs().get(0).getPtSante() + "\u001B[37m");
-                            System.out.println(ANSI_GREEN + "-----------------------" + "PV J2 " + plateau.getListeDeJoueurs().get(1).getPtSante()  + "\u001B[37m");
                             dejaAttaque = true;
-                            //waitingReward = calcReward(action);
                         }
                     }
                 }
                 if(mapperLentier(joueurAporteeDexplosion)) {
-                    System.out.println(ANSI_GREEN + "--------------------Portée d'explosion----------------------" + "\u001B[37m");
-                    System.out.println(ANSI_GREEN + "-----------------------" + "Position X J1 : " + plateau.getListeDeJoueurs().get(0).getPosition().getX()  + "\u001B[37m");
-                    System.out.println(ANSI_GREEN + "-----------------------" + "Position Y J1 : " + plateau.getListeDeJoueurs().get(0).getPosition().getY()  + "\u001B[37m");
-                    System.out.println(ANSI_GREEN + "-----------------------" + "Position X J2 : " + plateau.getListeDeJoueurs().get(1).getPosition().getX() + "\u001B[37m");
-                    System.out.println(ANSI_GREEN + "-----------------------" + "Position Y J2 : " + plateau.getListeDeJoueurs().get(1).getPosition().getY() + "\u001B[37m");
                     Arme arme = plateau.turnPlayer.armeSelectionnee;
                     ArrayList<Integer> listeDesLancers = new ArrayList<>();
                     int degats = 0;
@@ -257,11 +243,7 @@ public class SolidWarWorld implements RLWorld{
                             if(!dejaAttaque && c2.getType().equals("CaseJoueur") &&
                                     (c2.getPosition().getX() != plateau.turnPlayer.getPosition().getX() || c2.getPosition().getY() != plateau.turnPlayer.getPosition().getY())){
                                 plateau.appliquerDegatsExplosion(c.getPosition(), arme, degats, listeDesLancers);
-                                System.out.println(ANSI_GREEN + "-----------------------" + "PV perdu " + "-------------------------" + "\u001B[37m");
-                                System.out.println(ANSI_GREEN + "-----------------------" + "PV J1 " + plateau.getListeDeJoueurs().get(0).getPtSante() + "\u001B[37m");
-                                System.out.println(ANSI_GREEN + "-----------------------" + "PV J2 " + plateau.getListeDeJoueurs().get(1).getPtSante()  + "\u001B[37m");
                                 dejaAttaque = true;
-                                //waitingReward = calcReward(action);
                             }
                         }
                     }
@@ -273,40 +255,28 @@ public class SolidWarWorld implements RLWorld{
                 ArrayList<Arme> listeDesArmes = plateau.turnPlayer.getArmes();
                 switch(action) {
                     case 1:
-                        if(isSelectionDeLarmeAutorisee(0)) {
-                            plateau.turnPlayer.armeSelectionnee = plateau.turnPlayer.getArmes().get(0);
-                            //waitingReward = calcReward(action);
-                            System.out.println("Action décidée -- sélection arme 1");
-
-                        }
+                        plateau.turnPlayer.armeSelectionnee = listeDesArmes.get(0);
+                        System.out.println("Action décidée -- sélection arme 1");
                         break;
                     case 2:
-                        if(isSelectionDeLarmeAutorisee(1)) {
-                            plateau.turnPlayer.armeSelectionnee = plateau.turnPlayer.getArmes().get(1);
-                            //waitingReward = calcReward(action);
-                            System.out.println("Action décidée -- sélection arme 2");
-                        }
+                        if(isSelectionDeLarmeAutorisee(2))
+                            plateau.turnPlayer.armeSelectionnee = listeDesArmes.get(1);
+                        System.out.println("Action décidée -- sélection arme 2");
                         break;
                     case 3:
-                        if(isSelectionDeLarmeAutorisee(2)) {
-                            plateau.turnPlayer.armeSelectionnee = plateau.turnPlayer.getArmes().get(2);
-                            //waitingReward = calcReward(action);
-                            System.out.println("Action décidée -- sélection arme 3");
-                        }
+                        if(isSelectionDeLarmeAutorisee(3))
+                            plateau.turnPlayer.armeSelectionnee = listeDesArmes.get(2);
+                        System.out.println("Action décidée -- sélection arme 3");
                         break;
                     case 4:
-                        if(isSelectionDeLarmeAutorisee(3)) {
-                            plateau.turnPlayer.armeSelectionnee = plateau.turnPlayer.getArmes().get(3);
-                            //waitingReward = calcReward(action);
-                            System.out.println("Action décidée -- sélection arme 4");
-                        }
+                        if(isSelectionDeLarmeAutorisee(4))
+                            plateau.turnPlayer.armeSelectionnee = listeDesArmes.get(3);
+                        System.out.println("Action décidée -- sélection arme 4");
                         break;
                     case 5:
-                        if(isSelectionDeLarmeAutorisee(4)) {
-                            plateau.turnPlayer.armeSelectionnee = plateau.turnPlayer.getArmes().get(4);
-                            //waitingReward = calcReward(action);
-                            System.out.println("Action décidée -- sélection arme 5");
-                        }
+                        if(isSelectionDeLarmeAutorisee(5))
+                            plateau.turnPlayer.armeSelectionnee = listeDesArmes.get(4);
+                        System.out.println("Action décidée -- sélection arme 5");
                         break;
                 }
             }
@@ -323,7 +293,6 @@ public class SolidWarWorld implements RLWorld{
                         if(isDeplacementAutorise(positionDuJoueur, deltaX, deltaY)) {
                             System.err.println("-------Action VALIDÉE -- déplacement haut------");
                             plateau.deplacementDuJoueur(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
-                            //waitingReward = calcReward(action);
                         }
                         System.out.println("Action décidée -- déplacement haut");
                         break;
@@ -334,7 +303,6 @@ public class SolidWarWorld implements RLWorld{
                         if(isDeplacementAutorise(positionDuJoueur, deltaX, deltaY)) {
                             System.err.println("-------Action VALIDÉE -- déplacement bas------");
                             plateau.deplacementDuJoueur(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
-                            //waitingReward = calcReward(action);
                         }
                         System.out.println("Action décidée -- déplacement bas");
                         break;
@@ -345,7 +313,6 @@ public class SolidWarWorld implements RLWorld{
                         if(isDeplacementAutorise(positionDuJoueur, deltaX, deltaY)) {
                             System.err.println("-------Action VALIDÉE -- déplacement gauche------");
                             plateau.deplacementDuJoueur(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
-                            //waitingReward = calcReward(action);
                         }
                         System.out.println("Action décidée -- déplacement gauche");
                         break;
@@ -356,7 +323,6 @@ public class SolidWarWorld implements RLWorld{
                         if(isDeplacementAutorise(positionDuJoueur, deltaX, deltaY)) {
                             System.err.println("-------Action VALIDÉE -- déplacement droite------");
                             plateau.deplacementDuJoueur(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
-                            //waitingReward = calcReward(action);
                         }
                         System.out.println("Action décidée -- déplacement droite");
                         break;
@@ -375,7 +341,6 @@ public class SolidWarWorld implements RLWorld{
                         if(isConstructionAutorisee(positionDuJoueur, deltaX, deltaY)) {
                             Case caseAconstruire = plateau.getCaseByPosition(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
                             plateau.construireMur(caseAconstruire, new CaseMur(new Mur(), new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY)));
-                            //waitingReward = calcReward(action);
                         }
                         System.out.println("Action décidée -- Construire haut");
                         break;
@@ -386,7 +351,6 @@ public class SolidWarWorld implements RLWorld{
                         if(isConstructionAutorisee(positionDuJoueur, deltaX, deltaY)) {
                             Case caseAconstruire = plateau.getCaseByPosition(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
                             plateau.construireMur(caseAconstruire, new CaseMur(new Mur(), new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY)));
-                            //waitingReward = calcReward(action);
                         }
                         System.out.println("Action décidée -- Construire bas");
                         break;
@@ -397,7 +361,6 @@ public class SolidWarWorld implements RLWorld{
                         if(isConstructionAutorisee(positionDuJoueur, deltaX, deltaY)) {
                             Case caseAconstruire = plateau.getCaseByPosition(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
                             plateau.construireMur(caseAconstruire, new CaseMur(new Mur(), new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY)));
-                            //waitingReward = calcReward(action);
                         }
                         System.out.println("Action décidée -- Construire gauche");
                         break;
@@ -408,8 +371,6 @@ public class SolidWarWorld implements RLWorld{
                         if(isConstructionAutorisee(positionDuJoueur, deltaX, deltaY)) {
                             Case caseAconstruire = plateau.getCaseByPosition(new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY));
                             plateau.construireMur(caseAconstruire, new CaseMur(new Mur(), new Position(positionDuJoueur.getX()+deltaX, positionDuJoueur.getY()+deltaY)));
-                            //waitingReward = calcReward(action);
-
                         }
                         System.out.println("Action décidée -- Construire droite");
                         break;
@@ -424,13 +385,10 @@ public class SolidWarWorld implements RLWorld{
                         if(action == 14) {
                             System.err.println("------------Action VALIDÉE -- Arme Prise--------------");
                             int lancer1 = plateau.lancerUnDeAquatreChiffres();
-                            int lancer2 = plateau.lancerUnDeAhuitChiffres();
+                            int lancer2 = plateau.lancerUnDeAneufChiffres();
                             Arme arme = plateau.tirageArme(lancer1, lancer2);
                             plateau.turnPlayer.ajouterArme(arme);
                             plateau.turnPlayer.caseSauvegarde = null;
-                            //plateau.turnPlayer.armeSelectionnee = plateau.turnPlayer.getArmes().get(plateau.turnPlayer.getArmes().size()-1);
-                           // waitingReward = calcReward(action);
-
                         }
                     }
                     else if(plateau.turnPlayer.caseSauvegarde.getType().equals("CasePopo")) {
@@ -447,8 +405,6 @@ public class SolidWarWorld implements RLWorld{
                             if(plateau.turnPlayer.getPtSante() > 100)
                                 plateau.turnPlayer.setPtSante(100);
                             plateau.turnPlayer.caseSauvegarde = null;
-                            //waitingReward = calcReward(action);
-
                         }
                     }
                     else if(plateau.turnPlayer.caseSauvegarde.getType().equals("CaseArmure")) {
@@ -462,32 +418,29 @@ public class SolidWarWorld implements RLWorld{
                                 plateau.turnPlayer.setPtSante(plateau.turnPlayer.getPtSante()+plateau.lancerDeuxDes());
                             if(caseArmure.getVolume() == CaseArmure.VOLUME_GRAND)
                                 plateau.turnPlayer.setPtSante(plateau.turnPlayer.getPtSante()+plateau.lancerTroisDes());
-                            if(plateau.turnPlayer.getPtArmure() > 100)
-                                plateau.turnPlayer.setPtArmure(100);
+                            if(plateau.turnPlayer.getPtSante() > 100)
+                                plateau.turnPlayer.setPtSante(100);
                             plateau.turnPlayer.caseSauvegarde = null;
-                            //waitingReward = calcReward(action);
-
                         }
                     }
                 }
                 System.out.println("Action décidée -- Prendre ou laisser objet");
             }
-        else {
-            //FINIR LE TOUR
-            if(plateau.turnPlayer == plateau.getListeDeJoueurs().get(0)) {
-                plateau.getListeDeJoueurs().get(1).setPtAttaque(plateau.getListeDeJoueurs().get(1).getPtAttaque() + plateau.lancerUnDe());
-                plateau.getListeDeJoueurs().get(1).setPtMouvement(plateau.lancerDeuxDes());
-                plateau.turnPlayer = plateau.getListeDeJoueurs().get(1);
-            }
             else {
-                plateau.getListeDeJoueurs().get(0).setPtAttaque(plateau.getListeDeJoueurs().get(0).getPtAttaque() + plateau.lancerUnDe());
-                plateau.getListeDeJoueurs().get(0).setPtMouvement(plateau.lancerDeuxDes());
-                plateau.turnPlayer = plateau.getListeDeJoueurs().get(0);
+                //FINIR LE TOUR
+                if(plateau.turnPlayer == plateau.getListeDeJoueurs().get(0)) {
+                    plateau.turnPlayer = plateau.getListeDeJoueurs().get(1);
+                    plateau.getListeDeJoueurs().get(1).setPtAttaque(plateau.getListeDeJoueurs().get(1).getPtAttaque() + plateau.lancerUnDe());
+                    plateau.getListeDeJoueurs().get(1).setPtMouvement(plateau.lancerDeuxDes());
+                }
+                else {
+                    plateau.turnPlayer = plateau.getListeDeJoueurs().get(0);
+                    plateau.getListeDeJoueurs().get(0).setPtAttaque(plateau.getListeDeJoueurs().get(0).getPtAttaque() + plateau.lancerUnDe());
+                    plateau.getListeDeJoueurs().get(0).setPtMouvement(plateau.lancerDeuxDes());
+                }
+                System.out.println("Action décidée -- Finir le tour");
             }
-            //waitingReward = calcReward(action);
 
-            System.out.println("Action décidée -- Finir le tour");
-        }
 
         lowPointDeSante = mapperLeBooleen(plateau.isLowPointDeSante());
         lowPointDarmure = mapperLeBooleen(plateau.isLowPointDarmure());
@@ -505,6 +458,8 @@ public class SolidWarWorld implements RLWorld{
 
         waitingReward = calcReward(action);
 
+        //controllerJeu.definitionCasesDuPlateauWorld();
+
         return getState();
     }
 
@@ -517,7 +472,6 @@ public class SolidWarWorld implements RLWorld{
         //System.err.println("Joueur : " + plateau.turnPlayer.getName());
         //System.err.println("PositionX : " + j1.getPosition().getX());
         //System.err.println("PositionY : " + j1.getPosition().getY());
-        if(!plateau.isFinDePartie()) {
             if(action == 0 && isAttaqueAutorisee()) {
                 //System.err.println("Action : " + action);
                 //System.err.println("Possible, return true");
@@ -551,10 +505,6 @@ public class SolidWarWorld implements RLWorld{
                 return true;
             if(16 == action)
                 return true;
-        }
-        else {
-            System.err.println("00000000000000000000000 FIN DE PARTIE 00000000000000000000000");
-        }
 
         return false;
     }
@@ -566,7 +516,7 @@ public class SolidWarWorld implements RLWorld{
     public int[] resetState() {
         scoreJ1 = 0;
         scoreJ2 = 0;
-        plateau = new Plateau(plateau.getxTaille(), plateau.getyTaille(), "J1", "J2");
+        plateau = new Plateau(20, 20, "J1", "J2");
         return getState();
     }
 
@@ -595,15 +545,12 @@ public class SolidWarWorld implements RLWorld{
 
     public double calcReward(int action) {
         double newReward = 0;
-        /*if(action == 15 || action == 16) {
+        if(action == 15 || action == 16) {
             newReward += 0;
-        }
-        else if(action == 0) {
-            newReward += 5;
         }
         else {
             newReward += recompensePourUneAction;
-        }*/
+        }
 
         if(plateau.getListeDeJoueurs().get(1).isMort()) {
             scoreJ1++;

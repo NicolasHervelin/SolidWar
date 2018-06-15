@@ -45,16 +45,16 @@ public class Plateau {
         randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
         if(isDejaExistant("2"))
             randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
-        /*imageJoueur1 = new Image("images/Perso1minimizedColor.png");
+        imageJoueur1 = new Image("images/Perso1minimizedColor.png");
         imageJoueur2 = new Image("images/Perso2minimizedColor.png");
         System.out.println(joueur1);
         listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, imageJoueur1));
-        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));*/
+        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));
 
         //Pour les test de bico sur AWT
-        System.out.println(joueur1);
+        /*System.out.println(joueur1);
         listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, null));
-        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, null));
+        listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, null));*/
         initialize();
     }
 
@@ -462,31 +462,39 @@ public class Plateau {
     }
 
 
-    public ArrayList<Case> casesDansLeRayon(Position positionExplosion, int rayon, ArrayList<Case> casesDansExplosion) {
-
-        Case droite = getCaseRight(positionExplosion);
-        Case gauche = getCaseLeft(positionExplosion);
-        Case haut = getCaseUp(positionExplosion);
-        Case bas = getCaseDown(positionExplosion);
-        if(droite != null && !casesDansExplosion.contains(droite))
-            casesDansExplosion.add(droite);
-        if(gauche != null && !casesDansExplosion.contains(gauche))
-            casesDansExplosion.add(gauche);
-        if(haut != null && !casesDansExplosion.contains(haut))
-            casesDansExplosion.add(haut);
-        if(bas != null && !casesDansExplosion.contains(bas))
-            casesDansExplosion.add(bas);
-        if(rayon == 2) { //while i < rayon
-            if(droite != null)
-                casesDansLeRayon(droite.getPosition(), 1, casesDansExplosion);
-            if(gauche != null)
-                casesDansLeRayon(gauche.getPosition(), 1, casesDansExplosion);
-            if(haut != null)
-                casesDansLeRayon(haut.getPosition(), 1, casesDansExplosion);
-            if(bas != null)
-                casesDansLeRayon(bas.getPosition(), 1, casesDansExplosion);
+    public ArrayList<Case> casesDansLeRayon(Position positionExplosion, int rayon) {
+        openList=new ArrayList<>();
+        explosion=new ArrayList<>();
+        Case positionactuelle;
+        Case Depart=getCaseByPosition(positionExplosion);
+        Case Right;
+        Case Left;
+        Case Up;
+        Case Down;
+        openList.add(Depart);
+        while (openList.size()>0) {
+            positionactuelle=openList.get(openList.size()-1);
+            openList.remove(positionactuelle);
+            explosion.add(positionactuelle);
+            Right=getCaseRight(positionactuelle.getPosition());
+            Left=getCaseLeft(positionactuelle.getPosition());
+            Up=getCaseUp(positionactuelle.getPosition());
+            Down=getCaseDown(positionactuelle.getPosition());
+            if (Right!=null && !explosion.contains(Right)&&!openList.contains(Right)&& calculDeDistance(positionExplosion,Right.getPosition())<=rayon){
+                openList.add(Right);
+            }
+            if (Left!=null && !explosion.contains(Left) &&!openList.contains(Left)&& calculDeDistance(positionExplosion,Left.getPosition())<=rayon){
+                openList.add(Left);
+            }
+            if (Up!=null && !explosion.contains(Up)&& !openList.contains(Up)&& calculDeDistance(positionExplosion,Up.getPosition())<=rayon){
+                openList.add(Up);
+            }
+            if (Down!=null && !explosion.contains(Down)&&!openList.contains(Down)&& calculDeDistance(positionExplosion,Down.getPosition())<=rayon){
+                openList.add(Down);
+            }
         }
-        return casesDansExplosion;
+        return explosion;
+
     }
 
     public boolean isPointsAttaqueSuffisants(int ptAttaqueNecessaires){
@@ -505,7 +513,7 @@ public class Plateau {
 
     public void appliquerDegatsExplosion(Position positionExplosion, Arme arme, int degats, ArrayList<Integer> listeDeLancers) {
         if(isPointsAttaqueSuffisants(arme.getPa())) {
-            for(Case caseActuelle : casesDansLeRayon(positionExplosion, arme.getRayon(), new ArrayList<>())){
+            for(Case caseActuelle : casesDansLeRayon(positionExplosion, arme.getRayon())){
                 if(caseActuelle.getType().equals("CaseJoueur")){
                     //Check pour infliger dégats aux joueurs présents dans l'explosion
                     CaseJoueur caseJoueur = (CaseJoueur) caseActuelle;
@@ -812,7 +820,7 @@ public class Plateau {
         if(arme.getRayon() > 0) {
             ArrayList<Case> listcasesdansExplosion=new ArrayList<>();
             for (Case c : shootPathFindingPlateau(arme, joueur)) {
-                for (Case c2:casesDansLeRayon(c.getPosition(), arme.getRayon(), new ArrayList<>())) {
+                for (Case c2:casesDansLeRayon(c.getPosition(), arme.getRayon())) {
                     if(!listcasesdansExplosion.contains(c2)){
                         listcasesdansExplosion.add(c2);
                         //System.out.println("x :" +c2.getPosition().getX());
@@ -883,7 +891,7 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseArme")) {
-                System.out.println("Coffre à portée");
+                //System.out.println("Coffre à portée");
                 return true;
             }
         }
@@ -895,7 +903,7 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CasePopo")) {
-                System.out.println("Popo à portée");
+                //System.out.println("Popo à portée");
                 return true;
             }
         }
@@ -907,7 +915,7 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseArmure")) {
-                System.out.println("Armure à portée");
+                //System.out.println("Armure à portée");
                 return true;
             }
         }
@@ -919,7 +927,7 @@ public class Plateau {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                System.out.println("Joueur à portée de turnPlayer");
+                //System.out.println("Joueur à portée de turnPlayer");
                 return true;
             }
         }
@@ -948,7 +956,7 @@ public class Plateau {
             listeDesCasesAPorteeDeTir = shootPathFindingPlateau(turnPlayer.armeSelectionnee, turnPlayer);
             for (Case c : listeDesCasesAPorteeDeTir) {
                 if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                    System.out.println("Joueur à portée de tir de turnPlayer");
+                    //System.out.println("Joueur à portée de tir de turnPlayer");
                     return true;
                 }
             }
@@ -997,7 +1005,7 @@ public class Plateau {
             listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(turnPlayer.armeSelectionnee, turnPlayer);
             for (Case c : listeDesCasesAPorteeDexplosion) {
                 if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                    System.out.println("Joueur à portée d'explosion de turnPlayer");
+                    //System.out.println("Joueur à portée d'explosion de turnPlayer");
                     return true;
                 }
             }

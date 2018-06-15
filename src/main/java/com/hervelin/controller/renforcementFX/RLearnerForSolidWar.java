@@ -1,4 +1,9 @@
-package com.hervelin.model.renforcement2;
+package com.hervelin.controller.renforcementFX;
+
+import com.hervelin.model.renforcement2.RLWorld;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 import java.util.Vector;
 
@@ -72,7 +77,7 @@ public class RLearnerForSolidWar {
         // set default values
         epsilon = 0.1;
         temp = 1;
-
+        epochs = 1000;
         alpha = 1; // For CliffWorld alpha = 1 is good
         gamma = 0.1;
         lambda = 0.1;  // For CliffWorld gamma = 0.1, l = 0.5 (l*g=0.05)is a good choice.
@@ -128,8 +133,12 @@ public class RLearnerForSolidWar {
 
                     // Set state to the new state.
                     state = newstate;
+                        // give text output
+                        timer = ( System.currentTimeMillis() - timer );
+                        System.out.println("Epoch: " + timer);
+                        timer = System.currentTimeMillis();
                 }
-            System.err.println("$$$$$$$$$$$$$$$$$$ FIN DE PARTIE $$$$$$$$$$$$$$$$$$");
+
 
             }
 

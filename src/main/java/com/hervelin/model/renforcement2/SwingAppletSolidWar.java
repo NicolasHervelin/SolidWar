@@ -16,13 +16,15 @@ import java.util.Vector;
 public class SwingAppletSolidWar extends JApplet implements ActionListener,Runnable{
     static final int BW=300, BH=300, BX=8, BY=8, NUM_WALLS=20,
             SAMP_W = 100, SAMP_H = 100;
-    static final int DEF_EPOCHS = 50000;
+    static final int DEF_EPOCHS = 5000;
     static final long DELAY=500;
     static int MAXX=400, MAXY=400;
 
+    public static final String ANSI_GREEN = "\u001B[32m";
+
     SolidWarGame game;
     SolidWarWorld trainWorld, playWorld; // seperate world from playing world
-    Plateau plateau = new Plateau(5, 5, "J1", "J2");
+    Plateau plateau = new Plateau(10, 10, "J1", "J2");
     RLControllerForSolidWar rlc;
     RLearnerForSolidWar rl;
 
@@ -124,10 +126,20 @@ public class SwingAppletSolidWar extends JApplet implements ActionListener,Runna
         System.out.println("xdim : " + trainWorld.plateau.getxTaille());
         System.out.println("ydim : " + trainWorld.plateau.getyTaille());
         System.out.println("SolidWarWorld : OK" );
-        System.out.println("Appel de gameInit(40,40)" );
+        System.out.println("Appel de gameInit()" );
+        System.out.println(ANSI_GREEN + "------------------------------------------------" + "\u001B[37m");
+        System.out.println(ANSI_GREEN + "------------------------------------------------" + "\u001B[37m");
+        System.out.println(ANSI_GREEN + "-----------------------" + "Taille du plateau X : " + plateau.getxTaille()  + "\u001B[37m");
+        System.out.println(ANSI_GREEN + "-----------------------" + "Taille du plateau Y : " + plateau.getyTaille()  + "\u001B[37m");
+        System.out.println(ANSI_GREEN + "-----------------------" + "Position X J1 : " + plateau.getListeDeJoueurs().get(0).getPosition().getX()  + "\u001B[37m");
+        System.out.println(ANSI_GREEN + "-----------------------" + "Position Y J1 : " + plateau.getListeDeJoueurs().get(0).getPosition().getY()  + "\u001B[37m");
+        System.out.println(ANSI_GREEN + "-----------------------" + "Position X J2 : " + plateau.getListeDeJoueurs().get(1).getPosition().getX() + "\u001B[37m");
+        System.out.println(ANSI_GREEN + "-----------------------" + "Position Y J2 : " + plateau.getListeDeJoueurs().get(1).getPosition().getY() + "\u001B[37m");
+
         gameInit(trainWorld.plateau.getxTaille(),trainWorld.plateau.getyTaille());
 
     }
+
     public void worldInit(boolean[][] givenWalls) {
         int xdim = givenWalls.length, ydim = givenWalls[0].length;
         //plateau = new Plateau(xdim, ydim, "J1", "J2");
@@ -186,6 +198,7 @@ public class SwingAppletSolidWar extends JApplet implements ActionListener,Runna
 
         // update progress info
         progress.setValue(rlc.epochsdone);
+        learnEpochsDone.setText(Integer.toString(rlc.totaldone));
         learnEpochsDone.setText(Integer.toString(rlc.totaldone));
         if (rlc.newInfo) endTraining();
 

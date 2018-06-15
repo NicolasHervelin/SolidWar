@@ -1,5 +1,10 @@
 package com.hervelin.controller;
-import com.hervelin.model.*;
+
+import com.hervelin.model.FX.*;
+import com.hervelin.controller.renforcementFX.RLControllerForSolidWar;
+import com.hervelin.controller.renforcementFX.RLearnerForSolidWar;
+import com.hervelin.controller.renforcementFX.SolidWarGame;
+import com.hervelin.controller.renforcementFX.SolidWarWorld;
 import javafx.animation.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -56,7 +61,7 @@ public class ControllerJeu implements ControlledScreen {
     @FXML
     public GridPane anchorMain;
     @FXML
-    public Button buil, move, boutonFinDuTour, boutonOuvrirArme, boutonOuvrirArmure, boutonOuvrirPopo, boutonLancerPM, boutonLancerPA;
+    public Button buil, move, boutonFinDuTour, boutonOuvrirArme, boutonOuvrirArmure, boutonOuvrirPopo, boutonLancerPM, boutonLancerPA, boutonLancerRenforcement;
     @FXML
     public ListView<Arme> listArmes;
     @FXML
@@ -180,7 +185,7 @@ public class ControllerJeu implements ControlledScreen {
      *****/
 
     //Définition des cases du plateau
-    private void definitionCaseDuPlateau(Position positionAConserver) {
+    public void definitionCaseDuPlateau(Position positionAConserver) {
         gridPlateau.getChildren().clear();
         for (int row = 1; row <= plateau.getxTaille(); row++) {
             for (int col = 1; col <= plateau.getyTaille(); col++) {
@@ -463,7 +468,7 @@ public class ControllerJeu implements ControlledScreen {
                     for(Integer lancer : listeDesLancers) {
                         dommageTotal += lancer;
                     }
-                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
+                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon());
                     explosion(analyse.getPosition(), dommageTotal, listDesCasesDansLeRayon, armeSelectionnee, listeDesLancers);
                 }
                 else {
@@ -489,7 +494,7 @@ public class ControllerJeu implements ControlledScreen {
                     for(Integer lancer : listeDesLancers) {
                         dommageTotal += lancer;
                     }
-                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon(), new ArrayList<>());
+                    ArrayList<Case> listDesCasesDansLeRayon = plateau.casesDansLeRayon(analyse.getPosition(), armeSelectionnee.getRayon());
                     explosion(analyse.getPosition(), dommageTotal, listDesCasesDansLeRayon, armeSelectionnee, listeDesLancers);
                 }
             }
@@ -566,7 +571,6 @@ public class ControllerJeu implements ControlledScreen {
         Case caseDestination = plateau.getCaseByPosition(destination);
         plateau.deplacementDuJoueur(destination);
 
-        plateau.turnPlayer.setPtMouvement(plateau.turnPlayer.getPtMouvement() - caseDestination.getCout());
         if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CaseArme") && plateau.isPointsAttaqueSuffisants(1))
             boutonOuvrirArme.setVisible(true);
         if(plateau.turnPlayer.caseSauvegarde != null && plateau.turnPlayer.caseSauvegarde.getType().equals("CasePopo") && plateau.isPointsAttaqueSuffisants(1))
@@ -1224,4 +1228,76 @@ public class ControllerJeu implements ControlledScreen {
     /*****
      *  Fin Gestion actions du menu *
      *****/
+
+    public void worldInit() {
+        System.out.println("worldInit");
+        //System.out.println("plateau.Joueur1 : " + plateau.getListeDeJoueurs().get(0));
+        //System.out.println("plateau.Joueur2 : " + plateau.getListeDeJoueurs().get(1));
+        trainWorld = new SolidWarWorld(this, plateau);
+        System.out.println("xdim : " + trainWorld.plateau.getxTaille());
+        System.out.println("ydim : " + trainWorld.plateau.getyTaille());
+        System.out.println("SolidWarWorld : OK" );
+        System.out.println("Appel de gameInit(40,40)" );
+        gameInit();
+        rlc.setEpisodes(1000);
+    }
+
+    private void gameInit() {
+        System.out.println("gameInit()");
+        // disable this pane
+
+        playWorld = new SolidWarWorld(this, plateau);
+
+        //System.out.println("plateau.Joueur1 : " + plateau.getListeDeJoueurs().get(0));
+        //System.out.println("plateau.Joueur2 : " + plateau.getListeDeJoueurs().get(1));
+
+        rlc = new RLControllerForSolidWar(trainWorld, DELAY);
+        rl = rlc.learner;
+        rlc.start();
+
+        game = new SolidWarGame(this, 1500, playWorld, rl.getPolicy());
+        game.start();
+
+        // set first position on board
+        updateBoard();
+    }
+
+    void updateScore() {
+        game.gameActive = true;
+    }
+
+    public void run() { updateBoard(); }
+
+    /************ general functions ****************/
+    public void updateBoard() {
+        // update score panels
+        //j1scorelabel.setText(MS_TEXT+" "+Integer.toString(scoreJ1));
+        //j2scorelabel.setText(CS_TEXT+" "+Integer.toString(scoreJ2));
+        if (game.newInfo) {
+            updateScore();
+            game.newInfo = false;
+        }
+
+    }
+
+    static final int BW=300, BH=300, BX=8, BY=8, NUM_WALLS=20,
+            SAMP_W = 100, SAMP_H = 100;
+    static final int DEF_EPOCHS = 50000;
+    static final long DELAY=500;
+    static int MAXX=400, MAXY=400;
+
+    SolidWarGame game;
+    SolidWarWorld trainWorld, playWorld; // seperate world from playing world
+    RLControllerForSolidWar rlc;
+    RLearnerForSolidWar rl;
+
+    public void definitionCasesDuPlateauWorld() {
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(800),
+                ae -> definitionCaseDuPlateau(null)
+                ));
+        timeline.play();
+
+    }
+
 }
