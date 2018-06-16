@@ -918,7 +918,7 @@ public class ControllerJeu implements ControlledScreen {
         if (plateau.isPointsAttaqueSuffisants(1)) {
             plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque() - 1);
             lancer1 = plateau.lancerUnDeAquatreChiffres();
-            lancer2 = plateau.lancerUnDeAneufChiffres();
+            lancer2 = plateau.lancerUnDeAhuitChiffres();
             Arme arme = plateau.tirageArme(lancer1, lancer2);
             //  afficherListeArmes();
             mettreAjourInfoRessources();

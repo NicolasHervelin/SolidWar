@@ -30,9 +30,12 @@ public class Plateau {
     private Position randomPosition4;
 
     private static final String CHEMIN_FICHIER_CSV = "donneesDeJeu.csv";
-    private static final String FILE_HEADER = "Points de vie du turnPlayer, Points d'armure du turnPlayer, Points d'attaque du turnPlayer, Points de mouvement du turnPlayer, Points de Brique du turnPlayer, Mouvement max possible, Nombre d'armes possédées, Meilleure arme dispo, Coffre à portée, Popo à portée, Armure à portée, Joueur adverse à portée, Joueur adverse à portée de tir, Joueur adverse à portée d'explosion, turnPlayer à portée de tir, turnPlayer à portée d'explosion, Construction possible, Action réalisée ";
+    private static final String FILE_HEADER = "Points de vie du turnPlayer faibles, Points d'armure du turnPlayer faibles, Points d'attaque du turnPlayer faibles, Points de mouvement du turnPlayer faibles, Mouvement max possible, Nombre d'armes possédées, Meilleure arme dispo, Coffre à portée, Popo à portée, Armure à portée, Joueur adverse à portée, Joueur adverse à portée de tir, Joueur adverse à portée d'explosion, turnPlayer à portée de tir, turnPlayer à portée d'explosion, Construction possible, Action réalisée ";
     private static final String VIRGULE_DELIMITEUR = ",";
     private static final String LIGNE_SEPARATEUR = "\n";
+    private static final String ACTION_DEPLACEMENT = "DEPLACEMENT";
+    private static final String ACTION_ATTAQUER_CLASSIQUE = "ATTAQUER_CLASSIQUE";
+    private static final String ACTION_ATTAQUER_EXPLOSIF = "ATTAQUER_EXPLOSIF";
 
 
     public Joueur turnPlayer;
@@ -407,6 +410,11 @@ public class Plateau {
         return lance;
     }
 
+    public int lancerUnDeAhuitChiffres() {
+        int lance = 1 + (int)(Math.random() * ((8 - 1) + 1));
+        return lance;
+    }
+
 
     public int calculDeDistance(Position positionJoueur, Position caseCible) {
         int x_diff=caseCible.getX()-positionJoueur.getX();
@@ -527,6 +535,7 @@ public class Plateau {
                     attaquerMur(mur, arme, degats, isLancerParfait(listeDeLancers));
                 }
             }
+            ecrireActionCSV(ACTION_ATTAQUER_EXPLOSIF);
             turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
         }
         else {
@@ -545,6 +554,7 @@ public class Plateau {
                 Mur mur = caseMur.getMur();
                 attaquerMur(mur, arme, degats, isLancerParfait(listeDeLancers));
             }
+            ecrireActionCSV(ACTION_ATTAQUER_CLASSIQUE);
             turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
         }
         else {
@@ -589,15 +599,12 @@ public class Plateau {
                 arme=new Pistolet("images/Solid_war/COFFRE/ARMES/PISTOLET/CLASSE"+lancer1+".png");
                 break;
             case 6:
-                arme=new Mine("images/Solid_war/COFFRE/ARMES/MINE/CLASSE"+lancer1+".png");
-                break;
-            case 7:
                 arme=new Sulfateuse("images/Solid_war/COFFRE/ARMES/SULFATEUSE/CLASSE"+lancer1+".png");
                 break;
-            case 8:
+            case 7:
                 arme=new Sniper("images/Solid_war/COFFRE/ARMES/SNIPER/CLASSE"+lancer1+".png");
                 break;
-            case 9:
+            case 8:
                 arme=new Grenade("images/Solid_war/COFFRE/ARMES/GRENADE/CLASSE"+lancer1+".png");
                 break;
         }
@@ -650,6 +657,7 @@ public class Plateau {
         if(!getCaseByPosition(destination).getType().equals("CaseNormale"))
             turnPlayer.caseSauvegarde = getCaseByPosition(destination);
         Case caseDestination = getCaseByPosition(destination);
+        ecrireActionCSV(ACTION_DEPLACEMENT);
         turnPlayer.setPosition(destination);
         Case caseDestinationNouvelle = new CaseJoueur(turnPlayer, turnPlayer.getImageJoueur());
         remplacerCase(caseDestination, caseDestinationNouvelle);
@@ -938,7 +946,7 @@ public class Plateau {
     public boolean isJoueurAPorteeDeTir() {
         ArrayList<Case> listeDesCasesAPorteeDeTir;
         //Avant de faire le renforcement
-        /*
+
         for (Arme arme : turnPlayer.getArmes()) {
             if(arme.getRayon() == 0) {
                 listeDesCasesAPorteeDeTir = shootPathFindingPlateau(arme, turnPlayer);
@@ -949,8 +957,8 @@ public class Plateau {
                     }
                 }
             }
-        }*/
-
+        }
+        /*
         //Pour le renforcement
         if(turnPlayer.armeSelectionnee.getRayon() == 0) {
             listeDesCasesAPorteeDeTir = shootPathFindingPlateau(turnPlayer.armeSelectionnee, turnPlayer);
@@ -960,7 +968,7 @@ public class Plateau {
                     return true;
                 }
             }
-        }
+        }*/
         return false;
     }
 
@@ -989,7 +997,7 @@ public class Plateau {
     public boolean isJoueurAPorteeDexplosion() {
         ArrayList<Case> listeDesCasesAPorteeDexplosion;
         //Avant de faire le renforcement
-        /*
+
         for (Arme arme : turnPlayer.getArmes()) {
             if(arme.getRayon() > 0) {
                 listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme, turnPlayer);
@@ -1000,7 +1008,8 @@ public class Plateau {
                     }
                 }
             }
-        }*/
+        }
+        /*
         if(turnPlayer.armeSelectionnee.getRayon() > 0) {
             listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(turnPlayer.armeSelectionnee, turnPlayer);
             for (Case c : listeDesCasesAPorteeDexplosion) {
@@ -1009,7 +1018,7 @@ public class Plateau {
                     return true;
                 }
             }
-        }
+        }*/
         return false;
     }
 
@@ -1062,21 +1071,19 @@ public class Plateau {
             try {
                 fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
 
-                fileWriter.append(String.valueOf(turnPlayer.getPtSante()));
+                fileWriter.append(String.valueOf(isLowPointDeSante()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtArmure()));
+                fileWriter.append(String.valueOf(isLowPointDarmure()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtAttaque()));
+                fileWriter.append(String.valueOf(isLowPointDattaque()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtMouvement()));
-                fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getBrique()));
+                fileWriter.append(String.valueOf(isLowPointDeMouvement()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(getDeplacementMax()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(nombreArmesPossedees()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(meilleureArmePossedee()));
+                fileWriter.append(meilleureArmePossedee());
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(isCoffreAPortee()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
@@ -1120,26 +1127,24 @@ public class Plateau {
                 fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
 
                 //Ajoute le header au fichier CSV
-                fileWriter.append(FILE_HEADER.toString());
+                fileWriter.append(FILE_HEADER);
 
                 //Ajoute une nouvelle ligne après le header
                 fileWriter.append(LIGNE_SEPARATEUR);
 
-                fileWriter.append(String.valueOf(turnPlayer.getPtSante()));
+                fileWriter.append(String.valueOf(isLowPointDeSante()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtArmure()));
+                fileWriter.append(String.valueOf(isLowPointDarmure()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtAttaque()));
+                fileWriter.append(String.valueOf(isLowPointDattaque()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtMouvement()));
-                fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getBrique()));
+                fileWriter.append(String.valueOf(isLowPointDeMouvement()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(getDeplacementMax()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(nombreArmesPossedees()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(meilleureArmePossedee()));
+                fileWriter.append(meilleureArmePossedee());
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(isCoffreAPortee()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
