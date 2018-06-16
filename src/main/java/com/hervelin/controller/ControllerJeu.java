@@ -1,4 +1,5 @@
 package com.hervelin.controller;
+import com.hervelin.NeuralNetwork.NeuralNetwork;
 import com.hervelin.model.*;
 import javafx.animation.*;
 import javafx.beans.value.ChangeListener;
@@ -20,6 +21,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ControllerJeu implements ControlledScreen {
@@ -47,6 +51,8 @@ public class ControllerJeu implements ControlledScreen {
     private Image fixeCoffre = new Image("images/Solid_war/GIF/Coffre14_2-min.png");
     private Pane backOuvrirCoffre = new Pane();
     private Pane paneOuvrirCoffre = new Pane();
+    private static NeuralNetwork AI;
+
 
 
     @FXML
@@ -81,48 +87,63 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     private void setUp() {
+        try {
+            File file = new File("pong.network");
+            if (file.exists()) {
+                AI = new NeuralNetwork(file);
+            } else {
+                AI = new NeuralNetwork();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String nomJoueur1 = myController.getData("joueur1");
         String nomJoueur2 = myController.getData("joueur2");
         String nomJoueur3 = myController.getData("joueur3");
         String nomJoueur4 = myController.getData("joueur4");
+        String IA_Game = myController.getData("is_bot_game");
 
-        //Initialisation du plateau
-        switch (myController.getData("nbjoueurs")) {
-            case "2 joueurs" :
-                plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
-                joueur1 = plateau.getListeDeJoueurs().get(0);
-                joueur2 = plateau.getListeDeJoueurs().get(1);
-                break;
-            case "3 joueurs" :
-                plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3);
-                joueur1 = plateau.getListeDeJoueurs().get(0);
-                joueur2 = plateau.getListeDeJoueurs().get(1);
-                joueur3 = plateau.getListeDeJoueurs().get(2);
-                break;
-            case "4 joueurs" :
-                plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3, nomJoueur4);
-                joueur1 = plateau.getListeDeJoueurs().get(0);
-                joueur2 = plateau.getListeDeJoueurs().get(1);
-                joueur3 = plateau.getListeDeJoueurs().get(2);
-                joueur4 = plateau.getListeDeJoueurs().get(3);
-                break;
-            default :
-                plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
-                joueur1 = plateau.getListeDeJoueurs().get(0);
-                joueur2 = plateau.getListeDeJoueurs().get(1);
-                break;
+        if(IA_Game == "false") {
+
+            //Initialisation du plateau
+            switch (myController.getData("nbjoueurs")) {
+                case "2 joueurs":
+                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
+                    joueur1 = plateau.getListeDeJoueurs().get(0);
+                    joueur2 = plateau.getListeDeJoueurs().get(1);
+                    break;
+                case "3 joueurs":
+                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3);
+                    joueur1 = plateau.getListeDeJoueurs().get(0);
+                    joueur2 = plateau.getListeDeJoueurs().get(1);
+                    joueur3 = plateau.getListeDeJoueurs().get(2);
+                    break;
+                case "4 joueurs":
+                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3, nomJoueur4);
+                    joueur1 = plateau.getListeDeJoueurs().get(0);
+                    joueur2 = plateau.getListeDeJoueurs().get(1);
+                    joueur3 = plateau.getListeDeJoueurs().get(2);
+                    joueur4 = plateau.getListeDeJoueurs().get(3);
+                    break;
+                case "IA":
+                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, "IA");
+                    joueur1 = plateau.getListeDeJoueurs().get(0);
+                    joueur2 = plateau.getListeDeJoueurs().get(1);
+                    break;
+                default:
+                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
+                    joueur1 = plateau.getListeDeJoueurs().get(0);
+                    joueur2 = plateau.getListeDeJoueurs().get(1);
+                    break;
+            }
+        } else{
+            plateau = new Plateau(nombreCaseX, nombreCaseY);
+            joueur1 = plateau.getListeDeJoueurs().get(0);
+            joueur2 = plateau.getListeDeJoueurs().get(1);
         }
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
-        joueur1.ajouterArme(new Bazooka("images/nop.png"));
-        joueur1.ajouterArme(new Bazooka("images/nop.png"));
-        joueur1.ajouterArme(new Bazooka("images/nop.png"));
-        joueur1.ajouterArme(new Bazooka("images/nop.png"));
 
-        joueur2.ajouterArme(new Bazooka("images/nop.png"));
-        joueur2.ajouterArme(new Bazooka("images/nop.png"));
-        joueur2.ajouterArme(new Bazooka("images/nop.png"));
-        joueur2.ajouterArme(new Bazooka("images/nop.png"));
 
         affichageDuJoueur(plateau.turnPlayer);
         mettreAjourSanteArmure();
@@ -856,6 +877,9 @@ public class ControllerJeu implements ControlledScreen {
         boutonLancerPM.setVisible(true);
         plateau.getCaseByPosition(plateau.turnPlayer.getPosition()).getBouton().requestFocus();
         afficherCaseNormale(new CaseNormale(new Position(1,1)));
+        if(plateau.turnPlayer.isIs_IA()==true){
+            System.out.println("C'est au bot de jouer");
+        }
     }
 
     //FIN DU TOUR ET CHANGEMENT DE JOUEUR ACTIF

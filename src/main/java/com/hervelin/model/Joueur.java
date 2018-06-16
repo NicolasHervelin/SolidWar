@@ -18,6 +18,7 @@ public class Joueur {
     public Case caseSauvegarde;
     public Arme armeSelectionnee;
     public int indexArmeSelectionnee;
+    public boolean is_IA;
 
     public Joueur(String name, Position p, Image image) {
         this.name = name;
@@ -33,6 +34,10 @@ public class Joueur {
         armes.add(armeDeBase);
         this.armeSelectionnee = armes.get(0);
         this.indexArmeSelectionnee = 0;
+        this.is_IA=false;
+        if(name=="IA"){
+            this.is_IA=true;
+        }
     }
 
     public void deplacerX(int deplacementX) {
@@ -52,6 +57,14 @@ public class Joueur {
 
     public String getName() {
         return name;
+    }
+
+    public void setIs_IA(boolean is_IA) {
+        this.is_IA = is_IA;
+    }
+
+    public boolean isIs_IA() {
+        return is_IA;
     }
 
     public void setName(String name) {

@@ -1,8 +1,9 @@
 package com.hervelin.model;
 
+import com.hervelin.NeuralNetwork.NeuralNetwork;
 import javafx.scene.image.Image;
-
 import java.io.*;
+import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import java.util.ArrayList;
 
 public class Plateau {
@@ -15,6 +16,9 @@ public class Plateau {
     private ArrayList<Case> shoot = new ArrayList<>();
     private ArrayList<Case> build = new ArrayList<>();
     private ArrayList<Case> explosion = new ArrayList<>();
+    public NeuralNetwork AI;
+
+    private GameStatesList stateList = new GameStatesList();
 
     private int xTaille;
     private int yTaille;
@@ -47,6 +51,20 @@ public class Plateau {
         imageJoueur2 = new Image("images/Perso2minimizedColor.png");
         listeDeJoueurs.add(new Joueur(joueur1, randomPosition1, imageJoueur1));
         listeDeJoueurs.add(new Joueur(joueur2, randomPosition2, imageJoueur2));
+        initialize();
+    }
+    public Plateau(int xTaille, int yTaille) {
+        this.xTaille = xTaille;
+        this.yTaille = yTaille;
+        randomPosition1 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        if(isDejaExistant("2"))
+            randomPosition2 = new Position(1 + (int)(Math.random() * ((xTaille - 1) + 1)),1 + (int)(Math.random() * ((yTaille - 1) + 1)));
+        imageJoueur1 = new Image("images/Perso1minimizedColor.png");
+        imageJoueur1 = new Image("images/Perso1minimizedColor.png");
+        imageJoueur2 = new Image("images/IA.jpg");
+        listeDeJoueurs.add(new Joueur("Humain", randomPosition1, imageJoueur1));
+        listeDeJoueurs.add(new Joueur("IA", randomPosition2, imageJoueur2));
         initialize();
     }
 
@@ -137,6 +155,19 @@ public class Plateau {
             turnPlayer = listeDeJoueurs.get(0);
         }
     }
+    /*private void updateAIPaddle() {
+		if (ballXSpeed < 0) {
+		double destination = AI.output(new double[] {ballY, ballX, ballYSpeed})[0];
+		destination = destination*2-1; //retour entre 0 et 1
+		if (Math.abs(destination-AIPaddlePos) > 0.04) {
+			if (destination > AIPaddlePos) {
+				AIPaddlePos += 0.03;
+			} else {
+				AIPaddlePos -= 0.03;
+			}
+		}
+		}
+	}*/
 
     public boolean isDejaExistant(String nbJoueurs) {
         switch(nbJoueurs) {
@@ -806,8 +837,6 @@ public class Plateau {
                 for (Case c2:casesDansLeRayon(c.getPosition(), arme.getRayon())) {
                     if(!listcasesdansExplosion.contains(c2)){
                         listcasesdansExplosion.add(c2);
-                        //System.out.println("x :" +c2.getPosition().getX());
-                        //System.out.println("y :" +c2.getPosition().getY());
                     }
                 }
             }
@@ -1059,7 +1088,7 @@ public class Plateau {
                 fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
 
                 //Ajoute le header au fichier CSV
-                fileWriter.append(FILE_HEADER.toString());
+                fileWriter.append(FILE_HEADER);
 
                 //Ajoute une nouvelle ligne après le header
                 fileWriter.append(LIGNE_SEPARATEUR);
