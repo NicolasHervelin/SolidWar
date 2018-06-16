@@ -2,9 +2,7 @@ package com.hervelin.model.FX;
 
 import javafx.scene.image.Image;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Plateau {
@@ -1065,11 +1063,15 @@ public class Plateau {
     //Écrit les actions dans un fichier CSV
     public void ecrireActionCSV(String actionRealisee) {
         File fichierCSV = new File(CHEMIN_FICHIER_CSV);
-        FileWriter fileWriter = null;
+        Writer fileWriter = null;
 
         if(fichierCSV.exists()) {
             try {
-                fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
+                System.out.println("le fichier csv existe");
+
+                fileWriter = new BufferedWriter(new FileWriter(CHEMIN_FICHIER_CSV, true));  //clears file every time
+
+                //fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
 
                 fileWriter.append(String.valueOf(isLowPointDeSante()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
@@ -1124,6 +1126,7 @@ public class Plateau {
         }
         else {
             try {
+                System.out.println("le fichier csv n'existe pas");
                 fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
 
                 //Ajoute le header au fichier CSV
@@ -1191,7 +1194,7 @@ public class Plateau {
     public int nbJoueursRestants() {
         int nbJoueursMorts = 0;
         for (Joueur joueur : listeDeJoueurs) {
-            if(isJoueurMort(joueur))
+            if(!isJoueurMort(joueur))
                 nbJoueursMorts += 1;
         }
         return nbJoueursMorts;
