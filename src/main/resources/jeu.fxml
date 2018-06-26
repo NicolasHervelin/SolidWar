@@ -34,6 +34,11 @@
                         <MenuItem text="Règles" />
                     </items>
                 </Menu>
+                <Menu fx:id="IA" text="IA">
+                    <items>
+                        <MenuItem onAction="#learn" text="load dataset and learn" />
+                    </items>
+                </Menu>
             </menus>
         </MenuBar>
         <GridPane fx:id="gridContainer" GridPane.columnIndex="0" GridPane.rowIndex="1">

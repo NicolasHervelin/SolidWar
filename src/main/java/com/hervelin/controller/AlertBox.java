@@ -24,6 +24,43 @@ import java.util.ArrayList;
 
 class AlertBox {
 
+    static void afficher_vainqueur(Joueur j){
+        Stage messageBox = new Stage();
+        messageBox.initStyle(StageStyle.TRANSPARENT);
+
+        messageBox.initModality(Modality.APPLICATION_MODAL);
+        messageBox.setMinWidth(500);
+        messageBox.setMinHeight(500);
+
+        Label l = new Label(" VAINQUEUR : "+j.getName());
+        l.setTextFill(Color.RED);
+        l.setStyle("-fx-font: 35 'Autumn Regular';" +
+                "-fx-text-alignment: center;");
+
+        VBox container = new VBox(10);
+        container.getChildren().add(l);
+        container.setAlignment(Pos.CENTER);
+        container.setMinWidth(700);
+        container.setMinHeight(700);
+
+        // fill background with java
+        BackgroundFill fill = new BackgroundFill(Color.TRANSPARENT, new CornerRadii(1), new Insets(0, 0, 0, 0));
+        container.setBackground(new Background(fill));
+
+        // fadeIn
+        FadeTransition fade = new FadeTransition(Duration.seconds(1), container);
+        fade.setFromValue(0.0);
+        fade.setToValue(1.0);
+        fade.play();
+        Scene scene = new Scene(container);
+        messageBox.setScene(scene);
+        // transparence
+        scene.setFill(null);
+        messageBox.initStyle(StageStyle.TRANSPARENT);
+        // show popup
+        messageBox.show();
+    }
+
     static void afficherLancer(ArrayList<Integer> listeDesLancers, String message) {
         Stage messageBox = new Stage();
         messageBox.initStyle(StageStyle.TRANSPARENT);

@@ -3,8 +3,8 @@ package com.hervelin.model;
 import com.hervelin.NeuralNetwork.NeuralNetwork;
 import javafx.scene.image.Image;
 import java.io.*;
-import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import java.util.ArrayList;
+
 
 public class Plateau {
     private ArrayList<Case> casesDuPlateau = new ArrayList<>();
@@ -16,9 +16,6 @@ public class Plateau {
     private ArrayList<Case> shoot = new ArrayList<>();
     private ArrayList<Case> build = new ArrayList<>();
     private ArrayList<Case> explosion = new ArrayList<>();
-    public NeuralNetwork AI;
-
-    private GameStatesList stateList = new GameStatesList();
 
     private int xTaille;
     private int yTaille;
@@ -32,10 +29,20 @@ public class Plateau {
     private Position randomPosition4;
 
     private static final String CHEMIN_FICHIER_CSV = "donneesDeJeu.csv";
-    private static final String FILE_HEADER = "Points de vie du turnPlayer, Points d'armure du turnPlayer, Points d'attaque du turnPlayer, Points de mouvement du turnPlayer, Points de Brique du turnPlayer, Mouvement max possible, Nombre d'armes possédées, Meilleure arme dispo, Coffre à portée, Popo à portée, Armure à portée, Joueur adverse à portée, Joueur adverse à portée de tir, Joueur adverse à portée d'explosion, turnPlayer à portée de tir, turnPlayer à portée d'explosion, Construction possible, Action réalisée ";
+    private static final String FILE_HEADER = "Points de vie du turnPlayer faibles, Points d'armure du turnPlayer faibles, Points d'attaque du turnPlayer faibles, Points de mouvement du turnPlayer faibles, Mouvement max possible, Nombre d'armes possédées, Meilleure arme dispo, Coffre à portée, Popo à portée, Armure à portée, Joueur adverse à portée, Joueur adverse à portée de tir, Mur à portée de tir Joueur adverse à portée d'explosion, turnPlayer à portée de tir, turnPlayer à portée d'explosion, Construction possible, Action réalisée,POSX,POSY ";
     private static final String VIRGULE_DELIMITEUR = ",";
     private static final String LIGNE_SEPARATEUR = "\n";
-
+    /*
+    0: ACTION_FIN_DE_TOUR
+    1: ACTION_DEPLACEMENT
+    2: ACTION_ATTAQUER_JOUEUR
+    3: ACTION_ATTAQUER_MUR
+    4: ACTION_CONSTRUIRE
+    5: ACTION_ATTAQUER_EXPLOSIF
+    6 : ACTION_POPO
+    7 : ACTION_ARMURE
+    8: ACTION_PRENDRE_ARME
+     */
 
     public Joueur turnPlayer;
 
@@ -146,28 +153,15 @@ public class Plateau {
         creerJoueurs();
     }
 
-    public void joueurSuivant(String nbJoueurs) {
+    public void joueurSuivant() {
         int indexDuJoueurActuel = listeDeJoueurs.indexOf(turnPlayer);
-        if(indexDuJoueurActuel != (Integer.valueOf(nbJoueurs)-1)) {
+        if(indexDuJoueurActuel != listeDeJoueurs.size()-1) {
             turnPlayer = listeDeJoueurs.get(indexDuJoueurActuel +1);
         }
         else {
             turnPlayer = listeDeJoueurs.get(0);
         }
     }
-    /*private void updateAIPaddle() {
-		if (ballXSpeed < 0) {
-		double destination = AI.output(new double[] {ballY, ballX, ballYSpeed})[0];
-		destination = destination*2-1; //retour entre 0 et 1
-		if (Math.abs(destination-AIPaddlePos) > 0.04) {
-			if (destination > AIPaddlePos) {
-				AIPaddlePos += 0.03;
-			} else {
-				AIPaddlePos -= 0.03;
-			}
-		}
-		}
-	}*/
 
     public boolean isDejaExistant(String nbJoueurs) {
         switch(nbJoueurs) {
@@ -417,11 +411,10 @@ public class Plateau {
         return lance;
     }
 
-    public int lancerUnDeAneufChiffres() {
-        int lance = 1 + (int)(Math.random() * ((9 - 1) + 1));
+    public int lancerUnDeAhuitChiffres() {
+        int lance = 1 + (int)(Math.random() * ((8 - 1) + 1));
         return lance;
     }
-
 
     public int calculDeDistance(Position positionJoueur, Position caseCible) {
         int x_diff=caseCible.getX()-positionJoueur.getX();
@@ -548,6 +541,7 @@ public class Plateau {
                 attaquerMur(mur, arme, degats, isLancerParfait(listeDeLancers));
             }
         }
+       // ecrireActionCSV(5);
         turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
         //}
     }
@@ -557,11 +551,13 @@ public class Plateau {
         if (caseSelectionnee.getType().equals("CaseJoueur")) {
             CaseJoueur caseJoueur = (CaseJoueur) caseSelectionnee;
             attaquerJoueur(caseJoueur.getJoueur(), arme, degats, isLancerParfait(listeDeLancers));
+          //  ecrireActionCSV(2);
         }
         if (caseSelectionnee.getType().equals("CaseMur")) {
             CaseMur caseMur = (CaseMur) caseSelectionnee;
             attaquerMur(caseMur.getMur(), arme, degats, isLancerParfait(listeDeLancers));
             Mur mur = caseMur.getMur();
+          //  ecrireActionCSV(3);
         }
         turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
         //}
@@ -583,6 +579,22 @@ public class Plateau {
         else {
             System.out.print("Briques insuffisantes !");
         }
+      //  ecrireActionCSV(4);
+    }
+
+    public double getNbArme(String nom){
+        double nb=0;
+        switch (nom){
+            case "couteau": nb=0; break;
+            case "fusil d'assaut" : nb=1;break;
+            case "fusil à pompe" : nb=2;break;
+            case "bazooka" : nb=3;break;
+            case "pistolet" : nb=4;break;
+            case "sulfateuse" : nb=5; break;
+            case "grenade" : nb=7; break;
+            case "sniper" : nb=6; break;
+        }
+        return nb/7;
     }
 
     public Arme tirageArme(int lancer1,int lancer2){
@@ -604,18 +616,16 @@ public class Plateau {
                 arme=new Pistolet("images/Solid_war/COFFRE/ARMES/PISTOLET/CLASSE"+lancer1+".png");
                 break;
             case 6:
-                arme=new Mine("images/Solid_war/COFFRE/ARMES/MINE/CLASSE"+lancer1+".png");
-                break;
-            case 7:
                 arme=new Sulfateuse("images/Solid_war/COFFRE/ARMES/SULFATEUSE/CLASSE"+lancer1+".png");
                 break;
-            case 8:
+            case 7:
                 arme=new Sniper("images/Solid_war/COFFRE/ARMES/SNIPER/CLASSE"+lancer1+".png");
                 break;
-            case 9:
+            case 8:
                 arme=new Grenade("images/Solid_war/COFFRE/ARMES/GRENADE/CLASSE"+lancer1+".png");
                 break;
         }
+      // ecrireActionCSV(ACTION_COFFRE);
         return arme;
     }
 
@@ -668,6 +678,7 @@ public class Plateau {
         turnPlayer.setPosition(destination);
         Case caseDestinationNouvelle = new CaseJoueur(turnPlayer, turnPlayer.getImageJoueur());
         remplacerCase(caseDestination, caseDestinationNouvelle);
+       // ecrireActionCSV(1);
     }
 
     //Code pour le pathfinding
@@ -846,8 +857,8 @@ public class Plateau {
     }
 
     //Retourn le nombre de déplacement maximum que le joueur actuel peut effectuer
-    private int getDeplacementMax() {
-        int coutMax = 0;
+    public double getDeplacementMax() {
+        double coutMax = 0;
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for(Case c : listeDesCasesAccessibles) {
             int coutCase = c.getCout();
@@ -855,35 +866,54 @@ public class Plateau {
                 coutMax = coutCase;
             }
         }
-        return coutMax;
+        return coutMax/12;
     }
 
     //Retourne le nombre d'armes possédées par le joueur actuel
-    private int nombreArmesPossedees() {
-        return turnPlayer.getArmes().size();
+    public double nombreArmesPossedees() {
+        return turnPlayer.getArmes().size()/5;
     }
 
     //Retourne le nom de la meilleure arme du joueur actuel
-    private String meilleureArmePossedee() {
-        String meilleureArme = "couteau";
+    public Arme meilleureArmePossedee() {
+        Arme meilleureArme = turnPlayer.getArmes().get(0);
         int puissanceMax = 0;
         int puissanceArme = 0;
         for (Arme arme : turnPlayer.getArmes()) {
             puissanceArme = (arme.getPortée() + arme.getRayon()) * arme.getDmg_dés(); //Détermine arbitrairement la puissance d'une arme
             if(puissanceArme > puissanceMax) {
                 puissanceMax = puissanceArme;
-                meilleureArme = arme.getName();
+                meilleureArme = arme;
             }
         }
         return meilleureArme;
     }
 
+    //Savoir si le turnPlayer est Low-life
+    public boolean isLowPointDeSante() {
+        return turnPlayer.getPtSante() < 50;
+    }
+
+    //Savoir si le turnPlayer est Low-Armure
+    public boolean isLowPointDarmure() {
+        return turnPlayer.getPtArmure() < 50;
+    }
+
+    //Savoir si le turnPlayer est Low niveau pts d'attaque
+    public boolean isLowPointDattaque() {
+        return turnPlayer.getPtAttaque() < 3;
+    }
+
+    //Savoir si le turnPlayer est Low niveau pts de mouvement
+    public boolean isLowPointDeMouvement() {
+        return turnPlayer.getPtMouvement() < 3;
+    }
+
     //Savoir si un coffre est à portée du joueur actuel
-    private boolean isCoffreAPortee() {
+    public boolean isCoffreAPortee() {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseArme")) {
-                System.out.println("Coffre à portée");
                 return true;
             }
         }
@@ -891,11 +921,10 @@ public class Plateau {
     }
 
     //Savoir si une popo est à portée du joueur actuel
-    private boolean isPopoAPortee() {
+    public boolean isPopoAPortee() {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CasePopo")) {
-                System.out.println("Popo à portée");
                 return true;
             }
         }
@@ -903,11 +932,10 @@ public class Plateau {
     }
 
     //Savoir si une armure est à portée du joueur actuel
-    private boolean isArmureAPortee() {
+    public boolean isArmureAPortee() {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseArmure")) {
-                System.out.println("Armure à portée");
                 return true;
             }
         }
@@ -915,11 +943,10 @@ public class Plateau {
     }
 
     //Savoir si un autre joueur est à portée du joueur actuel
-    private boolean isJoueurAPortee() {
+    public boolean isJoueurAPortee() {
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for (Case c : listeDesCasesAccessibles) {
             if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                System.out.println("Joueur à portée de turnPlayer");
                 return true;
             }
         }
@@ -927,14 +954,28 @@ public class Plateau {
     }
 
     //Savoir si un autre joueur est à portée un de tir du joueur actuel
-    private boolean isJoueurAPorteeDeTir() {
+    public boolean isJoueurAPorteeDeTir() {
         ArrayList<Case> listeDesCasesAPorteeDeTir;
         for (Arme arme : turnPlayer.getArmes()) {
             if(arme.getRayon() == 0) {
                 listeDesCasesAPorteeDeTir = shootPathFindingPlateau(arme, turnPlayer);
                 for (Case c : listeDesCasesAPorteeDeTir) {
                     if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                        System.out.println("Joueur à portée de tir de turnPlayer");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isMurAPorteeDeTir(){
+        ArrayList<Case> listeDesCasesAPorteeDeTir;
+        for (Arme arme : turnPlayer.getArmes()) {
+            if(arme.getRayon() == 0) {
+                listeDesCasesAPorteeDeTir = shootPathFindingPlateau(arme, turnPlayer);
+                for (Case c : listeDesCasesAPorteeDeTir) {
+                    if(c.getType().equals("CaseMur") && c.getPosition() != turnPlayer.getPosition()) {
                         return true;
                     }
                 }
@@ -944,7 +985,7 @@ public class Plateau {
     }
 
     //Savoir si le joueur actuel est portée de tir d'un autre joueur
-    private boolean isTurnPlayerAPorteeDeTir() {
+    public boolean isTurnPlayerAPorteeDeTir() {
         ArrayList<Case> listeDesCasesAPorteeDeTir;
         for (Joueur joueur : listeDeJoueurs) {
             if(joueur != turnPlayer) {
@@ -953,7 +994,6 @@ public class Plateau {
                         listeDesCasesAPorteeDeTir = shootPathFindingPlateau(arme, joueur);
                         for (Case c : listeDesCasesAPorteeDeTir) {
                             if(c.getType().equals("CaseJoueur") && c.getPosition() == turnPlayer.getPosition()) {
-                                System.out.println("TurnPlayer à portée de tir de " + joueur.getName());
                                 return true;
                             }
                         }
@@ -965,14 +1005,13 @@ public class Plateau {
     }
 
     //Savoir si un autre joueur est à portée d'explosion du joueur actuel
-    private boolean isJoueurAPorteeDexplosion() {
+    public boolean isJoueurAPorteeDexplosion() {
         ArrayList<Case> listeDesCasesAPorteeDexplosion;
         for (Arme arme : turnPlayer.getArmes()) {
             if(arme.getRayon() > 0) {
                 listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme, turnPlayer);
                 for (Case c : listeDesCasesAPorteeDexplosion) {
                     if(c.getType().equals("CaseJoueur") && c.getPosition() != turnPlayer.getPosition()) {
-                        System.out.println("Joueur à portée d'explosion de turnPlayer");
                         return true;
                     }
                 }
@@ -982,7 +1021,7 @@ public class Plateau {
     }
 
     //Savoir si le joueur actuel est à portée d'explosion d'un autre joueur
-    private boolean isTurnPlayerAPorteeDexplosion() {
+    public boolean isTurnPlayerAPorteeDexplosion() {
         ArrayList<Case> listeDesCasesAPorteeDexplosion;
         for (Joueur joueur : listeDeJoueurs) {
             if(joueur != turnPlayer) {
@@ -991,7 +1030,6 @@ public class Plateau {
                         listeDesCasesAPorteeDexplosion = explosionPathFindingPlateau(arme, joueur);
                         for (Case c : listeDesCasesAPorteeDexplosion) {
                             if (c.getType().equals("CaseJoueur") && c.getPosition() == turnPlayer.getPosition()) {
-                                System.out.println("TurnPlayer à portée d'explosion de " + joueur.getName());
                                 return true;
                             }
                         }
@@ -1004,7 +1042,7 @@ public class Plateau {
     }
 
     //Savoir si le joueur actuel peut construire un mur
-    private boolean isConstructionPossible() {
+    public boolean isConstructionPossible() {
         return turnPlayer.getBrique() >= 10;
     }
 
@@ -1021,55 +1059,63 @@ public class Plateau {
         isTurnPlayerAPorteeDexplosion(); //OK
     }
 
+    public double convert(boolean b){
+        if(b==true){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+
     //Écrit les actions dans un fichier CSV
-    public void ecrireActionCSV(String actionRealisee) {
+    public void ecrireActionCSV(double actionRealisee) {
         File fichierCSV = new File(CHEMIN_FICHIER_CSV);
-        FileWriter fileWriter = null;
+        Writer fileWriter = null;
 
         if(fichierCSV.exists()) {
             try {
-                fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
-
-                fileWriter.append(String.valueOf(turnPlayer.getPtSante()));
+                fileWriter = new BufferedWriter(new FileWriter(CHEMIN_FICHIER_CSV, true));
+                fileWriter.append(String.valueOf(convert(isLowPointDeSante())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtArmure()));
+                fileWriter.append(String.valueOf(convert(isLowPointDarmure())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtAttaque()));
+                fileWriter.append(String.valueOf(convert(isLowPointDattaque())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtMouvement()));
-                fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getBrique()));
+                fileWriter.append(String.valueOf(convert(isLowPointDeMouvement())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(getDeplacementMax()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(nombreArmesPossedees()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(meilleureArmePossedee()));
+                fileWriter.append(String.valueOf(getNbArme(meilleureArmePossedee().getName())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isCoffreAPortee()));
+                fileWriter.append(String.valueOf(convert(isCoffreAPortee())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isPopoAPortee()));
+                fileWriter.append(String.valueOf(convert(isPopoAPortee())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isArmureAPortee()));
+                fileWriter.append(String.valueOf(convert(isArmureAPortee())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isJoueurAPortee()));
+                fileWriter.append(String.valueOf(convert(isJoueurAPortee())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isJoueurAPorteeDeTir()));
+                fileWriter.append(String.valueOf(convert(isJoueurAPorteeDeTir())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isJoueurAPorteeDexplosion()));
+                fileWriter.append(String.valueOf(convert(isMurAPorteeDeTir())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isTurnPlayerAPorteeDeTir()));
+                fileWriter.append(String.valueOf(convert(isJoueurAPorteeDexplosion())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isTurnPlayerAPorteeDexplosion()));
+                fileWriter.append(String.valueOf(convert(isTurnPlayerAPorteeDeTir())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isConstructionPossible()));
+                fileWriter.append(String.valueOf(convert(isTurnPlayerAPorteeDexplosion())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(actionRealisee));
+                fileWriter.append(String.valueOf(convert(isConstructionPossible())));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(actionRealisee/8));
+               // fileWriter.append(VIRGULE_DELIMITEUR);
+                /*fileWriter.append(String.valueOf(getXactual()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(getYactual()));*/
                 //...
                 fileWriter.append(LIGNE_SEPARATEUR);
-
-                System.out.println("Ecriture dans le fichier CSV réussie !!!");
-
             } catch (Exception e) {
                 System.out.println("Erreur dans le CsvFileWriter !!!");
                 e.printStackTrace();
@@ -1088,46 +1134,50 @@ public class Plateau {
                 fileWriter = new FileWriter(CHEMIN_FICHIER_CSV);
 
                 //Ajoute le header au fichier CSV
-                fileWriter.append(FILE_HEADER);
+               /* fileWriter.append(FILE_HEADER);
 
                 //Ajoute une nouvelle ligne après le header
-                fileWriter.append(LIGNE_SEPARATEUR);
+                fileWriter.append(LIGNE_SEPARATEUR);*/
 
-                fileWriter.append(String.valueOf(turnPlayer.getPtSante()));
+                fileWriter.append(String.valueOf(convert(isLowPointDeSante())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtArmure()));
+                fileWriter.append(String.valueOf(convert(isLowPointDarmure())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtAttaque()));
+                fileWriter.append(String.valueOf(convert(isLowPointDattaque())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getPtMouvement()));
-                fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(turnPlayer.getBrique()));
+                fileWriter.append(String.valueOf(convert(isLowPointDeMouvement())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(getDeplacementMax()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
                 fileWriter.append(String.valueOf(nombreArmesPossedees()));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(meilleureArmePossedee()));
+                fileWriter.append(String.valueOf(getNbArme(meilleureArmePossedee().getName())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isCoffreAPortee()));
+                fileWriter.append(String.valueOf(convert(isCoffreAPortee())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isPopoAPortee()));
+                fileWriter.append(String.valueOf(convert(isPopoAPortee())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isArmureAPortee()));
+                fileWriter.append(String.valueOf(convert(isArmureAPortee())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isJoueurAPortee()));
+                fileWriter.append(String.valueOf(convert(isJoueurAPortee())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isJoueurAPorteeDeTir()));
+                fileWriter.append(String.valueOf(convert(isJoueurAPorteeDeTir())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isJoueurAPorteeDexplosion()));
+                fileWriter.append(String.valueOf(convert(isMurAPorteeDeTir())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isTurnPlayerAPorteeDeTir()));
+                fileWriter.append(String.valueOf(convert(isJoueurAPorteeDexplosion())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isTurnPlayerAPorteeDexplosion()));
+                fileWriter.append(String.valueOf(convert(isTurnPlayerAPorteeDeTir())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(isConstructionPossible()));
+                fileWriter.append(String.valueOf(convert(isTurnPlayerAPorteeDexplosion())));
                 fileWriter.append(VIRGULE_DELIMITEUR);
-                fileWriter.append(String.valueOf(actionRealisee));
+                fileWriter.append(String.valueOf(convert(isConstructionPossible())));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(actionRealisee/8));
+               /* fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(getXactual()));
+                fileWriter.append(VIRGULE_DELIMITEUR);
+                fileWriter.append(String.valueOf(getYactual()));*/
                 //...
                 fileWriter.append(LIGNE_SEPARATEUR);
 
@@ -1147,6 +1197,14 @@ public class Plateau {
 
     }
 
+    private double getXactual() {
+        return (double)turnPlayer.getPosition().getX()/40;
+    }
+
+    private double getYactual() {
+        return (double)turnPlayer.getPosition().getY()/40;
+    }
+
     private boolean isJoueurMort(Joueur joueur) {
         return joueur.getPtSante() < 1;
     }
@@ -1154,8 +1212,7 @@ public class Plateau {
     public int nbJoueursRestants() {
         int nbJoueursMorts = 0;
         for (Joueur joueur : listeDeJoueurs) {
-            if(isJoueurMort(joueur))
-                nbJoueursMorts += 1;
+            nbJoueursMorts += 1;
         }
         return nbJoueursMorts;
     }
@@ -1164,14 +1221,15 @@ public class Plateau {
         return nbJoueursRestants() < 2;
     }
 
-    public void finDePartie() {
+    public boolean isFinDePartie() {
         if(isIlResteUnSeulJoueur()) {
             for (Joueur joueur : listeDeJoueurs) {
                 if(!isJoueurMort(joueur)) {
-                    //Alors joueur est le gagnant
-                    //AlertBox
+                    System.out.println(joueur.getName() + " est le gagnant de la partie !!!");
                 }
             }
+            return true;
         }
+        return false;
     }
 }

@@ -22,9 +22,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class ControllerJeu implements ControlledScreen {
     ScreensController myController;
@@ -52,6 +52,7 @@ public class ControllerJeu implements ControlledScreen {
     private Pane backOuvrirCoffre = new Pane();
     private Pane paneOuvrirCoffre = new Pane();
     private static NeuralNetwork AI;
+    private static GameStatesList GameState=new GameStatesList();
 
 
 
@@ -88,7 +89,7 @@ public class ControllerJeu implements ControlledScreen {
 
     private void setUp() {
         try {
-            File file = new File("pong.network");
+            File file = new File("fornique.network");
             if (file.exists()) {
                 AI = new NeuralNetwork(file);
             } else {
@@ -101,45 +102,47 @@ public class ControllerJeu implements ControlledScreen {
         String nomJoueur2 = myController.getData("joueur2");
         String nomJoueur3 = myController.getData("joueur3");
         String nomJoueur4 = myController.getData("joueur4");
-        String IA_Game = myController.getData("is_bot_game");
 
-        if(IA_Game == "false") {
-
-            //Initialisation du plateau
-            switch (myController.getData("nbjoueurs")) {
-                case "2 joueurs":
-                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
-                    joueur1 = plateau.getListeDeJoueurs().get(0);
-                    joueur2 = plateau.getListeDeJoueurs().get(1);
-                    break;
-                case "3 joueurs":
-                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3);
-                    joueur1 = plateau.getListeDeJoueurs().get(0);
-                    joueur2 = plateau.getListeDeJoueurs().get(1);
-                    joueur3 = plateau.getListeDeJoueurs().get(2);
-                    break;
-                case "4 joueurs":
-                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3, nomJoueur4);
-                    joueur1 = plateau.getListeDeJoueurs().get(0);
-                    joueur2 = plateau.getListeDeJoueurs().get(1);
-                    joueur3 = plateau.getListeDeJoueurs().get(2);
-                    joueur4 = plateau.getListeDeJoueurs().get(3);
-                    break;
-                case "IA":
-                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, "IA");
-                    joueur1 = plateau.getListeDeJoueurs().get(0);
-                    joueur2 = plateau.getListeDeJoueurs().get(1);
-                    break;
-                default:
-                    plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
-                    joueur1 = plateau.getListeDeJoueurs().get(0);
-                    joueur2 = plateau.getListeDeJoueurs().get(1);
-                    break;
-            }
-        } else{
-            plateau = new Plateau(nombreCaseX, nombreCaseY);
-            joueur1 = plateau.getListeDeJoueurs().get(0);
-            joueur2 = plateau.getListeDeJoueurs().get(1);
+        //Initialisation du plateau
+        switch (myController.getData("nbjoueurs")) {
+            case "2 joueurs":
+                plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
+                joueur1 = plateau.getListeDeJoueurs().get(0);
+                joueur2 = plateau.getListeDeJoueurs().get(1);
+                break;
+            case "3 joueurs":
+                plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3);
+                joueur1 = plateau.getListeDeJoueurs().get(0);
+                joueur2 = plateau.getListeDeJoueurs().get(1);
+                joueur3 = plateau.getListeDeJoueurs().get(2);
+                break;
+            case "4 joueurs":
+                plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2, nomJoueur3, nomJoueur4);
+                joueur1 = plateau.getListeDeJoueurs().get(0);
+                joueur2 = plateau.getListeDeJoueurs().get(1);
+                joueur3 = plateau.getListeDeJoueurs().get(2);
+                joueur4 = plateau.getListeDeJoueurs().get(3);
+                break;
+            case "IA":
+                try {
+                    File file = new File("fortnique.network");
+                    if (file.exists()) {
+                        AI = new NeuralNetwork(file);
+                        plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, "IA");
+                        joueur1 = plateau.getListeDeJoueurs().get(0);
+                        joueur2 = plateau.getListeDeJoueurs().get(1);
+                    } else {
+                        System.out.println("Veuillez entrainer le Dataset avant");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                plateau = new Plateau(nombreCaseX, nombreCaseY, nomJoueur1, nomJoueur2);
+                joueur1 = plateau.getListeDeJoueurs().get(0);
+                joueur2 = plateau.getListeDeJoueurs().get(1);
+                break;
         }
 
         listeDesJoueurs = plateau.getListeDeJoueurs();
@@ -251,7 +254,7 @@ public class ControllerJeu implements ControlledScreen {
         listArmes.getItems().setAll(plateau.turnPlayer.getArmes());
         listArmes.getSelectionModel().select(plateau.turnPlayer.indexArmeSelectionnee);
         listArmes.setCellFactory(new ArmeCellFactory());
-        listArmes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        listArmes.setOnMouseClicked(event -> {
             switch (mode){
                 case 1:
                     clean_pathfinding(ListPortee);
@@ -265,11 +268,9 @@ public class ControllerJeu implements ControlledScreen {
                 default:break;
             }
             mode=2;
-            if(newValue != null) {
-                afficherArme(newValue);
-                shoot_pathfinding(newValue);
-                plateau.turnPlayer.indexArmeSelectionnee=listArmes.getSelectionModel().getSelectedIndex();
-            }
+            afficherArme(listArmes.getSelectionModel().getSelectedItem());
+            shoot_pathfinding(listArmes.getSelectionModel().getSelectedItem());
+            plateau.turnPlayer.indexArmeSelectionnee=listArmes.getSelectionModel().getSelectedIndex();
         });
     }
 
@@ -294,9 +295,6 @@ public class ControllerJeu implements ControlledScreen {
         plateau.appliquerDegatsExplosion(positionExplosion , armeUtilisee, degats, listeDesLancers);
         remplacerLesMursDetruits(listeDeCases);
         shoot_pathfinding(armeUtilisee);
-        /*ArrayList<Case> l=plateau.explosionPathFindingPlateau(listArmes.getSelectionModel().getSelectedItem());
-        clean_pathfinding(shoot);
-        coloration(Color.BLACK,l);*/
     }
 
 
@@ -442,6 +440,9 @@ public class ControllerJeu implements ControlledScreen {
                 bouton.setEffect(null); //Apply the borderGlow effect to the JavaFX node
                 temp.setBouton(bouton);
             }
+        }
+        for (Case c:l) {
+            c.setCout(0);
         }
         l.clear();
     }
@@ -596,7 +597,6 @@ public class ControllerJeu implements ControlledScreen {
         clean_pathfinding(ListPortee);
         pathfinding();
         mettreAjourInfoRessources();
-        plateau.testAppelFonctionsPourCSV();
     }
 
     /*****
@@ -866,30 +866,122 @@ public class ControllerJeu implements ControlledScreen {
 
     //Mise a jour des infos suite au changement de joueur
     private void update() {
-        affichageDuJoueur(plateau.turnPlayer);
-        mettreAjourSanteArmure();
-        mettreAjourInfoRessources();
-        nomJoueur2.setText(null);
-        imageJoueur2.setImage(null);
-        cacherBoutonOuvrir();
-        afficherListeArmes();
-        listArmes.getSelectionModel().select(plateau.turnPlayer.indexArmeSelectionnee);
-        boutonLancerPM.setVisible(true);
-        plateau.getCaseByPosition(plateau.turnPlayer.getPosition()).getBouton().requestFocus();
-        afficherCaseNormale(new CaseNormale(new Position(1,1)));
-        if(plateau.turnPlayer.isIs_IA()==true){
-            System.out.println("C'est au bot de jouer");
+        if(plateau.getListeDeJoueurs().size()==1){
+            finDuJeu();
+        }else
+        if(plateau.turnPlayer.getPtSante()<=0){
+            plateau.getListeDeJoueurs().remove(plateau.turnPlayer);
+            plateau.remplacerCase(plateau.getCaseByPosition(plateau.turnPlayer.getPosition()),new CaseNormale(plateau.turnPlayer.getPosition()));
+            plateau.joueurSuivant();
+            definitionCaseDuPlateau(plateau.turnPlayer.getPosition());
+            update();
+        }else {
+            affichageDuJoueur(plateau.turnPlayer);
+            nomJoueur2.setText(null);
+            imageJoueur2.setImage(null);
+            cacherBoutonOuvrir();
+            afficherListeArmes();
+            listArmes.getSelectionModel().select(plateau.turnPlayer.indexArmeSelectionnee);
+            plateau.getCaseByPosition(plateau.turnPlayer.getPosition()).getBouton().requestFocus();
+            afficherCaseNormale(new CaseNormale(new Position(1, 1)));
+            if (plateau.turnPlayer.isIs_IA() == true) {
+                obtenirPointsDeMouvement();
+                obtenirPointsAttaque();
+                boutonLancerPM.setVisible(false);
+                plateau.turnPlayer.armeSelectionnee = plateau.meilleureArmePossedee();
+                pathfinding();
+                shoot_pathfinding(plateau.turnPlayer.armeSelectionnee);
+                ChoixActionIA();
+            }else{
+                boutonLancerPM.setVisible(true);
+            }
+            mettreAjourSanteArmure();
+            mettreAjourInfoRessources();
+            clean_pathfinding(ListPortee);
+            clean_pathfinding(shoot);
+
         }
     }
 
     //FIN DU TOUR ET CHANGEMENT DE JOUEUR ACTIF
     public void finDuTour() {
+       // plateau.ecrireActionCSV(0);
         plateau.turnPlayer.setPtMouvement(0);
-        plateau.joueurSuivant(myController.getData("nbjoueurs").substring(0,1));
-        //gridPlateau.getChildren().get(plateau.getIndexOfCase(plateau.getCaseByPosition(plateau.turnPlayer.getPosition()))).requestFocus();
         clean_pathfinding(ListPortee);
         clean_pathfinding(shoot);
+        //gridPlateau.getChildren().get(plateau.getIndexOfCase(plateau.getCaseByPosition(plateau.turnPlayer.getPosition()))).requestFocus();
+        plateau.joueurSuivant();
+
         update();
+    }
+
+    public void ChoixActionIA(){
+        System.out.println(plateau.convert(plateau.isLowPointDeSante()));
+        System.out.println(plateau.convert(plateau.isLowPointDarmure()));
+        System.out.println(plateau.convert(plateau.isLowPointDeMouvement()));
+        System.out.println(plateau.convert(plateau.isLowPointDattaque()));
+        System.out.println(plateau.convert(plateau.isCoffreAPortee()));
+        System.out.println(plateau.getDeplacementMax());
+
+        double choix = AI.outputs(new double[] {plateau.convert(plateau.isLowPointDeSante()),plateau.convert(plateau.isLowPointDarmure()),plateau.convert(plateau.isLowPointDattaque()),plateau.convert(plateau.isLowPointDeMouvement()),plateau.getDeplacementMax(),plateau.nombreArmesPossedees(),plateau.getNbArme(plateau.meilleureArmePossedee().getName()),plateau.convert(plateau.isCoffreAPortee()),plateau.convert(plateau.isPopoAPortee()),plateau.convert(plateau.isArmureAPortee()),plateau.convert(plateau.isJoueurAPortee()),plateau.convert(plateau.isJoueurAPorteeDeTir()),plateau.convert(plateau.isMurAPorteeDeTir()),plateau.convert(plateau.isJoueurAPorteeDexplosion()),plateau.convert(plateau.isTurnPlayerAPorteeDeTir()),plateau.convert(plateau.isTurnPlayerAPorteeDexplosion()),plateau.convert(plateau.isConstructionPossible())})[0]*8;
+        System.out.println(choix);
+        choix=Math.round(choix);
+        System.out.println((int)choix);
+        switch((int)choix){
+            case 0:
+                finDuTour();
+                break;
+            case 2:
+                int fin =0;
+                for (int i=0;i<shoot.size();i++){
+                    if(shoot.get(i).getType()=="CaseJoueur" && fin==0){
+                        Joueur j = plateau.getJoueurByPosition(shoot.get(i).getPosition());
+                        if (j != plateau.turnPlayer) {
+                            attaque(shoot.get(i), plateau.turnPlayer.armeSelectionnee);
+                            fin=1;
+                        }
+                    }
+                }
+                update();
+                break;
+
+            case 1:
+                int i=12;
+                Case deplacement;
+                for (Case c:ListPortee) {
+                    if (c.getType() == "CaseCoffre" && c.getCout() <= i) {
+                         i = c.getCout();
+                        deplacement=c;
+                    }else if(c.getType() == "CaseArmure" && c.getCout() <= i){
+                         i = c.getCout();
+                        deplacement=c;
+                    }else if (c.getType() == "CasePopo" && c.getCout() <= i && plateau.isLowPointDeSante()){
+                        i = c.getCout();
+                        deplacement=c;
+                    }
+                }
+               // deplacerPionJoueur(deplacement.getPosition());
+
+            case 3:
+                fin =0;
+                for ( i=0;i<shoot.size();i++){
+                    if(shoot.get(i).getType()=="CaseMur" && fin==0){
+                        Joueur j = plateau.getJoueurByPosition(shoot.get(i).getPosition());
+                        if (j != plateau.turnPlayer) {
+                            attaque(shoot.get(i), plateau.turnPlayer.armeSelectionnee);
+                            fin=1;
+                        }
+                    }
+                }
+                break;
+            default:
+                System.out.println("autre action !");
+                break;
+        }
+    }
+
+    public void finDuJeu(){
+        AlertBox.afficher_vainqueur(plateau.getListeDeJoueurs().get(0));
     }
 
     //Clic sur le bouton "MOVE", active le mode déplacement
@@ -936,7 +1028,7 @@ public class ControllerJeu implements ControlledScreen {
         if (plateau.isPointsAttaqueSuffisants(1)) {
             plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque() - 1);
             lancer1 = plateau.lancerUnDeAquatreChiffres();
-            lancer2 = plateau.lancerUnDeAneufChiffres();
+            lancer2 = plateau.lancerUnDeAhuitChiffres();
             Arme arme = plateau.tirageArme(lancer1, lancer2);
             //  afficherListeArmes();
             mettreAjourInfoRessources();
@@ -1049,6 +1141,7 @@ public class ControllerJeu implements ControlledScreen {
     }
 
     public void PrendreArme(Arme arme){
+       //plateau.ecrireActionCSV(8);
         if(plateau.turnPlayer.getArmes().size()<5) {
             plateau.turnPlayer.ajouterArme(arme);
             fermerCoffre();
@@ -1120,6 +1213,7 @@ public class ControllerJeu implements ControlledScreen {
 
     //Clic sur le bouton "OuvrirPopo"
     public void ouvrirPopo() {
+        //plateau.ecrireActionCSV(6);
         plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
         plateau.turnPlayer.setPtSante(plateau.turnPlayer.getPtSante()+plateau.lancerTroisDes());
         mettreAjourSanteArmure();
@@ -1130,6 +1224,7 @@ public class ControllerJeu implements ControlledScreen {
 
     //Clic sur le bouton "OuvrirArmure"
     public void ouvrirArmure() {
+       // plateau.ecrireActionCSV(7);
         plateau.turnPlayer.setPtAttaque(plateau.turnPlayer.getPtAttaque()-1);
         plateau.turnPlayer.setPtArmure(plateau.turnPlayer.getPtArmure()+plateau.lancerTroisDes());
         mettreAjourSanteArmure();
@@ -1241,6 +1336,37 @@ public class ControllerJeu implements ControlledScreen {
     public void backToJeu() {
         myController.loadScreen(Main.Jeu_ID, Main.Jeu_FILE);
         myController.setScreen(Main.Jeu_ID);
+    }
+
+    public void learn()throws FileNotFoundException, IOException{
+        File csvFile = new File("donneesDeJeu.csv");
+        if (!csvFile.exists())
+            throw new FileNotFoundException("Le fichier n'existe pas");
+        if (csvFile.isDirectory())
+            throw new FileNotFoundException("Le chemin désigne un répertoire et non un fichier");
+        if (!csvFile.getAbsolutePath().endsWith(".csv"))
+            throw new FileNotFoundException("Le fichier n'est pas du type CSV (Comma Separated Value)");
+
+        StringTokenizer lineParser;
+        BufferedReader reader = new BufferedReader(new FileReader(csvFile));
+
+        String line = null;
+        ArrayList<Double> dataEnd= new ArrayList<>();
+        double value;
+        int i;
+        while ((line = reader.readLine()) != null) {
+            i=0;
+            ArrayList<Double> dataRow = new ArrayList<>();
+            lineParser = new StringTokenizer(line, ",");
+            while (lineParser.hasMoreElements() && i<18) {
+                value = Double.parseDouble((String)lineParser.nextElement());
+                dataRow.add(value);
+                i++;
+            }
+            GameState.add(dataRow);
+        }
+        GameState.learnAll(AI);
+        GameState.reset();
     }
 
     /*****

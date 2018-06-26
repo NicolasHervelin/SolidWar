@@ -34,8 +34,8 @@ public class ControllerMenu implements Initializable, ControlledScreen {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        SoundEffect.init();
-        SoundEffect.volume = SoundEffect.Volume.LOW;  // un-mute
+      /*  SoundEffect.init();
+        SoundEffect.volume = SoundEffect.Volume.LOW;  // un-mute*/
         choixNbJoueur.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
@@ -104,8 +104,7 @@ public class ControllerMenu implements Initializable, ControlledScreen {
     }
 
     public void IA_Game(){
-        myController.addData("nbjoueurs","2");
-        myController.addData("is_bot_game","true");
+        myController.addData("nbjoueurs","IA");
         myController.loadScreen(Main.Jeu_ID, Main.Jeu_FILE);
         myController.setScreen(Main.Jeu_ID);
     }

@@ -15,16 +15,16 @@ public class NeuralNetwork {
 
     public NeuralNetwork() {
         layers = new NeuralLayer[4];
-        layers[0] = new NeuralLayer(3,3);
-        layers[1] = new NeuralLayer(3,10);
+        layers[0] = new NeuralLayer(17,17);
+        layers[1] = new NeuralLayer(17,10);
         layers[2] = new NeuralLayer(10,10);
         layers[3] = new NeuralLayer(10,1);
     }
 
     public void reset() {
         layers = new NeuralLayer[4];
-        layers[0] = new NeuralLayer(3,3);
-        layers[1] = new NeuralLayer(3,10);
+        layers[0] = new NeuralLayer(17,17);
+        layers[1] = new NeuralLayer(17,10);
         layers[2] = new NeuralLayer(10,10);
         layers[3] = new NeuralLayer(10,1);
         learningCycles = 0;
@@ -34,7 +34,8 @@ public class NeuralNetwork {
         this.load(file);
     }
 
-    public double[] outputs(double inputs[]) {
+    public double[]
+    outputs(double inputs[]) {
         for (int i = 0; i < getInputSize(); i++) {
             inputs = layers[i].outputs(inputs);
         }
