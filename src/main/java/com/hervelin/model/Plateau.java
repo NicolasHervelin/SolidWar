@@ -524,6 +524,8 @@ public class Plateau {
                     CaseMur caseMur = (CaseMur) caseActuelle;
                     Mur mur = caseMur.getMur();
                     attaquerMur(mur, arme, degats, isLancerParfait(listeDeLancers));
+                    if(mur.getPtStructure() == 0)
+                        detruireMur(caseMur, new CaseNormale(caseMur.getPosition()));
                 }
             }
             turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
@@ -543,6 +545,8 @@ public class Plateau {
                 CaseMur caseMur = (CaseMur) caseSelectionnee;
                 Mur mur = caseMur.getMur();
                 attaquerMur(mur, arme, degats, isLancerParfait(listeDeLancers));
+                if(mur.getPtStructure() == 0)
+                    detruireMur(caseMur, new CaseNormale(caseMur.getPosition()));
             }
             turnPlayer.setPtAttaque(turnPlayer.getPtAttaque() - arme.getPa());
         }
@@ -830,7 +834,7 @@ public class Plateau {
     }
 
     //Retourn le nombre de déplacement maximum que le joueur actuel peut effectuer
-    private int getDeplacementMax() {
+    public int getDeplacementMax() {
         int coutMax = 0;
         ArrayList<Case> listeDesCasesAccessibles = pathFindingPlateau(turnPlayer);
         for(Case c : listeDesCasesAccessibles) {

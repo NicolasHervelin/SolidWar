@@ -1,4 +1,4 @@
-package com.hervelin.model.renforcement2;
+package com.hervelin.model.renforcement;
 
 import java.util.Vector;
 
@@ -71,7 +71,7 @@ public class RLearnerForSolidWar {
 
         // set default values
         epsilon = 0.1;
-        temp = 1;
+        temp = 0.2;
 
         alpha = 1; // For CliffWorld alpha = 1 is good
         gamma = 0.1;

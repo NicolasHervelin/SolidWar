@@ -1,4 +1,4 @@
-package com.hervelin.model.renforcement2;
+package com.hervelin.model.renforcement;
 
 import com.hervelin.model.Position;
 
@@ -53,10 +53,14 @@ public class SolidWarGame extends Thread {
             int action=-1;
             if (mousetype == GREEDY) {
                 //action = world.mouseAction();
-                System.err.println("MouseType = GREEDY -- Not Implemented");
+                //System.err.println("MouseType = GREEDY -- Not Implemented");
             } else if (mousetype == SMART) {
-                action = policy.getBestAction(world.getState());
-                System.err.println("MouseType = SMART");
+                if(world.plateau.turnPlayer.getName().equals("J2")) {
+                    action = 16;
+                }
+                else
+                    action = policy.getBestAction(world.getState());
+                //System.err.println("MouseType = SMART");
             } else {
                 System.err.println("Invalid mouse type:"+mousetype);
             }

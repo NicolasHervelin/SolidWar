@@ -1,4 +1,4 @@
-package com.hervelin.model.renforcement2;
+package com.hervelin.model.renforcement;
 
 import java.lang.reflect.Array;
 

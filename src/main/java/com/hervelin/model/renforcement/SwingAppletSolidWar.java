@@ -1,4 +1,4 @@
-package com.hervelin.model.renforcement2;
+package com.hervelin.model.renforcement;
 
 import com.hervelin.model.Plateau;
 
@@ -25,6 +25,7 @@ public class SwingAppletSolidWar extends JApplet implements ActionListener,Runna
     SolidWarGame game;
     SolidWarWorld trainWorld, playWorld; // seperate world from playing world
     Plateau plateau = new Plateau(10, 10, "J1", "J2");
+    Plateau plateauGame = new Plateau(10, 10, "J1", "J2");
     RLControllerForSolidWar rlc;
     RLearnerForSolidWar rl;
 
@@ -151,7 +152,7 @@ public class SwingAppletSolidWar extends JApplet implements ActionListener,Runna
         // disable this pane
         tabbedPane.setEnabledAt(0,false);
 
-        playWorld = new SolidWarWorld(plateau);
+        playWorld = new SolidWarWorld(plateauGame);
 
         //System.out.println("plateau.Joueur1 : " + plateau.getListeDeJoueurs().get(0));
         //System.out.println("plateau.Joueur2 : " + plateau.getListeDeJoueurs().get(1));
@@ -472,7 +473,7 @@ public class SwingAppletSolidWar extends JApplet implements ActionListener,Runna
         JPanel labelpane = new JPanel();
         labelpane.setLayout(new GridLayout(0,1));
         labelpane.add(new JLabel("Death Penalty:", JLabel.RIGHT));
-        labelpane.add(new JLabel("Cheese Reward:", JLabel.RIGHT));
+        labelpane.add(new JLabel("Kill Reward:", JLabel.RIGHT));
         labelpane.add(new JLabel("Alpha:", JLabel.RIGHT));
         labelpane.add(new JLabel("Gamma:", JLabel.RIGHT));
         labelpane.add(new JLabel("Epsilon:", JLabel.RIGHT));
